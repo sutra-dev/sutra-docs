@@ -1,12 +1,12 @@
 import { Navbar } from "@/components/nav-bar";
-import "./global.css";
-import { RootProvider } from "fumadocs-ui/provider";
-import type { ReactNode } from "react";
 import { NavbarProvider } from "@/components/nav-mobile";
-import { baseUrl, createMetadata } from "@/lib/metadata";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { baseUrl, createMetadata } from "@/lib/metadata";
+import { RootProvider } from "fumadocs-ui/provider";
 import { Geist, Geist_Mono } from "next/font/google";
+import type { ReactNode } from "react";
+import "./global.css";
 
 const giest = Geist({
   subsets: ["latin"],
