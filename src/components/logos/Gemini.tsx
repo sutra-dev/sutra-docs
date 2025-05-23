@@ -1,9 +1,13 @@
-import { type SVGProps } from "react";
 import { useTheme } from "next-themes";
+import { useEffect, useState, type SVGProps } from "react";
 
 export default function Gemini(props: SVGProps<SVGSVGElement>) {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === "dark";
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    setIsDark(resolvedTheme === "dark");
+  }, [resolvedTheme]);
 
   return (
     <svg
