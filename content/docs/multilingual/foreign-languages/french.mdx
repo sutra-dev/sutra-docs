@@ -1,0 +1,54 @@
+---
+title: SUTRA-V2 French Notebook
+---
+
+Ce carnet montre comment utiliser **SUTRA-V2** en **français** pour créer des applications d'IA multilingues. Développé par TWO AI, SUTRA-V2 prend en charge plus de 50 langues, dont le français, pour les tâches de chat et d'instruction via une API compatible avec OpenAI.
+
+## 🔧 Prérequis
+
+- Obtenez votre clé API SUTRA sur [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- Stockez la clé API en toute sécurité (par exemple, dans les secrets de Google Colab ou comme variable d'environnement).
+
+## 📦 Étape 1 : Installer les dépendances
+
+```bash
+!pip install -qU openai
+```
+
+## 🔐 Étape 2 : Initialiser le client SUTRA
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_SUTRA_API_KEY",
+    base_url="https://api.two.ai/v2"
+)
+```
+
+## 💬 Étape 3 : Complétion de chat de base
+
+```python
+response = client.chat.completions.create(
+    model="sutra-v2",
+    messages=[
+        {"role": "system", "content": "Vous êtes une IA utile qui répond de manière concise."},
+        {"role": "user", "content": "Qu'est-ce que l'intelligence artificielle ? Expliquez en trois phrases."}
+    ],
+    max_tokens=1024,
+    temperature=0.7
+)
+print(response.choices[0].message.content)
+```
+
+## 🛠 Dépannage
+
+- **Clé API invalide** : Vérifiez votre clé sur [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- **Modèle non trouvé** : Utilisez `sutra-v2`. SUTRA-V1 a été abandonné le 22 mars 2025.
+- **Limites de taux** : Réduisez la fréquence des requêtes ou contactez TWO AI à [https://www.two.ai/support](https://www.two.ai/support).
+
+## 📎 Ressources
+
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [Dépôt GitHub SUTRA](https://github.com/sutra-dev/sutra-cookbook)
+- [ChatSUTRA](https://chat.two.ai)

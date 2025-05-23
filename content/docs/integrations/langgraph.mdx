@@ -1,0 +1,150 @@
+---
+title: LangGraph with SUTRA
+---
+
+This guide walks you through using **SUTRA models (V2 or R0)** within the **LangGraph** ecosystem to build stateful, graph-based AI workflows. With LangGraph, you can create dynamic agents, tools, and multi-step processes that leverage SUTRA’s multilingual and reasoning capabilities.
+
+## 📦 Step 1: Install Dependencies
+
+Install the latest versions of LangChain, LangGraph, and OpenAI-compatible packages:
+
+```bash
+!pip install -qU openai langchain langchain-openai langchain-community langgraph
+```
+
+## 🔐 Step 2: Authenticate with Your API Key
+
+Obtain your SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+
+```python
+from openai import OpenAI
+from langchain_openai import ChatOpenAI
+
+api_key = "YOUR_SUTRA_API_KEY"
+```
+
+## ⚙️ Step 3: Initialize LangChain Client with SUTRA
+
+Configure a LangChain `ChatOpenAI` instance to use either `sutra-v2` for multilingual chat or `sutra-r0` for advanced reasoning.
+
+```python
+chat = ChatOpenAI(
+    model="sutra-v2",  # or "sutra-r0" for reasoning tasks
+    api_key=api_key,
+    base_url="https://api.two.ai/v2"
+)
+```
+
+## 🧬 Step 4: Build a Simple LangGraph Workflow
+
+Create a basic LangGraph workflow that uses SUTRA to process a user query and generate a response with a reasoning step.
+
+```python
+from langgraph.graph import StateGraph, END
+from langchain_core.messages import HumanMessage, SystemMessage
+from typing import TypedDict, List
+
+# Define the state schema
+class GraphState(TypedDict):
+    messages: List[HumanMessage]
+
+# Define a node that processes the query with SUTRA-V2
+def chat_node(state: GraphState) -> GraphState:
+    messages = state["messages"]
+    response = chat.invoke([
+        SystemMessage(content="You are a helpful AI that answers concisely in the requested language."),
+        *messages
+    ])
+    state["messages"].append(response)
+    return state
+
+# Initialize the graph
+workflow = StateGraph(GraphState)
+
+# Add the chat node
+workflow.add_node("chat", chat_node)
+
+# Set entry and exit points
+workflow.set_entry_point("chat")
+workflow.add_edge("chat", END)
+
+# Compile the graph
+graph = workflow.compile()
+
+# Run the workflow
+initial_state = {"messages": [HumanMessage(content="Explain the benefits of AI in education in Spanish.")]}
+result = graph.invoke(initial_state)
+print(result["messages"][-1].content)
+```
+
+## 🧠 Step 5: Advanced Reasoning with SUTRA-R0 in LangGraph
+
+Use `sutra-r0` to create a multi-step reasoning workflow, such as analyzing a complex query with a reasoning chain.
+
+```python
+from langgraph.graph import StateGraph, END
+from langchain_core.messages import HumanMessage, SystemMessage
+from typing import TypedDict, List
+
+# Define the state schema
+class ReasoningState(TypedDict):
+    messages: List[HumanMessage]
+    reasoning_steps: List[str]
+
+# Initialize SUTRA-R0 client
+r0_chat = ChatOpenAI(
+    model="sutra-r0",
+    api_key=api_key,
+    base_url="https://api.two.ai/v2"
+)
+
+# Node for reasoning step
+def reasoning_node(state: ReasoningState) -> ReasoningState:
+    messages = state["messages"]
+    reasoning_prompt = [
+        SystemMessage(content="You are a legal reasoning expert. Break down the query into logical steps before answering."),
+        *messages
+    ]
+    response = r0_chat.invoke(reasoning_prompt)
+    state["reasoning_steps"].append(response.content)
+    state["messages"].append(response)
+    return state
+
+# Initialize the graph
+reasoning_workflow = StateGraph(ReasoningState)
+
+# Add the reasoning node
+reasoning_workflow.add_node("reason", reasoning_node)
+
+# Set entry and exit points
+reasoning_workflow.set_entry_point("reason")
+reasoning_workflow.add_edge("reason", END)
+
+# Compile the graph
+reasoning_graph = workflow.compile()
+
+# Run the workflow
+initial_state = {
+    "messages": [HumanMessage(content="If a contract states 'Party A is responsible unless Party B provides notice within 7 days,' who is liable if notice is given on day 8?")],
+    "reasoning_steps": []
+}
+result = reasoning_graph.invoke(initial_state)
+print("Reasoning Steps:", result["reasoning_steps"])
+print("Final Answer:", result["messages"][-1].content)
+```
+
+## 🛠 Troubleshooting
+
+- **Invalid API Key**: Ensure your `SUTRA_API_KEY` is correct and stored securely (e.g., in Colab secrets).
+- **Model Not Found**: Verify you’re using `sutra-v2` or `sutra-r0`. SUTRA-V1 was deprecated on March 22, 2025.
+- **Graph Errors**: Check that all nodes and edges are properly defined. Ensure `GraphState` or `ReasoningState` matches your workflow’s needs.
+- **Rate Limits**: If you hit rate limits, reduce request frequency or contact TWO AI at [https://www.two.ai/support](https://www.two.ai/support).
+
+## 📎 Resources
+
+- [LangGraph Documentation](https://python.langchain.com/docs/langgraph/)
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+- [LangChain Documentation](https://python.langchain.com/docs/)
+
+Use **LangGraph + SUTRA** to build dynamic, stateful AI workflows with multilingual reasoning, agentic logic, and scalable prompting for production-ready applications.

@@ -1,0 +1,77 @@
+---
+title: SUTRA Starter Apps Library
+---
+
+Explore our collection of **SUTRA-powered starter apps**, built with Streamlit to showcase the multilingual and AI-driven capabilities of SUTRA-V2. These apps demonstrate how to integrate SUTRA with LangChain for various use cases including multilingual chat, document question-answering, and educational content generation.
+
+## 📱 App Collection
+
+<ResourceGridWithTwoLinks
+  resources={[
+    {
+      title: "SUTRA Multilingual Chat",
+      description:
+        "A Streamlit app for real-time, multilingual conversations with SUTRA-V2 via LangChain, supporting 50+ languages.",
+      href: [
+        { href: "/docs/starter-apps/multilingual-chat", label: "Learn More" },
+        {
+          href: "https://github.com/Shubhwithai/sutra-cookbook/tree/main/starter-apps/sutra_multilingual_chat",
+          label: "View Code",
+        },
+      ],
+    },
+    {
+      title: "Document RAG Chatbot",
+      description:
+        "A Streamlit app using retrieval-augmented generation (RAG) with LangChain to chat with PDF content in multiple languages.",
+      href: "/docs/starter-apps/chat-with-pdf",
+      href: [
+        { href: "/docs/starter-apps/chat-with-pdf", label: "Learn More" },
+        {
+          href: "https://github.com/Shubhwithai/sutra-cookbook/tree/main/starter-apps/Document_RAG_ChatBOT",
+          label: "View Code",
+        },
+      ],
+    },
+    {
+      title: "Multilingual Question Generator",
+      description:
+        "A Streamlit app leveraging SUTRA-V2 and LangChain to generate questions from documents in multiple languages.",
+      href: "/docs/starter-apps/mcq-generator",
+      href: [
+        { href: "/docs/starter-apps/mcq-generator", label: "Learn More" },
+        {
+          href: "https://github.com/Shubhwithai/sutra-cookbook/tree/main/starter-apps",
+          label: "View Code",
+        },
+      ],
+    },
+  ]}
+  className="lg:grid-cols-2"
+/>
+
+## 🚀 Get Started
+
+### Prerequisites
+
+- **Python**: v3.8 or higher
+- **Required Packages**:
+  ```bash
+  pip install streamlit langchain-openai python-dotenv PyPDF2 faiss-cpu langchain-community
+  ```
+- **API Key**: Obtain your SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api)
+- **Environment Setup**: Create a `.env` file with `SUTRA_API_KEY=your_key_here`
+
+### Running the Apps
+
+1. Clone the repository: `git clone https://github.com/Shubhwithai/sutra-cookbook.git`
+2. Navigate to the desired app directory: `cd sutra-cookbook/starter-apps/[app_directory]`
+3. Run the app: `streamlit run app.py`
+4. Access in your browser at `http://localhost:8501`
+
+## 🔧 Resources
+
+- **GitHub Repository**: [https://github.com/Shubhwithai/sutra-cookbook](https://github.com/Shubhwithai/sutra-cookbook)
+- **SUTRA API Documentation**: [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api)
+- **LangChain Documentation**: [https://python.langchain.com/docs/get_started/introduction](https://python.langchain.com/docs/get_started/introduction)
+- **Streamlit Documentation**: [https://docs.streamlit.io](https://docs.streamlit.io)

@@ -1,0 +1,121 @@
+---
+title: SUTRA-V2 with Go SDK
+---
+
+This guide demonstrates how to use the **SUTRA-V2** model with the Go SDK to build multilingual AI applications. SUTRA-V2, developed by TWO AI, powers chat and instruction tasks via an OpenAI-compatible API.
+
+## 🔧 Prerequisites
+
+- Obtain your SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- Go 1.18 or later installed on your system.
+
+## 📦 Step 1: Install Dependencies
+
+```bash
+go get github.com/sashabaranov/go-openai
+```
+
+## 🔐 Step 2: Initialize SUTRA Client
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"os"
+
+	openai "github.com/sashabaranov/go-openai"
+)
+
+func main() {
+	// Get API key from environment variable
+	apiKey := os.Getenv("SUTRA_API_KEY")
+
+	// Create a new client with custom base URL
+	config := openai.DefaultConfig(apiKey)
+	config.BaseURL = "https://api.two.ai/v2"
+
+	client := openai.NewClientWithConfig(config)
+
+	// Continue with the chat completion example...
+}
+```
+
+## 💬 Step 3: Basic Chat Completion
+
+```go
+// Create a context
+ctx := context.Background()
+
+// Create chat completion request
+resp, err := client.CreateChatCompletion(
+	ctx,
+	openai.ChatCompletionRequest{
+		Model: "sutra-v2",
+		Messages: []openai.ChatCompletionMessage{
+			{
+				Role:    openai.ChatMessageRoleSystem,
+				Content: "You are a helpful AI that answers concisely.",
+			},
+			{
+				Role:    openai.ChatMessageRoleUser,
+				Content: "Explain AI in 3 sentences in Spanish.",
+			},
+		},
+		MaxTokens:   1024,
+		Temperature: 0.7,
+	},
+)
+
+if err != nil {
+	fmt.Printf("ChatCompletion error: %v\n", err)
+	return
+}
+
+fmt.Println(resp.Choices[0].Message.Content)
+```
+
+## 🌐 Error Handling
+
+```go
+// Example with error handling
+resp, err := client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
+	// ... request parameters ...
+})
+
+if err != nil {
+	// Check for specific error types
+	if apiErr, ok := err.(*openai.APIError); ok {
+		switch apiErr.HTTPStatusCode {
+		case 401:
+			fmt.Println("Invalid API key")
+		case 429:
+			fmt.Println("Rate limit exceeded")
+		case 500:
+			fmt.Println("Server error, please try again later")
+		default:
+			fmt.Printf("OpenAI API error: %v\n", err)
+		}
+	} else {
+		fmt.Printf("Error: %v\n", err)
+	}
+	return
+}
+
+// Process successful response
+fmt.Println(resp.Choices[0].Message.Content)
+```
+
+## 🛠 Troubleshooting
+
+- **Invalid API Key**: Ensure your API key is correct and stored securely.
+- **Model Not Found**: Use `sutra-v2`. SUTRA-V1 was deprecated on March 22, 2025.
+- **Rate Limits**: Reduce request frequency or contact TWO AI at [https://www.two.ai/support](https://www.two.ai/support).
+- **Connection Issues**: Verify your network connection and ensure the base URL is correct.
+
+## 📎 Resources
+
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+- [Go OpenAI Client](https://github.com/sashabaranov/go-openai)

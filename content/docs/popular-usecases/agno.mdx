@@ -1,0 +1,69 @@
+---
+title: SUTRA with Agno Notebook
+---
+
+This notebook demonstrates how to use **SUTRA** with **Agno** (formerly PhiData), a lightweight, model-agnostic framework for building multimodal AI agents. SUTRA-V2, developed by TWO AI, supports multilingual chat and instruction tasks via an OpenAI-compatible API, integrating seamlessly with Agno’s high-performance agent architecture.[](https://www.analyticsvidhya.com/blog/2025/03/agno-framework/)
+
+## 🔧 Prerequisites
+
+- Obtain your SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- Store the API key securely (e.g., in Google Colab secrets or environment variables).
+- Install Agno and OpenAI SDK.
+
+## 📦 Step 1: Install Dependencies
+
+```bash
+!pip install -qU agno openai
+```
+
+## 🔐 Step 2: Initialize SUTRA-V2 with Agno
+
+```python
+from agno.agent import Agent
+import os
+from openai import OpenAI
+
+# Set SUTRA API key
+api_key = os.getenv("SUTRA_API_KEY", "YOUR_SUTRA_API_KEY")
+
+# Initialize OpenAI client for SUTRA
+client = OpenAI(
+    api_key=api_key,
+    base_url="https://api.two.ai/v2"
+)
+
+# Create Agno agent with SUTRA-V2
+agent = Agent(
+    model="sutra-v2",
+    description="A multilingual assistant powered by SUTRA-V2",
+    instructions=["Answer concisely in the requested language."],
+    client=client
+)
+```
+
+## 💬 Step 3: Basic Chat Completion
+
+```python
+# Run the agent
+response = agent.run("Explain AI in three sentences in Hindi.")
+print(response.content)
+```
+
+## 🌟 Why Agno?
+
+- **Performance**: ~10,000x faster agent creation and ~50x less memory than LangGraph, ideal for lightweight applications.[](https://www.analyticsvidhya.com/blog/2025/03/agno-framework/)
+- **Flexibility**: Model-agnostic, supports multimodal tasks (text, images, etc.).
+- **Ease of Use**: Minimalist API for rapid prototyping.
+
+## 🛠 Troubleshooting
+
+- **Invalid API Key**: Verify your key at [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- **Model Not Found**: Use `sutra-v2`. SUTRA-V1 was deprecated on March 22, 2025.
+- **Rate Limits**: Reduce request frequency or contact TWO AI at [https://www.two.ai/support](https://www.two.ai/support).
+
+## 📎 Resources
+
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+- [Agno Documentation](https://docs.agnostack.com)
+- [ChatSUTRA](https://chat.two.ai)

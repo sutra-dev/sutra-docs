@@ -1,0 +1,82 @@
+---
+title: SUTRA with Portkey
+description: Integrate SUTRA models with Portkey for multilingual and reasoning-rich AI applications.
+---
+
+This guide walks you through integrating **SUTRA models (V2 or R0)** with **Portkey**. Portkey acts as an AI gateway, providing enhanced observability, reliability, and seamless integration with various AI models, including SUTRA.
+
+## 📦 Step 1: Install Dependencies
+
+```bash
+pip install -qU portkey-ai
+```
+
+## 🔐 Step 2: Set Up API Keys
+
+Ensure you have the following:
+
+- **Portkey API Key**: Obtain this from your [Portkey Dashboard](https://portkey.ai).
+- **SUTRA API Key**: Acquire this from the [SUTRA Platform](https://sutra.two.ai).
+
+Set them as environment variables:
+
+```bash
+export PORTKEY_API_KEY="your_portkey_api_key"
+export SUTRA_API_KEY="your_sutra_api_key"
+```
+
+## ⚙️ Step 3: Initialize Portkey Client with SUTRA
+
+```python
+from portkey_ai import Portkey
+
+client = Portkey(
+    api_key="your_portkey_api_key",
+    virtual_key="your_virtual_key",  # Optional: If using Portkey's virtual keys
+    base_url="https://api.two.ai/v2"  # SUTRA's API endpoint
+)
+```
+
+## 💬 Step 4: Make a Chat Completion Request
+
+```python
+response = client.chat.completions.create(
+    messages=[{"role": "user", "content": "Translate 'Hello, how are you?' to Hindi."}],
+    model="sutra-v2"  # Use "sutra-r0" for reasoning tasks
+)
+
+print(response.choices[0].message.content)
+```
+
+## 🧠 Advanced: Utilize SUTRA-R0 for Reasoning
+
+```python
+response = client.chat.completions.create(
+    messages=[{"role": "user", "content": "If all humans are mortal and Socrates is a human, is Socrates mortal?"}],
+    model="sutra-r0"
+)
+
+print(response.choices[0].message.content)
+```
+
+## 📎 Tips
+
+- **Model Selection**:
+
+  - Use `sutra-v2` for tasks like translation, summarization, and multilingual Q&A.
+  - Use `sutra-r0` for logical reasoning and analytical tasks.
+
+- **Portkey Features**:
+  - **Observability**: Monitor requests and responses seamlessly.
+  - **Retries & Fallbacks**: Enhance reliability with automatic retries.
+  - **Semantic Caching**: Reduce latency and costs with intelligent caching.
+
+## 🔗 Resources
+
+- [Portkey Documentation](https://portkey.ai/docs)
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+
+---
+
+Harness the power of **SUTRA** models with **Portkey** to build robust, multilingual, and reasoning-capable AI applications.

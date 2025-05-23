@@ -1,0 +1,59 @@
+---
+title: SUTRA Features Overview
+---
+
+This guide provides a high-level overview of the key features of **SUTRA**, a family of multilingual AI models by TWO AI, designed for conversation, reasoning, and quantitative tasks. SUTRA’s innovative architecture powers scalable, cost-efficient, and enterprise-ready applications across diverse domains.
+
+## 🌟 Key Features
+
+### Multilingual Capabilities
+
+SUTRA supports over 50 languages, including Hindi, Gujarati, Tamil, Korean, Arabic, and more, with superior performance on the Multilingual MMLU benchmark. Its dual-transformer architecture decouples concept and language learning, enabling fluent, context-aware responses in diverse linguistic landscapes.[](https://www.two.ai/sutra)[](https://indiaai.gov.in/article/two-platforms-unveiled-sutra-a-novel-multilingual-large-language-model)
+
+### Advanced Reasoning
+
+SUTRA-R0 introduces a structured reasoning framework for complex decision-making and multi-step problem-solving, outperforming models like DeepSeek-R1-32B and OpenAI-o1-mini in languages like Hindi (81.44) and Gujarati (79.39). It’s ideal for enterprise applications in finance, healthcare, and customer service.[](https://www.analyticsvidhya.com/blog/2025/02/sutra-r0/)[](https://analyticsindiamag.com/ai-news-updates/jio-backed-two-ai-launches-multilingual-reasoning-model-sutra-r0/)
+
+### Streaming Mode
+
+SUTRA-V2 supports real-time response streaming, ensuring low-latency interactions for dynamic applications like chatbots and live assistants, with optimized servers in India, the USA, Korea, and Japan (coming soon).[](https://www.two.ai/blog/sutra-v2-is-here)
+
+### Quantitative Analysis
+
+SUTRA-Q0, a time-series quantitative model, excels in forecasting, anomaly detection, and trend analysis for domains like finance, logistics, and healthcare, leveraging a dense architecture for dynamic data patterns.[](https://www.two.ai/sutra)
+
+### Voice Interaction
+
+SUTRA HiFi, a voice-to-voice model, offers ultra-low latency and natural-sounding interactions in over 30 languages, ideal for virtual assistants and customer service applications.[](https://analyticsindiamag.com/ai-news-updates/jio-backed-two-ai-launches-multilingual-voice-model-sutra-hifi/)
+
+## 🔧 Getting Started
+
+- **API Access**: Obtain a free SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- **ChatSUTRA**: Test SUTRA’s capabilities via [chat.two.ai](https://chat.two.ai), supporting web and mobile (iOS/Android).[](https://indiaai.gov.in/article/two-ai-launched-chatsutra-which-helps-users-communicate-in-over-50-languages)
+
+## 📦 Example: Basic Chat with SUTRA-V2
+
+```python
+from openai import OpenAI
+
+client = OpenAI(api_key="YOUR_SUTRA_API_KEY", base_url="https://api.two.ai/v2")
+response = client.chat.completions.create(
+    model="sutra-v2",
+    messages=[{"role": "user", "content": "Explain AI in Hindi."}],
+    max_tokens=1024,
+    temperature=0.7
+)
+print(response.choices[0].message.content)
+```
+
+## 🛠 Troubleshooting
+
+- **Invalid API Key**: Verify your key at [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- **Model Not Found**: Use `sutra-v2` or `sutra-r0`. SUTRA-V1 was deprecated on March 22, 2025.[](https://www.two.ai/blog/sutra-v2-is-here)
+- **Rate Limits**: Reduce request frequency or contact TWO AI at [https://www.two.ai/support](https://www.two.ai/support).
+
+## 📎 Resources
+
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+- [ChatSUTRA](https://chat.two.ai)

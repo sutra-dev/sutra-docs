@@ -1,0 +1,83 @@
+---
+title: SUTRA with LangChain Tool Calling Notebook
+---
+
+This notebook demonstrates how to use **SUTRA** with **LangChain’s tool-calling capabilities** to build intelligent, tool-augmented AI applications. SUTRA-V2, developed by TWO AI, supports multilingual chat and integrates seamlessly with LangChain’s ecosystem for dynamic tool usage.[](https://docs.crewai.com/tools/langchaintool)
+
+## 🔧 Prerequisites
+
+- Obtain your SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- Store the API key securely (e.g., in Google Colab secrets or environment variables).
+- Install LangChain and OpenAI SDK.
+
+## 📦 Step 1: Install Dependencies
+
+```bash
+!pip install -qU langchain langchain-openai openai
+```
+
+## 🔐 Step 2: Initialize SUTRA-V2 with LangChain
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain_core.tools import tool
+from langchain_core.messages import HumanMessage, SystemMessage
+import os
+
+# Set SUTRA API key
+api_key = os.getenv("SUTRA_API_KEY", "YOUR_SUTRA_API_KEY")
+
+# Initialize SUTRA-V2 with ChatOpenAI
+llm = ChatOpenAI(
+    model="sutra-v2",
+    api_key=api_key,
+    base_url="https://api.two.ai/v2"
+)
+
+# Define a simple tool
+@tool
+def get_greeting(language: str) -> str:
+    """Returns a greeting in the specified language."""
+    greetings = {
+        "english": "Hello!",
+        "hindi": "नमस्ते!",
+        "french": "Bonjour!"
+    }
+    return greetings.get(language.lower(), "Hello!")
+
+# Bind the tool to the LLM
+llm_with_tools = llm.bind_tools([get_greeting])
+```
+
+## 💬 Step 3: Tool Calling Example
+
+```python
+# Create a prompt with a tool call
+messages = [
+    SystemMessage(content="You are a helpful AI that uses tools to provide greetings."),
+    HumanMessage(content="Get a greeting in Hindi.")
+]
+
+# Invoke the LLM with the tool
+response = llm_with_tools.invoke(messages)
+print(response.tool_calls)  # Displays the tool call result
+```
+
+## 🌟 Why LangChain Tool Calling?
+
+- **Dynamic Tool Usage**: Enables SUTRA-V2 to call custom or pre-built tools for specific tasks.[](https://docs.crewai.com/tools/langchaintool)
+- **Multilingual Support**: Combines SUTRA-V2’s language capabilities with LangChain’s flexible tool ecosystem.
+- **Extensibility**: Integrates with tools like search, RAG, and more for complex workflows.
+
+## 🛠 Troubleshooting
+
+- **Invalid API Key**: Verify your key at [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- **Model Not Found**: Use `sutra-v2`. SUTRA-V1 was deprecated on March 22, 2025.
+- **Tool Errors**: Ensure tools are correctly defined and bound to the LLM.
+
+## 📎 Resources
+
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+- [LangChain Documentation](https://python.langchain.com/docs)
+- [ChatSUTRA](https://chat.two.ai)

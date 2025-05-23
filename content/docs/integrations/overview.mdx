@@ -1,0 +1,36 @@
+---
+title: Integrations Overview
+---
+
+SUTRA™ seamlessly integrates with popular frameworks and tools to accelerate your AI development. This section highlights how to connect SUTRA with leading open-source libraries, SDKs, and third-party platforms.
+
+## Supported Integrations
+
+- **LangChain**: Build advanced chains and workflows using SUTRA as a language model backend.
+- **LlamaIndex**: Use SUTRA for retrieval-augmented generation and document QA pipelines.
+- **Portkey**: Connect SUTRA to Portkey for secure, scalable API management.
+- **LiteLLM**: Integrate SUTRA with LiteLLM for lightweight, multi-provider LLM orchestration.
+- **CrewAI**: Power autonomous agents and task automation with SUTRA.
+- **Agno**: Use SUTRA in Agno pipelines for advanced reasoning and analytics.
+
+## Example: Using SUTRA with LangChain (Python)
+
+```python
+from langchain.llms import OpenAI
+
+llm = OpenAI(
+    base_url="https://api.two.ai/v2",
+    api_key="YOUR_SUTRA_API_KEY"
+)
+
+response = llm("Translate this to Hindi: 'How are you?'")
+print(response)
+```
+
+## Learn More
+
+- [LangChain Integration Guide](https://docs.langchain.com/docs/integrations/providers/openai)
+- [LlamaIndex Documentation](https://docs.llamaindex.ai/en/latest/)
+- [Portkey Docs](https://www.portkey.ai/docs)
+- [Agno Docs](https://docs.agno.ai/)
+- [LiteLLM Docs](https://docs.litellm.ai/)

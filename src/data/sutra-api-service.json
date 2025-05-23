@@ -1,0 +1,627 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "5.5.0",
+    "title": "Sutra API Service",
+    "description": "\nThe Sutra API provides access to powerful large language models (LLMs) with capabilities for text completion, online search integration, and location-based services.\n"
+  },
+  "externalDocs": {
+    "description": "Sutra OpenAPI Specification",
+    "url": "endpoints"
+  },
+  "servers": [
+    {
+      "url": "https://api.two.ai",
+      "description": "Sutra API Server"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Role": {
+        "type": "string",
+        "enum": [
+          "system",
+          "user",
+          "assistant"
+        ],
+        "description": "The role of the message sender. Can be 'system', 'user', or 'assistant'.\n"
+      },
+      "ChatMLMessageContent": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "text"
+            ],
+            "description": "\nThe type of content. Currently only 'text' is supported.\n"
+          },
+          "text": {
+            "type": "string",
+            "description": "\nThe text content of the message.\n"
+          }
+        },
+        "required": [
+          "type",
+          "text"
+        ]
+      },
+      "ChatML": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ChatMLMessageContent"
+                }
+              }
+            ]
+          }
+        },
+        "required": [
+          "role",
+          "content"
+        ],
+        "description": "\nA ChatML message object containing a role and content.\n"
+      },
+      "SutraModel": {
+        "type": "string",
+        "enum": [
+          "sutra-v2",
+          "sutra-r0"
+        ],
+        "description": "\nThe name of the model to use for generation. Available models include:\n\n- `sutra-v2`: A multilingual AI model designed for instruction execution and conversational intelligence across 50+ languages. \nTrained on a diverse blend of proprietary and open-access datasets, it excels in handling complex tasks with high accuracy. \nWith deep proficiency across Latin, Indic, and Far Eastern languages, SUTRA-V2 delivers natural, context-aware responses, \nmaking it a powerful solution for global enterprises, multilingual assistants, and cross-language AI applications.\n\n- `sutra-r0`: The first in our series of advanced reasoning models, designed for complex problem-solving and deep contextual understanding. \nBuilt to analyze, infer, and generate logical responses, SUTRA-R0 goes beyond pattern recognition—applying structured reasoning to tackle \nnuanced queries, multi-step problem-solving, and enterprise decision-making. Its architecture enables high-accuracy responses across domains, \nmaking it a powerful tool for knowledge-intensive workflows and next-generation AI applications.\n"
+      },
+      "StopSeq": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          {
+            "nullable": true
+          },
+          {
+            "nullable": true
+          }
+        ],
+        "description": "\nUp to 4 sequences where the API will stop generating further tokens.\nMay be a string, null, or an array of strings.\n"
+      },
+      "SearchLocation": {
+        "type": "object",
+        "properties": {
+          "uule": {
+            "type": "string",
+            "description": "\nLocation encoding in UULE format.\n"
+          },
+          "country_code": {
+            "type": "string",
+            "description": "\nTwo-letter country code (e.g., 'US', 'IN').\n"
+          },
+          "language_code": {
+            "type": "string",
+            "description": "\nA language code, for example 'en'.\n"
+          },
+          "city": {
+            "type": "string",
+            "description": "\nName of a city.\n"
+          },
+          "region": {
+            "type": "string",
+            "description": "\nName of a region, for example 'California'.\n"
+          },
+          "country_name": {
+            "type": "string",
+            "description": "\nName of a country.\n"
+          }
+        },
+        "required": [
+          "uule",
+          "country_code",
+          "language_code"
+        ],
+        "description": "\nIdentifies the search location. Obtained from `/v2/location` requests. If `online_search` is 'false' or not set then search location is ignored and no online search is performed.\n"
+      },
+      "CompletionRequest": {
+        "type": "object",
+        "properties": {
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChatML"
+            },
+            "description": "\nA list of messages comprising the conversation so far.\nEach message should follow the ChatML format with a role and content.\n"
+          },
+          "model": {
+            "$ref": "#/components/schemas/SutraModel"
+          },
+          "stream": {
+            "type": "boolean",
+            "description": "\nIf set to `true`, partial message deltas will be sent, like in ChatGPT.\nTokens will be sent as data-only server-sent events as they become available.\nThe default is `false`.\n"
+          },
+          "frequency_penalty": {
+            "type": "number"
+          },
+          "presence_penalty": {
+            "type": "number"
+          },
+          "max_tokens": {
+            "type": "number",
+            "description": "\nThe maximum number of tokens to generate before terminating. This number cannot exceed the context window for the selected model. The default value is 1024.\n"
+          },
+          "stop": {
+            "$ref": "#/components/schemas/StopSeq"
+          },
+          "temperature": {
+            "type": "number",
+            "description": "\nControls the randomness of the response, a lower temperature gives lower randomness. Values are in the range [0,2] with a default value of 0.3.\n"
+          },
+          "top_p": {
+            "type": "number"
+          },
+          "extra_body": {
+            "type": "object",
+            "properties": {
+              "online_search": {
+                "type": "boolean",
+                "description": "\nA boolean flag to enable online search. The default is `false`.\n"
+              },
+              "search_location": {
+                "$ref": "#/components/schemas/SearchLocation"
+              }
+            }
+          }
+        },
+        "required": [
+          "messages",
+          "model"
+        ]
+      },
+      "SearchLocationRequest": {
+        "type": "object",
+        "properties": {
+          "city": {
+            "type": "string",
+            "description": "\nName of a city.\n"
+          },
+          "region": {
+            "type": "string",
+            "description": "\nName of a region, for example 'California'.\n"
+          },
+          "region_type": {
+            "type": "string",
+            "description": "\nType of a region, for example 'state' or 'province'.\n"
+          },
+          "country_name": {
+            "type": "string",
+            "description": "\nName of a country.\n"
+          },
+          "country_code": {
+            "type": "string",
+            "description": "\nTwo-letter country code (e.g., 'US', 'IN').\n"
+          },
+          "language_code": {
+            "type": "string",
+            "description": "\nA language code, for example 'en'.\n"
+          },
+          "locale": {
+            "type": "string",
+            "description": "\nA locale, for example 'en-US'.\n"
+          },
+          "longitude": {
+            "type": "number",
+            "description": "\nA longitude coordinate value.\n"
+          },
+          "latitude": {
+            "type": "number",
+            "description": "\nA latitude coordinate value.\n"
+          }
+        },
+        "additionalProperties": false
+      },
+      "Message": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": [
+              "system",
+              "user",
+              "assistant"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "refusal": {
+            "nullable": true
+          },
+          "annotations": {
+            "type": "array",
+            "items": {
+              "nullable": true
+            }
+          }
+        },
+        "required": [
+          "role",
+          "content",
+          "refusal",
+          "annotations"
+        ],
+        "additionalProperties": false
+      },
+      "Choice": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "number",
+            "description": "\nThe index of the choice.\n"
+          },
+          "message": {
+            "$ref": "#/components/schemas/Message"
+          },
+          "logprobs": {
+            "nullable": true
+          },
+          "finish_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "stop",
+                  "length",
+                  "content_filter"
+                ]
+              },
+              {
+                "nullable": true
+              },
+              {
+                "nullable": true
+              }
+            ],
+            "description": "\nThe reason why the completion finished.\n"
+          }
+        },
+        "required": [
+          "index",
+          "message",
+          "logprobs",
+          "finish_reason"
+        ],
+        "additionalProperties": false
+      },
+      "CompletionSequence": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "\nA unique identifier for the completion.\n"
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "chat.completion"
+            ],
+            "description": "\nThe object type, which is always 'chat.completion'.\n"
+          },
+          "created": {
+            "type": "number",
+            "description": "\nThe Unix timestamp for when the completion was created.\n"
+          },
+          "model": {
+            "type": "string",
+            "description": "\nThe model used for completion.\n"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Choice"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "created",
+          "model",
+          "choices"
+        ],
+        "additionalProperties": false
+      },
+      "ChoiceChunk": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "number",
+            "description": "\nThe index of the choice.\n"
+          },
+          "delta": {
+            "type": "object",
+            "properties": {
+              "content": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "content"
+            ]
+          },
+          "logprobs": {
+            "nullable": true
+          },
+          "finish_reason": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "stop",
+                  "length",
+                  "content_filter"
+                ]
+              },
+              {
+                "nullable": true
+              },
+              {
+                "nullable": true
+              }
+            ],
+            "description": "\nThe reason why the completion finished.\n"
+          }
+        },
+        "required": [
+          "index",
+          "delta",
+          "logprobs",
+          "finish_reason"
+        ],
+        "additionalProperties": false
+      },
+      "CompletionChunk": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "\nA unique identifier for the completion.\n"
+          },
+          "object": {
+            "type": "string",
+            "enum": [
+              "chat.completion.chunk"
+            ],
+            "description": "\nThe object type, which is always 'chat.completion.chunk'.\n"
+          },
+          "created": {
+            "type": "number",
+            "description": "\nThe Unix timestamp for when the completion was created.\n"
+          },
+          "model": {
+            "type": "string",
+            "description": "\nThe model used for completion.\n"
+          },
+          "system_fingerprint": {
+            "type": "string"
+          },
+          "choices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ChoiceChunk"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "object",
+          "created",
+          "model",
+          "system_fingerprint",
+          "choices"
+        ],
+        "additionalProperties": false
+      },
+      "CompletionStream": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/CompletionChunk"
+        }
+      }
+    },
+    "parameters": {},
+    "securitySchemes": {
+      "BearerAuthorizer": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "apiKey",
+        "description": "\nAuthentication is performed via HTTP Bearer authentication. All API requests require an API key to be included in the header:\n`Authorization: Bearer YOUR_API_KEY`\n"
+      }
+    }
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "\nCheck health of API service.\n",
+        "description": "\nReturns a simple health check status to verify the API is operational.\n",
+        "tags": [
+          "Health Check"
+        ],
+        "responses": {
+          "200": {
+            "description": "\nAPI is healthy and operational.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request: validation error or missing parameters."
+          },
+          "401": {
+            "description": "Authorization information is missing or invalid."
+          },
+          "404": {
+            "description": "Invalid endpoint."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "5XX": {
+            "description": "Internal service error."
+          }
+        }
+      }
+    },
+    "/v2/chat/completions": {
+      "post": {
+        "summary": "\nCreate a chat completion.\n",
+        "description": "\nCreates a completion for the chat message. The request payload is a `CompletionRequest` object.\nThis endpoint supports both SUTRA-V2 and SUTRA-R0 models, each optimized for different use cases.\nUse SUTRA-V2 for multilingual applications across 50+ languages, or SUTRA-R0 for advanced reasoning\nand complex problem-solving tasks requiring deep contextual understanding.\n\nThere are two forms of reply as determined by the `stream` parameter:\n- `stream` is `false` or not set - the reply is a `CompletionSequence` object.\n\n- `stream` is `true` - the reply is `CompletionStream` delivered as server-sent events (SSE),\neach event containing a `CompletionChunk` object.\n",
+        "tags": [
+          "Completion"
+        ],
+        "security": [
+          {
+            "BearerAuthorizer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompletionRequest"
+              },
+              "example": {
+                "model": "sutra-v2",
+                "messages": [
+                  {
+                    "role": "system",
+                    "content": "You are a helpful assistant."
+                  },
+                  {
+                    "role": "user",
+                    "content": "Hello, how are you today?"
+                  }
+                ],
+                "max_tokens": 100,
+                "temperature": 0.3,
+                "stream": false,
+                "extra_body": {
+                  "online_search": false
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "\nSuccessful response with completion data.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompletionSequence"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompletionStream"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request: validation error or missing parameters."
+          },
+          "401": {
+            "description": "Authorization information is missing or invalid."
+          },
+          "404": {
+            "description": "Invalid endpoint."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "5XX": {
+            "description": "Internal service error."
+          }
+        }
+      }
+    },
+    "/v2/location": {
+      "post": {
+        "summary": "\nDetermine a search location.\n",
+        "description": "\nDetermines a search location based on the provided parameters. The request payload\nis a `SearchLocationRequest` object; the return is a `SearchLocation` object that can be\nused for location-based services and search operations.\n",
+        "tags": [
+          "Location"
+        ],
+        "security": [
+          {
+            "BearerAuthorizer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SearchLocationRequest"
+              },
+              "example": {
+                "city": "San Francisco",
+                "region": "California",
+                "region_type": "state",
+                "country_name": "United States",
+                "country_code": "US",
+                "language_code": "en",
+                "locale": "en-US"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "\nSuccessful search location determination.\n",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SearchLocation"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request: validation error or missing parameters."
+          },
+          "401": {
+            "description": "Authorization information is missing or invalid."
+          },
+          "404": {
+            "description": "Invalid endpoint."
+          },
+          "429": {
+            "description": "Rate limit exceeded."
+          },
+          "5XX": {
+            "description": "Internal service error."
+          }
+        }
+      }
+    }
+  }
+}

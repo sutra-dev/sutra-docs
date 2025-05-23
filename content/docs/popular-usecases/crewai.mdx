@@ -1,0 +1,85 @@
+---
+title: SUTRA with CrewAI Notebook
+---
+
+This notebook demonstrates how to use **SUTRA** with **CrewAI**, a framework for orchestrating role-playing, autonomous AI agents. SUTRA-V2, developed by TWO AI, powers multilingual chat and instruction tasks, integrating seamlessly with CrewAI’s collaborative agent workflows.[](https://www.analyticsvidhya.com/blog/2024/01/building-collaborative-ai-agents-with-crewai/)[](https://github.com/crewAIInc/crewAI)
+
+## 🔧 Prerequisites
+
+- Obtain your SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- Store the API key securely (e.g., in Google Colab secrets or environment variables).
+- Install CrewAI and OpenAI SDK.
+
+## 📦 Step 1: Install Dependencies
+
+```bash
+!pip install -qU crewai openai
+```
+
+## 🔐 Step 2: Initialize SUTRA-V2 with CrewAI
+
+```python
+from crewai import Agent, Task, Crew
+from openai import OpenAI
+import os
+
+# Set SUTRA API key
+api_key = os.getenv("SUTRA_API_KEY", "YOUR_SUTRA_API_KEY")
+
+# Initialize OpenAI client for SUTRA
+client = OpenAI(
+    api_key=api_key,
+    base_url="https://api.two.ai/v2"
+)
+
+# Define a CrewAI agent with SUTRA-V2
+agent = Agent(
+    role="Multilingual Assistant",
+    goal="Provide concise answers in multiple languages",
+    backstory="You are an expert AI assistant trained to communicate fluently in over 50 languages.",
+    llm=client,
+    model="sutra-v2",
+    verbose=True
+)
+
+# Define a task
+task = Task(
+    description="Explain AI in three sentences in German.",
+    agent=agent,
+    expected_output="A concise explanation of AI in German."
+)
+
+# Create a crew
+crew = Crew(
+    agents=[agent],
+    tasks=[task],
+    verbose=True
+)
+```
+
+## 💬 Step 3: Run the Crew
+
+```python
+# Execute the crew
+result = crew.kickoff()
+print(result)
+```
+
+## 🌟 Why CrewAI?
+
+- **Collaboration**: Enables multi-agent workflows with role-based tasks.[](https://github.com/crewAIInc/crewAI)
+- **Flexibility**: Integrates with OpenAI-compatible APIs like SUTRA-V2.[](https://www.analyticsvidhya.com/blog/2024/01/building-collaborative-ai-agents-with-crewai/)
+- **Performance**: Optimized for speed and enterprise-grade automation.[](https://github.com/crewAIInc/crewAI)
+
+## 🛠 Troubleshooting
+
+- **Invalid API Key**: Verify your key at [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- **Model Not Found**: Use `sutra-v2`. SUTRA-V1 was deprecated on March 22, 2025.
+- **CrewAI Errors**: Ensure Python < 3.13 for compatibility with CrewAI tools.[](https://docs.ag2.ai/0.8.1/docs/blog/category/crewai/)
+
+## 📎 Resources
+
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+- [CrewAI Documentation](https://docs.crewai.com)
+- [ChatSUTRA](https://chat.two.ai)

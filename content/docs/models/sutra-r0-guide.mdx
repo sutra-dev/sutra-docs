@@ -1,0 +1,119 @@
+---
+title: SUTRA-R0 Guide
+---
+
+## 🧠 Build with SUTRA-R0
+
+Welcome to the Build with SUTRA-R0 guide — designed to help developers leverage the advanced reasoning capabilities of SUTRA-R0 in AI agents, decision engines, and complex workflows.
+
+### 🔍 What is SUTRA-R0?
+
+SUTRA-R0 is an advanced reasoning model trained to perform:
+
+- Multi-step logical inference
+- Structured problem-solving
+- Deep contextual analysis
+
+Perfect for applications in:
+
+- Legal & policy interpretation
+- Business intelligence
+- Scientific reasoning
+- Complex query answering
+
+---
+
+### 🧪 Quickstart in Python
+
+Install the required packages:
+
+```python
+!pip install -qU openai
+```
+
+Authenticate with your API key:
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url='https://api.two.ai/v2',
+    api_key="YOUR_SUTRA_API_KEY"
+)
+```
+
+Make a basic structured reasoning request:
+
+```python
+response = client.chat.completions.create(
+    model='sutra-r0',
+    messages=[
+        {"role": "user", "content": "If Alice is taller than Bob, and Bob is taller than Carol, who is the tallest?"}
+    ],
+    max_tokens=512,
+    temperature=0.3
+)
+
+print(response.choices[0].message.content)
+```
+
+---
+
+### 🔁 Comparative Reasoning Example
+
+```python
+def compare_reasoning(prompt):
+    basic = client.chat.completions.create(
+        model='sutra-r0',
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.3
+    )
+    advanced = client.chat.completions.create(
+        model='sutra-r0',
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.7,
+        presence_penalty=0.6
+    )
+
+    print("Basic reasoning:\n", basic.choices[0].message.content)
+    print("\nAdvanced reasoning:\n", advanced.choices[0].message.content)
+
+compare_reasoning("Explain the trade-offs between nuclear and solar energy for long-term policy decisions.")
+```
+
+---
+
+### 🧠 Ideal Use Cases
+
+| Scenario                  | Example                                             |
+| ------------------------- | --------------------------------------------------- |
+| Legal Analysis            | Interpret multi-clause statements and policies      |
+| Scientific Reports        | Break down cause-effect chains in data              |
+| Complex Q&A               | Multi-hop reasoning across large corpora            |
+| Business Logic Automation | Analyze structured decisions and optimize workflows |
+
+---
+
+### ⚙️ Recommended Parameters
+
+| Parameter          | Purpose                 | Recommended for R0 |
+| ------------------ | ----------------------- | ------------------ |
+| `temperature`      | Controls determinism    | 0.3–0.5 for logic  |
+| `max_tokens`       | Limits response length  | 512–1024           |
+| `presence_penalty` | Penalize repeating info | 0.3–0.7            |
+
+---
+
+### 🔗 API Access (cURL)
+
+```bash
+curl -X POST https://api.two.ai/v2/chat/completions \
+-H "Authorization: Bearer $SUTRA_API_KEY" \
+-H "Content-Type: application/json" \
+-d '{
+  "model": "sutra-r0",
+  "messages": [
+    {"role": "user", "content": "Explain how blockchain improves supply chain transparency."}
+  ]
+}'
+```
