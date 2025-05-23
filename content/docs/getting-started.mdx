@@ -1,0 +1,296 @@
+---
+title: Getting Started
+---
+
+# Quickstart
+
+SUTRA™ (Speak, Understand, and Reason in Any Language) provides powerful multilingual AI capabilities through a simple API. This documentation will help you get started quickly with integrating SUTRA into your applications.
+
+## Installation
+
+<Tabs items={["Python", "Javascript", "Java"]}>
+<Tab title="Python">
+
+```bash
+pip install openai
+```
+
+</Tab>
+<Tab title="JavaScript">
+
+```bash
+npm install openai
+```
+
+</Tab>
+<Tab title="Java">
+
+```groovy
+// Add to your build.gradle
+implementation 'com.theokanning.openai-gpt3-java:service:0.14.0'
+```
+
+</Tab>
+</Tabs>
+
+## Authentication
+
+All API requests require authentication using your SUTRA API key.
+
+### Getting Your API Key
+
+1. Go to [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api)
+2. Enter your email address and submit the form
+3. Click **"Get SUTRA API Key"**
+
+Once you receive your key, store it securely in your environment:
+
+```bash
+export SUTRA_API_KEY="your_api_key_here"
+```
+
+## API Reference
+
+### Base URL
+
+```
+https://api.two.ai/v2
+```
+
+### Chat Completions Endpoint
+
+This endpoint allows you to interact with the SUTRA model in a conversational format.
+
+**Endpoint:** `/chat/completions`
+
+**Method:** POST
+
+**Required Headers:**
+
+- `Authorization: Bearer <YOUR_SUTRA_API_KEY>`
+- `Content-Type: application/json`
+
+**Optional Headers (for streaming):**
+
+- `Accept: text/event-stream`
+
+### Request Parameters
+
+| Parameter   | Type    | Required | Description                                            |
+| ----------- | ------- | -------- | ------------------------------------------------------ |
+| model       | string  | Yes      | Model ID to use (e.g., `sutra-v2`)                     |
+| messages    | array   | Yes      | Array of message objects with `role` and `content`     |
+| max_tokens  | integer | No       | Maximum number of tokens to generate                   |
+| temperature | number  | No       | Controls randomness (0-1), lower is more deterministic |
+| stream      | boolean | No       | If true, responses will be sent as they're generated   |
+
+## Code Examples
+
+<Tabs items={["Python", "Javascript", "cURL"]}>
+<Tab title="Python">
+
+```python
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.two.ai/v2",
+    api_key=os.environ.get("SUTRA_API_KEY")
+)
+
+response = client.chat.completions.create(
+    model='sutra-v2',
+    messages=[{"role": "user", "content": "Tell me about the history of Mars exploration"}],
+    max_tokens=1024,
+    temperature=0.7
+)
+
+print(response.choices[0].message.content)
+```
+
+</Tab>
+<Tab title="JavaScript">
+
+```javascript
+import { OpenAI } from "openai";
+
+async function testSutra() {
+  const client = new OpenAI({
+    apiKey: process.env.SUTRA_API_KEY,
+    baseURL: "https://api.two.ai/v2",
+  });
+
+  const response = await client.chat.completions.create({
+    model: "sutra-v2",
+    messages: [
+      {
+        role: "user",
+        content: "Tell me about the history of Mars exploration",
+      },
+    ],
+    max_tokens: 1024,
+    temperature: 0.7,
+  });
+
+  console.log(response.choices[0].message.content);
+}
+
+testSutra();
+```
+
+</Tab>
+<Tab title="cURL">
+
+```bash
+curl -X POST "https://api.two.ai/v2/chat/completions" \
+    -H "Authorization: Bearer $SUTRA_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+          "model": "sutra-v2",
+          "messages": [
+            {"role": "user", "content": "Tell me about the history of Mars exploration"}
+          ],
+          "max_tokens": 1024,
+          "temperature": 0.7
+        }'
+```
+
+</Tab>
+</Tabs>
+
+## Streaming Responses
+
+For real-time output, add `"stream": true` to your request body and include the header `Accept: text/event-stream`.
+
+### Request Body for Streaming
+
+```json
+{
+  "model": "sutra-v2",
+  "messages": [{ "role": "user", "content": "Write a short story in Hindi" }],
+  "stream": true
+}
+```
+
+<Tabs items={["Python", "Javascript", "cURL"]}>
+<Tab title="Python">
+
+```python
+import os
+from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://api.two.ai/v2",
+    api_key=os.environ.get("SUTRA_API_KEY")
+)
+
+stream = client.chat.completions.create(
+    model='sutra-v2',
+    messages=[{"role": "user", "content": "Tell me a story about space exploration"}],
+    stream=True
+)
+
+# Process the stream
+for chunk in stream:
+    if chunk.choices[0].delta.content is not None:
+        print(chunk.choices[0].delta.content, end="")
+```
+
+</Tab>
+<Tab title="JavaScript">
+
+```javascript
+import { OpenAI } from "openai";
+
+async function streamSutra() {
+  const client = new OpenAI({
+    apiKey: process.env.SUTRA_API_KEY,
+    baseURL: "https://api.two.ai/v2",
+  });
+
+  const stream = await client.chat.completions.create({
+    model: "sutra-v2",
+    messages: [
+      { role: "user", content: "Tell me a story about space exploration" },
+    ],
+    stream: true,
+  });
+
+  for await (const chunk of stream) {
+    process.stdout.write(chunk.choices[0]?.delta?.content || "");
+  }
+}
+
+streamSutra();
+```
+
+</Tab>
+<Tab title="cURL">
+
+```bash
+curl -X POST "https://api.two.ai/v2/chat/completions" \
+    -H "Authorization: Bearer $SUTRA_API_KEY" \
+    -H "Content-Type: application/json" \
+    -H "Accept: text/event-stream" \
+    -d '{
+          "model": "sutra-v2",
+          "messages": [
+            {"role": "user", "content": "मुझे मंगल ग्रह के बारे में 5 रोचक तथ्य दीजिए"}
+          ],
+          "stream": true
+        }'
+```
+
+</Tab>
+</Tabs>
+
+## Multilingual Capabilities
+
+SUTRA is designed to understand and generate content in multiple languages. You can simply provide your input in any supported language, and the model will respond accordingly.
+
+Example request in Hindi:
+
+```python
+response = client.chat.completions.create(
+    model='sutra-v2',
+    messages=[{"role": "user", "content": "भारत के बारे में मुझे कुछ जानकारी दें"}],
+    max_tokens=1024
+)
+```
+
+## Error Handling
+
+The API uses standard HTTP status codes to indicate success or failure:
+
+- 200: Success
+- 400: Bad Request - Check your request parameters
+- 401: Unauthorized - Invalid API key
+- 429: Too Many Requests - Rate limit exceeded
+- 500: Internal Server Error
+
+## Rate Limits
+
+Free developer accounts have the following rate limits:
+
+- 50 requests per minute
+- 5,000 requests per day
+
+Contact [support@two.ai](mailto:support@two.ai) for information about higher rate limits for production use.
+
+## Join the Community
+
+By signing up, you'll automatically become part of the SUTRA Developer Community, where you can:
+
+- Share your projects
+- Get technical support
+- Collaborate with other developers
+- Access early beta features
+
+Visit our [community forum](https://community.two.ai) to get started.
+
+## Support
+
+For technical support or questions about the API:
+
+- Email: [support@two.ai](mailto:support@two.ai)
+- Documentation: [https://docs.two.ai/sutra](https://docs.two.ai/sutra)

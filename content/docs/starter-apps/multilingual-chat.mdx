@@ -1,0 +1,230 @@
+---
+title: SUTRA Multilingual Chat - Streamlit App with LangChain
+---
+
+This MDX file documents a **Streamlit-based SUTRA Multilingual Chat** application, which leverages the SUTRA LLM model via LangChain to provide a chat interface supporting over 50 languages. The app features a language selector, streaming responses, and a clean UI with Streamlit components.
+
+## Overview
+
+The SUTRA Multilingual Chat app allows users to select a language from a predefined list and interact with the SUTRA LLM model through a Streamlit interface. It uses environment variables for API key management, supports streaming responses for a dynamic user experience, and maintains chat history using Streamlit's session state.
+
+## Prerequisites
+
+To run this Streamlit app, ensure you have the following installed:
+
+- **Python** (v3.8 or higher)
+- **pip** (Python package manager)
+- **Streamlit** (`pip install streamlit`)
+- **LangChain OpenAI** (`pip install langchain-openai`)
+- **python-dotenv** (`pip install python-dotenv`)
+- A valid **Sutra API key** (set in a `.env` file as `SUTRA_API_KEY`)
+- A modern web browser (e.g., Chrome, Firefox)
+
+## Setup Instructions
+
+1. **Install Dependencies**:
+
+   ```bash
+   pip install streamlit langchain-openai python-dotenv
+   ```
+
+2. **Set Up Environment Variables**:
+   Create a `.env` file in the project directory with the following content:
+
+   ```bash
+   SUTRA_API_KEY=your_sutra_api_key_here
+   ```
+
+3. **Save the Code**:
+   Save the provided code in a file named `app.py`.
+
+4. **Run the Application**:
+
+   ```bash
+   streamlit run app.py
+   ```
+
+   This will start the Streamlit server, and the app will be accessible at `http://localhost:8501`.
+
+## Streamlit App Code
+
+Below is the complete Python code for the Streamlit app, which implements the multilingual chat functionality.
+
+```python
+import os
+import streamlit as st
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
+from langchain.callbacks.base import BaseCallbackHandler
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+api_key = os.getenv("SUTRA_API_KEY")
+
+# Page configuration
+st.set_page_config(
+    page_title="SUTRA Multilingual Chat",
+    page_icon="🌐",
+    layout="wide"
+)
+
+# Define supported languages
+languages = [
+    "English", "Hindi", "Gujarati", "Bengali", "Tamil",
+    "Telugu", "Kannada", "Malayalam", "Punjabi", "Marathi",
+    "Urdu", "Assamese", "Odia", "Sanskrit", "Korean",
+    "Japanese", "Arabic", "French", "German", "Spanish",
+    "Portuguese", "Russian", "Chinese", "Vietnamese", "Thai",
+    "Indonesian", "Turkish", "Polish", "Ukrainian", "Dutch",
+    "Italian", "Greek", "Hebrew", "Persian", "Swedish",
+    "Norwegian", "Danish", "Finnish", "Czech", "Hungarian",
+    "Romanian", "Bulgarian", "Croatian", "Serbian", "Slovak",
+    "Slovenian", "Estonian", "Latvian", "Lithuanian", "Malay",
+    "Tagalog", "Swahili"
+]
+
+# Streaming callback handler
+class StreamHandler(BaseCallbackHandler):
+    def __init__(self, container, initial_text=""):
+        self.container = container
+        self.text = initial_text
+        self.run_id_ignore_token = None
+
+    def on_llm_new_token(self, token: str, **kwargs):
+        self.text += token
+        self.container.markdown(self.text)
+
+# Initialize the ChatOpenAI model - base instance for caching
+@st.cache_resource
+def get_base_chat_model():
+    return ChatOpenAI(
+        api_key=os.getenv("SUTRA_API_KEY"),
+        base_url="https://api.two.ai/v2",
+        model="sutra-v2",
+        temperature=0.7,
+    )
+
+# Create a streaming version of the model with callback handler
+def get_streaming_chat_model(callback_handler=None):
+    return ChatOpenAI(
+        api_key=os.getenv("SUTRA_API_KEY"),
+        base_url="https://api.two.ai/v2",
+        model="sutra-v2",
+        temperature=0.7,
+        streaming=True,
+        callbacks=[callback_handler] if callback_handler else None
+    )
+
+# Sidebar for language selection
+st.sidebar.image("https://framerusercontent.com/images/3Ca34Pogzn9I3a7uTsNSlfs9Bdk.png", use_container_width=True)
+with st.sidebar:
+    st.title("🌐 Sutra Chat :")
+
+    # Language selector
+    selected_language = st.selectbox("Select language:", languages)
+
+    st.divider()
+    st.markdown(f"Currently chatting in: **{selected_language}**")
+
+    # About section
+    st.markdown("### About Sutra LLM")
+    st.markdown("Sutra is a multilingual model supporting 50+ languages with high-quality responses.")
+
+st.markdown(
+    f'<h1><img src="https://framerusercontent.com/images/9vH8BcjXKRcC5OrSfkohhSyDgX0.png" width="60"/> Sutra Multilingual Chatbot 🤖</h1>',
+    unsafe_allow_html=True
+)
+
+# Initialize session state for messages
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Display chat messages
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
+
+# Chat input
+user_input = st.chat_input("Type your message here...")
+
+# Process user input
+if user_input:
+    # Add user message to chat
+    st.session_state.messages.append({"role": "user", "content": user_input})
+
+    # Display user message
+    with st.chat_message("user"):
+        st.write(user_input)
+
+    # Generate response
+    try:
+        # Create message placeholder
+        with st.chat_message("assistant"):
+            response_placeholder = st.empty()
+
+            # Create a stream handler
+            stream_handler = StreamHandler(response_placeholder)
+
+            # Get streaming model with handler
+            chat = get_streaming_chat_model(stream_handler)
+
+            # Create system message indicating preferred language
+            system_message = f"You are a helpful assistant. Please respond in {selected_language}."
+
+            # Generate streaming response
+            messages = [
+                HumanMessage(content=f"{system_message}\n\nUser message: {user_input}")
+            ]
+
+            response = chat.invoke(messages)
+            answer = response.content
+
+            # Add assistant response to chat history
+            st.session_state.messages.append({"role": "assistant", "content": answer})
+
+    except Exception as e:
+        st.error(f"Error: {str(e)}")
+        if "API key" in str(e):
+            st.error("Please check your Sutra API key in the environment variables.")
+```
+
+## Functionality
+
+- **Language Selection**: A sidebar dropdown allows users to select from 50+ languages (e.g., English, Hindi, Spanish, etc.).
+- **Chat Interface**: Users input messages via a `st.chat_input` field, and messages are displayed using `st.chat_message` for a clean chat UI.
+- **Streaming Responses**: The app uses a custom `StreamHandler` class to stream responses from the Sutra LLM model, providing a dynamic typing effect.
+- **Multilingual Support**: The app instructs the Sutra LLM to respond in the selected language via a system message.
+- **Error Handling**: Displays errors if the API key is invalid or if other issues occur during response generation.
+- **Session State**: Persists chat history using `st.session_state`.
+- **Styling**: Uses custom HTML for the title with an icon and includes a logo in the sidebar for branding.
+
+## Running the App
+
+1. Ensure all dependencies are installed and the `.env` file contains a valid `SUTRA_API_KEY`.
+2. Save the code as `app.py`.
+3. Run `streamlit run app.py`.
+4. Open `http://localhost:8501` in your browser.
+5. Select a language from the sidebar dropdown, type a message in the chat input, and submit to receive a response in the chosen language.
+
+## Notes
+
+- **API Key**: The app requires a valid SUTRA API key. Obtain one from [Two AI's API service](https://www.two.ai/sutra/api) and set it in the `.env` file.
+- **Multilingual Support**: The app relies on the SUTRA LLM (`sutra-v2` model) to handle multilingual responses. Ensure the API supports the selected language.
+- **Streaming**: The `StreamHandler` class ensures smooth streaming of responses, enhancing the user experience.
+- **Styling**: The app uses minimal custom CSS and HTML for branding (e.g., logo and title). Further styling can be added using Streamlit’s `st.markdown` with CSS.
+- **Limitations**: The app assumes a stable internet connection for API calls. If the SUTRA API is unavailable, error messages will guide the user to check the API key or connection.
+
+## Example Usage
+
+1. Select "Hindi" from the sidebar.
+2. Type "हाय, आप कैसे हैं?" in the chat input.
+3. The app sends the message to the SUTRA LLM, which responds in Hindi (e.g., "हाय, मैं ठीक हूँ! आपका दिन कैसा है?").
+4. The conversation is stored in `st.session_state.messages` and displayed in the chat interface.
+
+## Resources
+
+- [Complete Source Code](https://github.com/Shubhwithai/sutra-cookbook/tree/main/starter-apps/sutra_multilingual_chat)
+- [SUTRA API Documentation](/docs)
+- [LangChain Documentation](https://python.langchain.com/docs/get_started/introduction)
+- [Streamlit Documentation](https://docs.streamlit.io)

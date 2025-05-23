@@ -1,0 +1,72 @@
+---
+title: LangChain with SUTRA
+---
+
+This guide walks you through using **SUTRA models (V2 or R0)** within the LangChain ecosystem. With LangChain, you can build context-aware chains, agents, and tools that integrate SUTRA’s multilingual and reasoning capabilities.
+
+## 📦 Step 1: Install Dependencies
+
+```bash
+!pip install -qU openai langchain langchain-openai langchain_community
+```
+
+## 🔐 Step 2: Authenticate with Your API Key
+
+```python
+from openai import OpenAI
+from langchain_openai import ChatOpenAI
+
+api_key = "YOUR_SUTRA_API_KEY"
+```
+
+## ⚙️ Step 3: Initialize LangChain Client with SUTRA
+
+You can use either `sutra-v2` for multilingual chat or `sutra-r0` for advanced reasoning.
+
+```python
+chat = ChatOpenAI(
+    model="sutra-v2",  # or "sutra-r0"
+    api_key=api_key,
+    base_url="https://api.two.ai/v2"
+)
+```
+
+## 💬 Step 4: Run a Basic Chat Prompt
+
+```python
+from langchain.schema import HumanMessage, SystemMessage
+
+messages = [
+    SystemMessage(content="You are a helpful AI that answers concisely."),
+    HumanMessage(content="What are the benefits of multilingual education?")
+]
+
+response = chat.invoke(messages)
+print(response.content)
+```
+
+## 🧠 Use SUTRA-R0 for Structured Reasoning
+
+```python
+r0_chat = ChatOpenAI(
+    model="sutra-r0",
+    api_key=api_key,
+    base_url="https://api.two.ai/v2"
+)
+
+prompt = [
+    SystemMessage(content="You are a legal advisor."),
+    HumanMessage(content="If a contract states 'Party A is responsible unless Party B provides notice,' who is liable?")
+]
+
+response = r0_chat.invoke(prompt)
+print(response.content)
+```
+
+## 📎 Resources
+
+- [LangChain Documentation](https://docs.langchain.com/)
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+
+Use **LangChain + SUTRA** to create production-ready AI flows with multilingual reasoning, chain logic, and smart prompting.

@@ -1,0 +1,54 @@
+---
+title: SUTRA-V2 Korean Notebook
+---
+
+이 노트북은 **SUTRA-V2**를 **한국어**로 사용하여 다국어 AI 애플리케이션을 만드는 방법을 보여줍니다. TWO AI가 개발한 SUTRA-V2는 한국어를 포함한 50개 이상의 언어를 지원하며 OpenAI 호환 API를 통해 채팅 및 지시 작업을 수행합니다.
+
+## 🔧 전제 조건 (Prerequisites)
+
+- [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api)에서 SUTRA API 키를 획득하세요.
+- API 키를 안전하게 저장하세요 (예: Google Colab 비밀 키 또는 환경 변수).
+
+## 📦 1단계: 종속성 설치 (Install Dependencies)
+
+```bash
+!pip install -qU openai
+```
+
+## 🔐 2단계: SUTRA 클라이언트 초기화 (Initialize SUTRA Client)
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_SUTRA_API_KEY",
+    base_url="https://api.two.ai/v2"
+)
+```
+
+## 💬 3단계: 기본 채팅 완료 (Basic Chat Completion)
+
+```python
+response = client.chat.completions.create(
+    model="sutra-v2",
+    messages=[
+        {"role": "system", "content": "당신은 간결하게 답변하는 유용한 AI입니다."},
+        {"role": "user", "content": "인공지능이란 무엇인가요? 세 문장으로 설명하세요."}
+    ],
+    max_tokens=1024,
+    temperature=0.7
+)
+print(response.choices[0].message.content)
+```
+
+## 🛠 문제 해결 (Troubleshooting)
+
+- **유효하지 않은 API 키**: [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api)에서 키를 확인하세요.
+- **모델을 찾을 수 없음**: `sutra-v2`를 사용하세요. SUTRA-V1은 2025년 3월 22일에 중단되었습니다.
+- **요청 제한**: 요청 빈도를 줄이거나 [https://www.two.ai/support](https://www.two.ai/support)에서 TWO AI에 문의하세요.
+
+## 📎 자원 (Resources)
+
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+- [ChatSUTRA](https://chat.two.ai)

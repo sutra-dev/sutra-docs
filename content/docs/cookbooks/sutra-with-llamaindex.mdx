@@ -1,0 +1,299 @@
+---
+title: SUTRA with LlamaIndex
+---
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1IzEMvNDPmPa8OWYLUn2Y_7XA-xq1UUKX?usp=sharing)
+
+## SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+# LlamaIndex 🦙
+
+LlamaIndex is the leading framework for building LLM-powered agents over your data with LLMs and workflows.
+
+#SUTRA With LlamaIndex 🦙
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1. A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+2. Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python installation is required.
+
+### Install Requirements
+
+```python
+!pip install -qU llama-index llama-index-llms-openai-like llama-index-vector-stores-faiss faiss-cpu ipywidgets
+```
+
+### Setup API Keys
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
+```
+
+### Initialize SUTRA Model via LlamaIndex 🦙:
+
+```python
+import os
+from llama_index.llms.openai_like import OpenAILike
+
+# Initialize SUTRA as an OpenAI-compatible LLM
+llm = OpenAILike(
+    model="sutra-v2",                             # Model name
+    api_base="https://api.two.ai/v2",            # SUTRA API base
+    api_key=os.getenv("SUTRA_API_KEY"),          # API Key from environment
+    is_chat_model=True                           # Set True for chat-based models
+)
+
+# Send a message in English
+response = llm.complete("Give me 3 tips to stay productive while working from home.")
+print(response.text)
+```
+
+    1. **Establish a Dedicated Workspace**: Create a specific area in your home that is designated for work. This helps to mentally separate work from personal life, reducing distractions and improving focus. Ensure this space is comfortable, well-lit, and equipped with all necessary tools.
+
+    2. **Set a Structured Schedule**: Develop a daily routine that includes set working hours, breaks, and time for meals. Stick to this schedule as closely as possible to maintain a sense of normalcy and discipline. Use tools like calendars or task management apps to plan your day effectively.
+
+    3. **Limit Distractions**: Identify common distractions in your home environment and take steps to minimize them. This could involve turning off notifications on your phone, using noise-canceling headphones, or setting boundaries with family members during work hours. Consider techniques like the Pomodoro Technique to maintain focus and productivity.
+
+### Multilingual capabilities using LlamaIndex 🦙
+
+```python
+from llama_index.llms.openai_like import OpenAILike
+
+# Initialize SUTRA LLM with necessary parameters
+llm = OpenAILike(
+    model="sutra-v2",                    # SUTRA model name
+    api_base="https://api.two.ai/v2",    # SUTRA API base URL
+    api_key=os.getenv("SUTRA_API_KEY"),  # SUTRA API key
+    is_chat_model=True,                  # Mandatory: Set to True for chat-based models
+)
+
+# Multilingual prompts
+prompts = [
+    "తెలుగులో ఒక కథ చెప్పు?",                         # Telugu
+    "Une histoire en français, s'il vous plaît.",     # French
+    "Por favor, cuéntame una historia en español.",   # Spanish
+    "कृपया हिंदी में एक कहानी सुनाइए।",                    # Hindi
+    "Bitte erzähle mir eine Geschichte auf Deutsch."  # German
+]
+
+# Loop through each prompt and print the response
+for prompt in prompts:
+    response = llm.complete(prompt)
+    print(f"\nPrompt: {prompt}")
+    print(f"Response: {str(response)}\n")
+```
+
+### Building a Simple Chatbot with LlamaIndex 🦙
+
+```python
+import os
+from llama_index.llms.openai_like import OpenAILike
+from llama_index.core.llms import ChatMessage
+
+
+# Initialize the SUTRA model via LlamaIndex
+llm = OpenAILike(
+    model="sutra-v2",                    # SUTRA model name
+    api_base="https://api.two.ai/v2",    # SUTRA API base URL
+    api_key=os.getenv("SUTRA_API_KEY"),  # SUTRA API key
+    is_chat_model=True,                  # Mandatory for chat-based models
+)
+
+# Start the chatbot conversation loop
+print("Chatbot: Hello! Type 'exit' to end the conversation.\n")
+
+chat_history = []
+
+while True:
+    user_input = input("You: ")  # Get user input
+
+    if user_input.lower() == "exit":
+        print("Chatbot: Goodbye! 👋")
+        break
+
+    # Add user message to chat history
+    chat_history.append(ChatMessage(role="user", content=user_input))
+
+    # Get response from SUTRA via LlamaIndex
+    response = llm.chat(chat_history)
+
+    # Print response content
+    print("Chatbot:", response.message.content)
+
+    # Add AI response to chat history
+    chat_history.append(response.message)
+```
+
+    Chatbot: Hello! Type 'exit' to end the conversation.
+
+    You: hi
+    Chatbot: Hello! How can I assist you today?
+    You: exit
+    Chatbot: Goodbye! 👋
+
+### LlamaIndex 🦙 with the SUTRA model for Document Querying
+
+```python
+import os
+import faiss
+from llama_index.core import Document, StorageContext, VectorStoreIndex
+from llama_index.vector_stores.faiss import FaissVectorStore
+from llama_index.embeddings.openai import OpenAIEmbedding
+from llama_index.llms.openai_like import OpenAILike
+from llama_index.core.query_engine import RetrieverQueryEngine
+
+# Set up FAISS index manually
+dimension = 3072  # For "text-embedding-3-large" from OpenAI
+faiss_index = faiss.IndexFlatL2(dimension)
+
+# 1. Hindi text
+text = """
+SUTRA दो प्लेटफ़ॉर्म्स द्वारा विकसित एक बहुभाषी बड़े भाषा मॉडल (LMLM) परिवार है।
+SUTRA की डुअल-ट्रांसफॉर्मर पद्धति MoE और Dense AI मॉडल आर्किटेक्चर दोनों की शक्ति को बढ़ाती है,
+जो 50+ से अधिक भाषाओं के लिए लागत-कुशल बहुभाषी क्षमताएं प्रदान करती है। यह संवाद, खोज,
+और उन्नत तर्क के लिए स्केलेबल एआई एप्लिकेशन को सक्षम बनाता है, जो विभिन्न भाषाओं, डोमेन और उपयोगों में उच्च प्रदर्शन सुनिश्चित करता है।
+"""
+documents = [Document(text=text)]
+
+# 2. Embedding model
+embedding_model = OpenAIEmbedding(
+    model="text-embedding-3-large",
+    api_key=os.getenv("OPENAI_API_KEY")
+)
+
+# 3. FAISS vector store and storage context
+vector_store = FaissVectorStore(faiss_index=faiss_index)
+storage_context = StorageContext.from_defaults(vector_store=vector_store)
+
+# 4. Create the vector index with the given storage context
+index = VectorStoreIndex.from_documents(
+    documents,
+    embed_model=embedding_model,
+    storage_context=storage_context,
+)
+
+# 5. Set up SUTRA LLM
+sutra_llm = OpenAILike(
+    model="sutra-v2",
+    api_base="https://api.two.ai/v2",
+    api_key=os.getenv("SUTRA_API_KEY"),
+    is_chat_model=True,
+)
+
+# 6. Query the index using the SUTRA LLM
+query_engine = index.as_query_engine(llm=sutra_llm)
+response = query_engine.query("SUTRA कितनी भाषाओं का समर्थन करता है?")
+
+# 7. Show the result
+print("उत्तर:", response.response)
+```
+
+    उत्तर: SUTRA 50+ से अधिक भाषाओं का समर्थन करता है।
+
+###Multilingual Chat with SUTRA LLM
+
+```python
+# Step 1: Import dependencies
+import ipywidgets as widgets
+from IPython.display import display
+from llama_index.llms.openai_like import OpenAILike
+from llama_index.core.chat_engine import SimpleChatEngine
+
+# Step 2: Set up SUTRA LLM
+sutra_llm = OpenAILike(
+    api_base="https://api.two.ai/v2",
+    api_key=os.getenv("SUTRA_API_KEY"),
+    model="sutra-v2",
+    is_chat_model=True,
+)
+
+chat_engine = SimpleChatEngine.from_defaults(llm=sutra_llm)
+
+# Step 3: Language options
+languages = [
+    "English", "Hindi", "Gujarati", "Bengali", "Tamil", "Telugu", "Kannada", "Malayalam",
+    "Punjabi", "Marathi", "Urdu", "Assamese", "Odia", "Sanskrit", "Korean", "Japanese",
+    "Arabic", "French", "German", "Spanish", "Portuguese", "Russian", "Chinese", "Vietnamese",
+    "Thai", "Indonesian", "Turkish", "Polish", "Ukrainian", "Dutch", "Italian", "Greek",
+    "Hebrew", "Persian"
+]
+
+# Step 4: Create widgets with style
+lang_dropdown = widgets.Dropdown(
+    options=languages,
+    value="English",
+    description='Select Language:',
+    style={'description_width': 'initial'},
+    layout=widgets.Layout(width='75%', height='30px')
+)
+
+chat_log = widgets.Textarea(
+    value="",
+    placeholder='Chat history will appear here...',
+    description='Chat History:',
+    disabled=True,
+    layout=widgets.Layout(width='80%', height='400px'),
+    style={'description_width': 'initial'}
+)
+
+user_input = widgets.Text(
+    value='',
+    placeholder='Type your message...',
+    description='You:',
+    layout=widgets.Layout(width='70%'),
+    style={'description_width': 'initial'}
+)
+
+send_button = widgets.Button(
+    description="Send",
+    button_style='info',
+    layout=widgets.Layout(width='20%')
+)
+
+output = widgets.Output()
+
+# Step 5: Initialize message storage
+messages = []
+
+# Step 6: Send message handler
+def on_send_click(b):
+    user_text = user_input.value.strip()
+    if not user_text:
+        return
+    language = lang_dropdown.value
+
+    # Add user message to the history
+    messages.append(f"User: {user_text}")
+    chat_log.value = '\n'.join(messages)
+
+    # Create prompt for SUTRA LLM
+    full_prompt = f"Please respond only in {language}. User: {user_text}\nAssistant:"
+
+    # Get response from SUTRA LLM
+    response = chat_engine.chat(full_prompt)
+    assistant_reply = response.response.strip()
+
+    # Add assistant response to chat history
+    messages.append(f"Assistant ({language}): {assistant_reply}")
+    chat_log.value = '\n'.join(messages)
+
+    # Clear user input field
+    user_input.value = ""
+
+# Step 7: Bind button click event
+send_button.on_click(on_send_click)
+
+# Step 8: Display all widgets
+display(lang_dropdown, chat_log, user_input, send_button, output)
+```

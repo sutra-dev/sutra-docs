@@ -1,0 +1,288 @@
+---
+title: SUTRA Multilingual Question Generator - Streamlit App with LangChain
+---
+
+This MDX file documents the **Streamlit-based SUTRA Multilingual Question Generator** application, sourced from the [Sutra Cookbook repository](https://github.com/Shubhwithai/sutra-cookbook/blob/main/starter-apps/Multilingual_Question_Generator/app.py). The app leverages the SUTRA LLM model via LangChain to generate questions from uploaded PDF files or manually entered text in over 50 languages, with streaming responses for a dynamic user experience.
+
+## Overview
+
+The SUTRA Multilingual Question Generator enables users to upload a PDF or input text, select a language, and generate a list of five relevant questions based on the provided content. The app uses Streamlit for the user interface, LangChain for integrating the SUTRA LLM (`sutra-v2` model), and `PyPDF2` for PDF text extraction. Questions are streamed in real-time and stored in session state for persistence.
+
+## Prerequisites
+
+To run this Streamlit app, ensure you have the following installed:
+
+- **Python** (v3.8 or higher)
+- **pip** (Python package manager)
+- **Streamlit** (`pip install streamlit`)
+- **LangChain OpenAI** (`pip install langchain-openai`)
+- **PyPDF2** (`pip install PyPDF2`)
+- **python-dotenv** (`pip install python-dotenv`)
+- A valid **Sutra API key** (set in a `.env` file as `SUTRA_API_KEY`)
+- A modern web browser (e.g., Chrome, Firefox)
+
+## Setup Instructions
+
+1. **Install Dependencies**:
+
+   ```bash
+   pip install streamlit langchain-openai PyPDF2 python-dotenv
+   ```
+
+2. **Set Up Environment Variables**:
+   Create a `.env` file in the project directory with the following content:
+
+   ```bash
+   SUTRA_API_KEY=your_sutra_api_key_here
+   ```
+
+3. **Save the Code**:
+   Save the provided code in a file named `app.py`.
+
+4. **Run the Application**:
+
+   ```bash
+   streamlit run app.py
+   ```
+
+   This will start the Streamlit server, and the app will be accessible at `http://localhost:8501`.
+
+## Streamlit App Code
+
+Below is the complete Python code for the Streamlit app, implementing the Multilingual Question Generator functionality.
+
+```python
+import streamlit as st
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
+from langchain.callbacks.base import BaseCallbackHandler
+import PyPDF2
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+api_key = os.getenv("SUTRA_API_KEY")
+
+# Page configuration
+st.set_page_config(
+    page_title="Sutra Multilingual Question Generator",
+    page_icon="❓",
+    layout="wide"
+)
+
+# Define supported languages
+languages = [
+    "English", "Hindi", "Gujarati", "Bengali", "Tamil",
+    "Telugu", "Kannada", "Malayalam", "Punjabi", "Marathi",
+    "Urdu", "Assamese", "Odia", "Sanskrit", "Korean",
+    "Japanese", "Arabic", "French", "German", "Spanish",
+    "Portuguese", "Russian", "Chinese", "Vietnamese", "Thai",
+    "Indonesian", "Turkish", "Polish", "Ukrainian", "Dutch",
+    "Italian", "Greek", "Hebrew", "Persian", "Swedish",
+    "Norwegian", "Danish", "Finnish", "Czech", "Hungarian",
+    "Romanian", "Bulgarian", "Croatian", "Serbian", "Slovak",
+    "Slovenian", "Estonian", "Latvian", "Lithuanian", "Malay",
+    "Tagalog", "Swahili"
+]
+
+# Streaming callback handler
+class StreamHandler(BaseCallbackHandler):
+    def __init__(self, container, initial_text=""):
+        self.container = container
+        self.text = initial_text
+
+    def on_llm_new_token(self, token: str, **kwargs):
+        self.text += token
+        self.container.markdown(self.text)
+
+# Initialize the ChatOpenAI model - base instance for caching
+@st.cache_resource
+def get_base_chat_model():
+    return ChatOpenAI(
+        api_key=os.getenv("SUTRA_API_KEY"),
+        base_url="https://api.two.ai/v2",
+        model="sutra-v2",
+        temperature=0.7,
+    )
+
+# Create a streaming version of the model with callback handler
+def get_streaming_chat_model(callback_handler=None):
+    return ChatOpenAI(
+        api_key=os.getenv("SUTRA_API_KEY"),
+        base_url="https://api.two.ai/v2",
+        model="sutra-v2",
+        temperature=0.7,
+        streaming=True,
+        callbacks=[callback_handler] if callback_handler else None
+    )
+
+# Sidebar for input options
+st.sidebar.image("https://framerusercontent.com/images/3Ca34Pogzn9I3a7uTsNSlfs9Bdk.png", use_container_width=True)
+with st.sidebar:
+    st.title("❓ Sutra Question Generator")
+
+    # Language selector
+    selected_language = st.selectbox("Select language for questions:", languages)
+
+    # File uploader for PDF
+    uploaded_file = st.file_uploader("Upload a PDF document (optional)", type="pdf")
+
+    # Text input for manual text
+    input_text = st.text_area("Or enter text manually:", height=200)
+
+    st.divider()
+    st.markdown(f"Generating questions in: **{selected_language}**")
+
+    # About section
+    st.markdown("### About Sutra Question Generator")
+    st.markdown("This app generates questions from uploaded PDFs or text inputs using the Sutra LLM, supporting 50+ languages.")
+
+# Main app title
+st.markdown(
+    f'<h1><img src="https://framerusercontent.com/images/9vH8BcjXKRcC5OrSfkohhSyDgX0.png" width="60"/> Sutra Multilingual Question Generator 🤖</h1>',
+    unsafe_allow_html=True
+)
+
+# Initialize session state for generated questions
+if "questions" not in st.session_state:
+    st.session_state.questions = []
+
+# Process input and generate questions
+if st.button("Generate Questions"):
+    content = ""
+
+    # Handle PDF upload
+    if uploaded_file is not None:
+        try:
+            pdf_reader = PyPDF2.PdfReader(uploaded_file)
+            for page in pdf_reader.pages:
+                content += page.extract_text() or ""
+            st.success("PDF processed successfully!")
+        except Exception as e:
+            st.error(f"Error processing PDF: {str(e)}")
+
+    # Handle manual text input
+    if input_text:
+        content = input_text
+
+    # Generate questions if content is available
+    if content:
+        try:
+            # Create message placeholder
+            with st.container():
+                st.markdown("### Generated Questions")
+                response_placeholder = st.empty()
+
+                # Create a stream handler
+                stream_handler = StreamHandler(response_placeholder)
+
+                # Get streaming model with handler
+                chat = get_streaming_chat_model(stream_handler)
+
+                # Create system message for question generation
+                system_message = f"You are a helpful assistant. Generate 5 relevant questions based on the provided content in {selected_language}. Format the questions as a numbered list."
+
+                # Generate questions
+                messages = [
+                    HumanMessage(content=f"{system_message}\n\nContent: {content}")
+                ]
+
+                response = chat.invoke(messages)
+                questions = response.content
+
+                # Add questions to session state
+                st.session_state.questions.append({"content": questions})
+
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
+            if "API key" in str(e):
+                st.error("Please check your Sutra API key in the environment variables.")
+    else:
+        st.error("Please upload a PDF or enter text to generate questions.")
+
+# Display generated questions
+for item in st.session_state.questions:
+    with st.container():
+        st.markdown(item["content"])
+```
+
+## Functionality
+
+- **Input Options**: Users can upload a PDF file via a sidebar file uploader or enter text manually in a text area.
+- **Language Selection**: A dropdown supports over 50 languages (e.g., English, Hindi, Spanish, Arabic) for question generation.
+- **Question Generation**: The app generates five relevant questions based on the input content, formatted as a numbered list in the selected language, using the SUTRA LLM (`sutra-v2` model).
+- **Streaming Responses**: A custom `StreamHandler` class streams the generated questions for a dynamic, real-time display.
+- **Session State**: Persists the history of generated questions using `st.session_state`.
+- **Error Handling**: Displays errors for invalid API keys, PDF processing issues, or missing input content (e.g., no PDF or text provided).
+- **Styling**: Uses custom HTML for the title with an icon and a logo in the sidebar for branding, consistent with the Sutra Cookbook’s visual identity.
+
+## Running the App
+
+1. Ensure all dependencies are installed and the `.env` file contains a valid `SUTRA_API_KEY`.
+2. Save the code as `app.py`.
+3. Run:
+   ```bash
+   streamlit run app.py
+   ```
+4. Open `http://localhost:8501` in your browser.
+5. Select a language from the sidebar dropdown (e.g., French).
+6. Upload a PDF or enter text in the provided text area.
+7. Click the “Generate Questions” button to receive a list of five questions in the chosen language, displayed in a dedicated section.
+
+## Usage Examples
+
+### Example 1: PDF Input
+
+1. Select “Spanish” from the sidebar.
+2. Upload a PDF about renewable energy.
+3. Click “Generate Questions.”
+4. Receive questions like:
+   ```
+   1. ¿Cuáles son las principales fuentes de energía renovable mencionadas en el documento?
+   2. ¿Cómo contribuye la energía solar a la sostenibilidad?
+   3. ¿Qué desafíos enfrenta la adopción de energías renovables?
+   4. ¿Cómo se compara la eficiencia de la energía eólica con otras fuentes?
+   5. ¿Qué políticas se mencionan para promover la energía renovable?
+   ```
+5. Questions are stored in `st.session_state.questions` and displayed below the “Generated Questions” header.
+
+### Example 2: Manual Text Input
+
+1. Select “Hindi” from the sidebar.
+2. Enter text in the text area: “जलवायु परिवर्तन वैश्विक पारिस्थितिकी तंत्र को प्रभावित करता है।”
+3. Click “Generate Questions.”
+4. Receive questions like:
+   ```
+   1. जलवायु परिवर्तन वैश्विक पारिस्थितिकी तंत्र को कैसे प्रभावित करता है?
+   2. जलवायु परिवर्तन के प्रमुख कारण क्या हैं?
+   3. जलवायु परिवर्तन को कम करने के लिए क्या उपाय किए जा सकते हैं?
+   4. जलवायु परिवर्तन का जैव विविधता पर क्या प्रभाव पड़ता है?
+   5. जलवायु परिवर्तन से निपटने के लिए वैश्विक सहयोग क्यों महत्वपूर्ण है?
+   ```
+5. Questions are appended to the session state and displayed in the app.
+
+## Notes
+
+- **API Key**: The app requires a valid Sutra API key, obtainable from [Two AI's API service](https://www.two.ai/sutra/api). Ensure it’s correctly set in the `.env` file.
+- **Multilingual Support**: The app relies on the SUTRA LLM’s ability to generate questions in the selected language. Verify that the API supports the chosen language for optimal results.
+- **PDF Processing**: Uses `PyPDF2` for text extraction. Complex or scanned PDFs may require OCR tools for better text extraction, which are not included in this app.
+- **Question Generation**: The app generates five questions by default, as specified in the system message. Modify the `system_message` to change the number or format of questions.
+- **Streaming**: The `StreamHandler` class ensures a smooth, real-time display of questions, enhancing user engagement.
+- **Styling**: Minimal custom CSS and HTML are used for branding (e.g., logo and title). Additional styling can be implemented using Streamlit’s `st.markdown` with CSS.
+- **Limitations**:
+  - Requires a stable internet connection for API calls.
+  - Large PDFs may cause performance issues; consider adjusting text extraction or chunking strategies for optimization.
+  - The quality of questions depends on the input content’s clarity and the SUTRA LLM’s language proficiency.
+- **Extensibility**:
+  - Add support for other file formats (e.g., `.txt`, `.docx`) by extending the input processing logic.
+  - Implement question type selection (e.g., factual, analytical) by modifying the system message.
+  - Enhance the UI with additional styling or interactive elements like question filtering.
+
+## Resources
+
+- [Complete Source Code](https://github.com/Shubhwithai/sutra-cookbook/tree/main/starter-apps/Multilingual_Question_Generator)
+- [Sutra API Documentation](https://www.two.ai/sutra/api)
+- [LangChain Documentation](https://python.langchain.com/docs/get_started/introduction)
+- [Streamlit Documentation](https://docs.streamlit.io)
+- [PyPDF2 Documentation](https://pypdf2.readthedocs.io/en/stable/)

@@ -1,0 +1,63 @@
+---
+title: SUTRA Streaming Mode
+---
+
+This guide explores **SUTRA-V2’s streaming mode**, enabling real-time, low-latency responses for dynamic applications like chatbots, live assistants, and interactive workflows. Streaming delivers responses incrementally, enhancing user experience with faster interactions.
+
+## 🌐 Streaming Overview
+
+SUTRA-V2’s streaming mode, supported via its OpenAI-compatible API, provides real-time response generation, ideal for applications requiring immediate feedback. Dedicated servers in India, the USA, Korea, and Japan (coming soon) optimize latency for global users.[](https://www.two.ai/blog/sutra-v2-is-here)
+
+## 📦 Step 1: Install Dependencies
+
+```bash
+!pip install -qU openai
+```
+
+## 🔐 Step 2: Initialize SUTRA Client
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_SUTRA_API_KEY",
+    base_url="https://api.two.ai/v2"
+)
+```
+
+## 💬 Step 3: Streaming Chat Completion
+
+```python
+stream = client.chat.completions.create(
+    model="sutra-v2",
+    messages=[{"role": "user", "content": "Write a short story in Hindi about an AI assistant."}],
+    max_tokens=1024,
+    temperature=0.7,
+    stream=True
+)
+for chunk in stream:
+    if len(chunk.choices) > 0 and chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end='', flush=True)
+```
+
+## 🌟 Example: cURL for Streaming
+
+```bash
+curl -X POST "https://api.two.ai/v2/chat/completions" \
+  -H "Authorization: Bearer $SUTRA_API_KEY" \
+  -H "Content-Type: application/json" \
+  -H "Accept: text/event-stream" \
+  -d '{"model": "sutra-v2", "messages": [{"role": "user", "content": "मंगल ग्रह के बारे में बताएं"}], "stream": true}'
+```
+
+## 🛠 Troubleshooting
+
+- **Stream Interruptions**: Ensure a stable internet connection and verify the `stream=True` parameter.
+- **Invalid API Key**: Check your key at [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- **Model Not Found**: Use `sutra-v2`. SUTRA-V1 was deprecated on March 22, 2025.[](https://www.two.ai/blog/sutra-v2-is-here)
+
+## 📎 Resources
+
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+- [ChatSUTRA](https://chat.two.ai)

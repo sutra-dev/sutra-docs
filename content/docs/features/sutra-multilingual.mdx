@@ -1,0 +1,62 @@
+---
+title: SUTRA Multilingual Capabilities Deep Dive
+---
+
+This guide explores **SUTRA’s multilingual capabilities**, supporting over 50 languages with exceptional fluency and context-awareness. SUTRA’s dual-transformer architecture and efficient tokenizer make it a leader in multilingual AI applications.
+
+## 🌐 Multilingual Overview
+
+SUTRA excels in over 50 languages, including Hindi, Gujarati, Tamil, Bengali, Korean, Arabic, and Japanese, outperforming models like GPT-4 in languages like Gujarati and Tamil on the Multilingual MMLU benchmark. Its Mixture of Experts (MoE) framework decouples concept and language learning, enabling cost-efficient, scalable multilingual performance.[](https://www.two.ai/sutra)[](https://www.deeplearning.ai/the-batch/startup-two-ai-launches-sutra-a-multilingual-model-for-south-asian-markets/)
+
+## 📦 Step 1: Install Dependencies
+
+```bash
+!pip install -qU openai
+```
+
+## 🔐 Step 2: Initialize SUTRA Client
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_SUTRA_API_KEY",
+    base_url="https://api.two.ai/v2"
+)
+```
+
+## 💬 Step 3: Multilingual Example
+
+```python
+def get_response(prompt, lang):
+    print(f"[{lang}] {prompt}")
+    response = client.chat.completions.create(
+        model="sutra-v2",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=1024,
+        temperature=0.7
+    )
+    print(response.choices[0].message.content)
+
+get_response("What is AI?", "English")
+get_response("आर्टिफिशियल इंटेलिजेंस क्या है?", "Hindi")
+get_response("人工知能とは何ですか？", "Japanese")
+```
+
+## 🌟 Key Strengths
+
+- **Broad Language Support**: Handles Latin, Indic, and Far Eastern languages, including Hinglish.[](https://indiaai.gov.in/article/two-platforms-unveiled-sutra-a-novel-multilingual-large-language-model)
+- **Efficient Tokenizer**: Reduces token consumption by 3-5x for non-English languages, lowering costs.[](https://www.deeplearning.ai/the-batch/startup-two-ai-launches-sutra-a-multilingual-model-for-south-asian-markets/)
+- **High MMLU Scores**: Hindi (81.44), Gujarati (79.39), Tamil (77.82), Bengali (78.91).[](https://analyticsindiamag.com/ai-news-updates/jio-backed-two-ai-launches-multilingual-reasoning-model-sutra-r0/)
+
+## 🛠 Troubleshooting
+
+- **Language Errors**: Ensure prompts match the target language’s script and syntax.
+- **Invalid API Key**: Verify your key at [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- **Model Not Found**: Use `sutra-v2`. SUTRA-V1 was deprecated on March 22, 2025.[](https://www.two.ai/blog/sutra-v2-is-here)
+
+## 📎 Resources
+
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+- [ChatSUTRA](https://chat.two.ai)

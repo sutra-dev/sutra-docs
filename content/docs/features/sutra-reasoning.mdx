@@ -1,0 +1,59 @@
+---
+title: SUTRA Reasoning Capabilities
+---
+
+This guide dives into **SUTRA-R0’s reasoning capabilities**, designed for structured thinking and complex decision-making across domains like finance, healthcare, and customer service. SUTRA-R0 excels in multi-step problem-solving and nuanced analysis.
+
+## 🧠 Reasoning Overview
+
+SUTRA-R0, built with a logical reasoning layer, outperforms models like DeepSeek-R1-32B and OpenAI-o1-mini in multilingual tasks (e.g., Hindi: 81.44, Gujarati: 79.39). Its structured reasoning framework supports enterprise applications by interpreting complex scenarios and generating actionable insights.[](https://www.analyticsvidhya.com/blog/2025/02/sutra-r0/)[](https://analyticsindiamag.com/ai-news-updates/jio-backed-two-ai-launches-multilingual-reasoning-model-sutra-r0/)
+
+## 📦 Step 1: Install Dependencies
+
+```bash
+!pip install -qU openai
+```
+
+## 🔐 Step 2: Initialize SUTRA Client
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_SUTRA_API_KEY",
+    base_url="https://api.two.ai/v2"
+)
+```
+
+## 💬 Step 3: Reasoning Example
+
+```python
+response = client.chat.completions.create(
+    model="sutra-r0",
+    messages=[
+        {"role": "system", "content": "You are a reasoning expert. Break down the query into logical steps."},
+        {"role": "user", "content": "If a contract states 'Party A is liable unless Party B notifies within 7 days,' who is liable if notice is given on day 8?"}
+    ],
+    max_tokens=1024,
+    temperature=0.7
+)
+print(response.choices[0].message.content)
+```
+
+## 🌟 Use Cases
+
+- **Financial Services**: Risk assessment and market trend analysis.
+- **Healthcare**: Medical data analysis and diagnostic support.
+- **Customer Service**: Intelligent response recommendations for complex inquiries.
+
+## 🛠 Troubleshooting
+
+- **Invalid API Key**: Verify your key at [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- **Model Not Found**: Use `sutra-r0`. SUTRA-V1 was deprecated on March 22, 2025.[](https://www.two.ai/blog/sutra-v2-is-here)
+- **Incomplete Responses**: Increase `max_tokens` or refine the prompt for clarity.
+
+## 📎 Resources
+
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+- [ChatSUTRA](https://chat.two.ai)

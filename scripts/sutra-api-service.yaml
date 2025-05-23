@@ -1,0 +1,593 @@
+openapi: 3.0.0
+info:
+  version: 5.5.0
+  title: Sutra API Service
+  description: >
+
+    The Sutra API provides access to powerful large language models (LLMs) with
+    capabilities for text completion, online search integration, and
+    location-based services.
+externalDocs:
+  description: Sutra OpenAPI Specification
+  url: endpoints
+servers:
+  - url: https://api.two.ai
+    description: Sutra API Server
+components:
+  schemas:
+    Role:
+      type: string
+      enum:
+        - system
+        - user
+        - assistant
+      description: |
+        The role of the message sender. Can be 'system', 'user', or 'assistant'.
+    ChatMLMessageContent:
+      type: object
+      properties:
+        type:
+          type: string
+          enum:
+            - text
+          description: |
+
+            The type of content. Currently only 'text' is supported.
+        text:
+          type: string
+          description: |
+
+            The text content of the message.
+      required:
+        - type
+        - text
+    ChatML:
+      type: object
+      properties:
+        role:
+          $ref: "#/components/schemas/Role"
+        content:
+          anyOf:
+            - type: string
+            - type: array
+              items:
+                $ref: "#/components/schemas/ChatMLMessageContent"
+      required:
+        - role
+        - content
+      description: |
+
+        A ChatML message object containing a role and content.
+    SutraModel:
+      type: string
+      enum:
+        - sutra-v2
+        - sutra-r0
+      description: >
+
+        The name of the model to use for generation. Available models include:
+
+
+        - `sutra-v2`: A multilingual AI model designed for instruction execution
+        and conversational intelligence across 50+ languages. 
+
+        Trained on a diverse blend of proprietary and open-access datasets, it
+        excels in handling complex tasks with high accuracy. 
+
+        With deep proficiency across Latin, Indic, and Far Eastern languages,
+        SUTRA-V2 delivers natural, context-aware responses, 
+
+        making it a powerful solution for global enterprises, multilingual
+        assistants, and cross-language AI applications.
+
+
+        - `sutra-r0`: The first in our series of advanced reasoning models,
+        designed for complex problem-solving and deep contextual understanding. 
+
+        Built to analyze, infer, and generate logical responses, SUTRA-R0 goes
+        beyond pattern recognition—applying structured reasoning to tackle 
+
+        nuanced queries, multi-step problem-solving, and enterprise
+        decision-making. Its architecture enables high-accuracy responses across
+        domains, 
+
+        making it a powerful tool for knowledge-intensive workflows and
+        next-generation AI applications.
+    StopSeq:
+      anyOf:
+        - type: string
+        - type: array
+          items:
+            type: string
+        - nullable: true
+        - nullable: true
+      description: |
+
+        Up to 4 sequences where the API will stop generating further tokens.
+        May be a string, null, or an array of strings.
+    SearchLocation:
+      type: object
+      properties:
+        uule:
+          type: string
+          description: |
+
+            Location encoding in UULE format.
+        country_code:
+          type: string
+          description: |
+
+            Two-letter country code (e.g., 'US', 'IN').
+        language_code:
+          type: string
+          description: |
+
+            A language code, for example 'en'.
+        city:
+          type: string
+          description: |
+
+            Name of a city.
+        region:
+          type: string
+          description: |
+
+            Name of a region, for example 'California'.
+        country_name:
+          type: string
+          description: |
+
+            Name of a country.
+      required:
+        - uule
+        - country_code
+        - language_code
+      description: >
+
+        Identifies the search location. Obtained from `/v2/location` requests.
+        If `online_search` is 'false' or not set then search location is ignored
+        and no online search is performed.
+    CompletionRequest:
+      type: object
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChatML"
+          description: >
+
+            A list of messages comprising the conversation so far.
+
+            Each message should follow the ChatML format with a role and
+            content.
+        model:
+          $ref: "#/components/schemas/SutraModel"
+        stream:
+          type: boolean
+          description: >
+
+            If set to `true`, partial message deltas will be sent, like in
+            ChatGPT.
+
+            Tokens will be sent as data-only server-sent events as they become
+            available.
+
+            The default is `false`.
+        frequency_penalty:
+          type: number
+        presence_penalty:
+          type: number
+        max_tokens:
+          type: number
+          description: >
+
+            The maximum number of tokens to generate before terminating. This
+            number cannot exceed the context window for the selected model. The
+            default value is 1024.
+        stop:
+          $ref: "#/components/schemas/StopSeq"
+        temperature:
+          type: number
+          description: >
+
+            Controls the randomness of the response, a lower temperature gives
+            lower randomness. Values are in the range [0,2] with a default value
+            of 0.3.
+        top_p:
+          type: number
+        extra_body:
+          type: object
+          properties:
+            online_search:
+              type: boolean
+              description: |
+
+                A boolean flag to enable online search. The default is `false`.
+            search_location:
+              $ref: "#/components/schemas/SearchLocation"
+      required:
+        - messages
+        - model
+    SearchLocationRequest:
+      type: object
+      properties:
+        city:
+          type: string
+          description: |
+
+            Name of a city.
+        region:
+          type: string
+          description: |
+
+            Name of a region, for example 'California'.
+        region_type:
+          type: string
+          description: |
+
+            Type of a region, for example 'state' or 'province'.
+        country_name:
+          type: string
+          description: |
+
+            Name of a country.
+        country_code:
+          type: string
+          description: |
+
+            Two-letter country code (e.g., 'US', 'IN').
+        language_code:
+          type: string
+          description: |
+
+            A language code, for example 'en'.
+        locale:
+          type: string
+          description: |
+
+            A locale, for example 'en-US'.
+        longitude:
+          type: number
+          description: |
+
+            A longitude coordinate value.
+        latitude:
+          type: number
+          description: |
+
+            A latitude coordinate value.
+      additionalProperties: false
+    Message:
+      type: object
+      properties:
+        role:
+          type: string
+          enum:
+            - system
+            - user
+            - assistant
+        content:
+          type: string
+        refusal:
+          nullable: true
+        annotations:
+          type: array
+          items:
+            nullable: true
+      required:
+        - role
+        - content
+        - refusal
+        - annotations
+      additionalProperties: false
+    Choice:
+      type: object
+      properties:
+        index:
+          type: number
+          description: |
+
+            The index of the choice.
+        message:
+          $ref: "#/components/schemas/Message"
+        logprobs:
+          nullable: true
+        finish_reason:
+          anyOf:
+            - type: string
+              enum:
+                - stop
+                - length
+                - content_filter
+            - nullable: true
+            - nullable: true
+          description: |
+
+            The reason why the completion finished.
+      required:
+        - index
+        - message
+        - logprobs
+        - finish_reason
+      additionalProperties: false
+    CompletionSequence:
+      type: object
+      properties:
+        id:
+          type: string
+          description: |
+
+            A unique identifier for the completion.
+        object:
+          type: string
+          enum:
+            - chat.completion
+          description: |
+
+            The object type, which is always 'chat.completion'.
+        created:
+          type: number
+          description: |
+
+            The Unix timestamp for when the completion was created.
+        model:
+          type: string
+          description: |
+
+            The model used for completion.
+        choices:
+          type: array
+          items:
+            $ref: "#/components/schemas/Choice"
+      required:
+        - id
+        - object
+        - created
+        - model
+        - choices
+      additionalProperties: false
+    ChoiceChunk:
+      type: object
+      properties:
+        index:
+          type: number
+          description: |
+
+            The index of the choice.
+        delta:
+          type: object
+          properties:
+            content:
+              type: string
+          required:
+            - content
+        logprobs:
+          nullable: true
+        finish_reason:
+          anyOf:
+            - type: string
+              enum:
+                - stop
+                - length
+                - content_filter
+            - nullable: true
+            - nullable: true
+          description: |
+
+            The reason why the completion finished.
+      required:
+        - index
+        - delta
+        - logprobs
+        - finish_reason
+      additionalProperties: false
+    CompletionChunk:
+      type: object
+      properties:
+        id:
+          type: string
+          description: |
+
+            A unique identifier for the completion.
+        object:
+          type: string
+          enum:
+            - chat.completion.chunk
+          description: |
+
+            The object type, which is always 'chat.completion.chunk'.
+        created:
+          type: number
+          description: |
+
+            The Unix timestamp for when the completion was created.
+        model:
+          type: string
+          description: |
+
+            The model used for completion.
+        system_fingerprint:
+          type: string
+        choices:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChoiceChunk"
+      required:
+        - id
+        - object
+        - created
+        - model
+        - system_fingerprint
+        - choices
+      additionalProperties: false
+    CompletionStream:
+      type: array
+      items:
+        $ref: "#/components/schemas/CompletionChunk"
+  parameters: {}
+  securitySchemes:
+    BearerAuthorizer:
+      type: http
+      scheme: bearer
+      bearerFormat: apiKey
+      description: >
+
+        Authentication is performed via HTTP Bearer authentication. All API
+        requests require an API key to be included in the header:
+
+        `Authorization: Bearer YOUR_API_KEY`
+paths:
+  /health:
+    get:
+      summary: |
+
+        Check health of API service.
+      description: |
+
+        Returns a simple health check status to verify the API is operational.
+      tags:
+        - Health Check
+      responses:
+        "200":
+          description: |
+
+            API is healthy and operational.
+          content:
+            application/json:
+              schema:
+                type: string
+        "400":
+          description: "Bad request: validation error or missing parameters."
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Invalid endpoint.
+        "429":
+          description: Rate limit exceeded.
+        5XX:
+          description: Internal service error.
+  /v2/chat/completions:
+    post:
+      summary: |
+
+        Create a chat completion.
+      description: >
+
+        Creates a completion for the chat message. The request payload is a
+        `CompletionRequest` object.
+
+        This endpoint supports both SUTRA-V2 and SUTRA-R0 models, each optimized
+        for different use cases.
+
+        Use SUTRA-V2 for multilingual applications across 50+ languages, or
+        SUTRA-R0 for advanced reasoning
+
+        and complex problem-solving tasks requiring deep contextual
+        understanding.
+
+
+        There are two forms of reply as determined by the `stream` parameter:
+
+        - `stream` is `false` or not set - the reply is a `CompletionSequence`
+        object.
+
+
+        - `stream` is `true` - the reply is `CompletionStream` delivered as
+        server-sent events (SSE),
+
+        each event containing a `CompletionChunk` object.
+      tags:
+        - Completion
+      security:
+        - BearerAuthorizer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompletionRequest"
+            example:
+              model: sutra-v2
+              messages:
+                - role: system
+                  content: You are a helpful assistant.
+                - role: user
+                  content: Hello, how are you today?
+              max_tokens: 100
+              temperature: 0.3
+              stream: false
+              extra_body:
+                online_search: false
+      responses:
+        "200":
+          description: |
+
+            Successful response with completion data.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CompletionSequence"
+            text/event-stream:
+              schema:
+                $ref: "#/components/schemas/CompletionStream"
+        "400":
+          description: "Bad request: validation error or missing parameters."
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Invalid endpoint.
+        "429":
+          description: Rate limit exceeded.
+        5XX:
+          description: Internal service error.
+  /v2/location:
+    post:
+      summary: |
+
+        Determine a search location.
+      description: >
+
+        Determines a search location based on the provided parameters. The
+        request payload
+
+        is a `SearchLocationRequest` object; the return is a `SearchLocation`
+        object that can be
+
+        used for location-based services and search operations.
+      tags:
+        - Location
+      security:
+        - BearerAuthorizer: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchLocationRequest"
+            example:
+              city: San Francisco
+              region: California
+              region_type: state
+              country_name: United States
+              country_code: US
+              language_code: en
+              locale: en-US
+      responses:
+        "200":
+          description: |
+
+            Successful search location determination.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SearchLocation"
+        "400":
+          description: "Bad request: validation error or missing parameters."
+        "401":
+          description: Authorization information is missing or invalid.
+        "404":
+          description: Invalid endpoint.
+        "429":
+          description: Rate limit exceeded.
+        5XX:
+          description: Internal service error.

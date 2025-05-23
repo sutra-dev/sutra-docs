@@ -1,0 +1,271 @@
+---
+title: SUTRA Starter Guide
+---
+
+<img src="/sutra.png" width="150" alt="SUTRA Logo" />
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1j7B8mDIU8KMZ_IB-oaL_qLqXmWYYh0Xu?usp=sharing)
+
+## Introduction to SUTRA
+
+SUTRA is a family of large multi-lingual language models (LMLMs) developed by [TWO AI](https://www.two.ai). SUTRA's dual-transformer architecture extends the power of both MoE (Mixture of Experts) and Dense AI language model approaches, delivering cost-efficient multilingual capabilities across 50+ languages.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1. A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+2. Basic familiarity with Python and Jupyter notebooks
+
+This guide is designed to run in Google Colab, so no local Python installation is required.
+
+## Step 1: Installation
+
+First, let's install the required dependencies:
+
+```python
+# Install the OpenAI Python package
+!pip install -qU openai
+
+print("✅ OpenAI SDK installed successfully!")
+```
+
+## Step 2: Authentication
+
+SUTRA uses API keys for authentication. In Google Colab, we recommend using the `userdata` feature to securely store your API key.
+
+### Setting up your API key in Colab:
+
+1. Click on the 🔑 icon in the left sidebar
+2. Add a new secret with the name "SUTRA_API_KEY" and your API key as the value
+
+Then run the cell below to access your API key:
+
+```python
+from google.colab import userdata
+
+SUTRA_API_KEY = userdata.get("SUTRA_API_KEY")
+```
+
+## Step 3: Basic Usage with OpenAI SDK
+
+SUTRA's API is compatible with the OpenAI SDK, making it easy to integrate into existing workflows. Let's set up the client and make a simple request:
+
+```python
+from openai import OpenAI
+
+# Initialize the client with SUTRA's API endpoint
+client = OpenAI(
+    base_url='https://api.two.ai/v2',
+    api_key=SUTRA_API_KEY
+)
+
+# Make a simple completion request
+response = client.chat.completions.create(
+    model='sutra-v2',
+    messages=[{"role": "user", "content": "Tell me about artificial intelligence in 3 sentences."}],
+    max_tokens=1024,
+    temperature=0.7
+)
+
+# Print the response
+print("\n🤖 SUTRA's response:\n")
+print(response.choices[0].message.content)
+```
+
+## Step 4: Streaming Responses
+
+For a more interactive experience, you can stream responses from SUTRA:
+
+```python
+print("🤖 SUTRA is writing a short story about a robot...\n")
+
+stream = client.chat.completions.create(
+    model='sutra-v2',
+    messages=[{"role": "user", "content": "Write a short story about a robot who discovers emotions."}],
+    max_tokens=1024,
+    temperature=0.7,
+    stream=True
+)
+
+# Process the stream
+for chunk in stream:
+    if len(chunk.choices) > 0:
+        content = chunk.choices[0].delta.content
+        finish_reason = chunk.choices[0].finish_reason
+        if content and finish_reason is None:
+            print(content, end='', flush=True)
+```
+
+## Step 5: Multilingual Capabilities
+
+One of SUTRA's key strengths is its multilingual support. Let's try it in different languages:
+
+```python
+# Function to get response in a specific language
+def get_response_in_language(prompt, language_name):
+    print(f"\nPrompt: {prompt}")
+    response = client.chat.completions.create(
+        model='sutra-v2',
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=1024,
+        temperature=0.7
+    )
+    print(f"Response ({language_name}): {response.choices[0].message.content}\n")
+
+# Try different languages
+get_response_in_language("नमस्ते, आप कैसे हैं?", "Hindi")
+get_response_in_language("¿Qué es la inteligencia artificial?", "Spanish")
+get_response_in_language("人工智能是什么？", "Chinese")
+get_response_in_language("Raconte-moi une courte histoire.", "French")
+```
+
+## Step 6: Advanced Parameter Tuning
+
+Fine-tune your responses with these parameters:
+
+```python
+# Function to demonstrate different parameter settings
+def compare_parameters(prompt):
+    print(f"Prompt: {prompt}\n")
+
+    # Conservative settings (more deterministic)
+    conservative = client.chat.completions.create(
+        model='sutra-v2',
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=1024,
+        temperature=0.3,
+        top_p=0.85,
+        frequency_penalty=0.0,
+        presence_penalty=0.0
+    )
+
+    # Creative settings (more random)
+    creative = client.chat.completions.create(
+        model='sutra-v2',
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=1024,
+        temperature=0.9,
+        top_p=0.95,
+        frequency_penalty=0.5,
+        presence_penalty=0.5
+    )
+
+    print("Conservative settings (temperature=0.3):\n")
+    print(conservative.choices[0].message.content)
+    print("\n---\n")
+    print("Creative settings (temperature=0.9):\n")
+    print(creative.choices[0].message.content)
+
+# Try with a creative prompt
+compare_parameters("Write a short poem about technology and nature.")
+```
+
+## Step 7: Building a Simple Chatbot
+
+Create a basic chatbot that maintains conversation history:
+
+```python
+conversation_history = [
+    {"role": "system", "content": "You are a helpful assistant powered by SUTRA. You are knowledgeable, friendly, and concise."}
+]
+
+def chat(user_input):
+    # Add the user's message to the conversation
+    conversation_history.append({"role": "user", "content": user_input})
+
+    # Get the response from SUTRA
+    response = client.chat.completions.create(
+        model='sutra-v2',
+        messages=conversation_history,
+        max_tokens=1024,
+        temperature=0.7
+    )
+
+    # Extract the assistant's reply
+    assistant_response = response.choices[0].message.content
+
+    # Add the assistant's response to the conversation history
+    conversation_history.append({"role": "assistant", "content": assistant_response})
+
+    return assistant_response
+
+# Interactive chat interface
+from IPython.display import display, HTML
+import ipywidgets as widgets
+
+output = widgets.Output()
+input_box = widgets.Text(placeholder='Type your message here...')
+
+def on_send(b):
+    user_input = input_box.value
+    input_box.value = ''
+
+    with output:
+        display(HTML(f"""
+        <div style='background-color:#ffffff; color:#000000; padding:10px; margin:5px; border-radius:5px;'>
+            <b>You:</b> {user_input}
+        </div>"""))
+        response = chat(user_input)
+        display(HTML(f"""
+        <div style='background-color:#ffffff; color:#000000; padding:10px; margin:5px; border-radius:5px;'>
+            <b>SUTRA:</b> {response}
+        </div>"""))
+
+send_button = widgets.Button(description="Send")
+send_button.on_click(on_send)
+
+def on_enter(widget):
+    on_send(None)
+
+input_box.on_submit(on_enter)
+
+display(HTML("<h3>Chat with SUTRA</h3>"))
+display(widgets.VBox([output, widgets.HBox([input_box, send_button])]))
+```
+
+## Step 8: Integration with LangChain
+
+For more complex applications, you can integrate SUTRA with LangChain:
+
+```python
+# Install LangChain
+!pip install -qU langchain langchain-openai langchain_community
+print("✅ LangChain installed successfully!")
+
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage, SystemMessage
+
+# Initialize the LangChain ChatOpenAI with SUTRA
+chat = ChatOpenAI(
+    model="sutra-v2",
+    api_key=api_key,  # Use your actual API key
+    base_url="https://api.two.ai/v2"
+)
+
+# Define messages
+messages = [
+    SystemMessage(content="You are a helpful assistant that provides concise answers."),
+    HumanMessage(content="Tell me a joke about programming.")
+]
+
+# Get and print the response
+response = chat.invoke(messages)
+print("LangChain + SUTRA response:\n")
+print(response.content)
+```
+
+## Troubleshooting
+
+If you encounter issues:
+
+1. **Authentication Errors**: Verify your API key is correct and properly set
+2. **Rate Limiting**: Check if you've exceeded your API usage limits
+3. **Connection Issues**: Ensure you have internet connectivity and the API endpoint is accessible
+4. **Response Format**: Make sure you're correctly parsing the response object
+
+## Resources
+
+- [Official Documentation](https://docs.two.ai/version-2/docs/get-started-with-sutra)
+- [TWO AI Website](https://www.two.ai)
+- [Follow TWO AI on Twitter](https://twitter.com/two_platforms)

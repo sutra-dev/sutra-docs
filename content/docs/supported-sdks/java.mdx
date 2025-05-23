@@ -1,0 +1,96 @@
+---
+title: SUTRA-V2 with Java SDK
+---
+
+This guide demonstrates how to use the **SUTRA-V2** model with the Java SDK to build multilingual AI applications. SUTRA-V2, developed by TWO AI, powers chat and instruction tasks via an OpenAI-compatible API.
+
+## 🔧 Prerequisites
+
+- Obtain your SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- Java 11 or later installed on your system.
+- Maven or Gradle for dependency management.
+
+## 📦 Step 1: Install Dependencies
+
+Add the OpenAI Java client to your project:
+
+**Maven:**
+
+```xml
+<dependency>
+    <groupId>com.theokanning.openai-gpt3-java</groupId>
+    <artifactId>service</artifactId>
+    <version>0.18.2</version>
+</dependency>
+```
+
+**Gradle:**
+
+```groovy
+implementation 'com.theokanning.openai-gpt3-java:service:0.18.2'
+```
+
+## 🔐 Step 2: Initialize SUTRA Client
+
+```java
+import com.theokanning.openai.service.OpenAiService;
+import com.theokanning.openai.completion.chat.ChatCompletionRequest;
+import com.theokanning.openai.completion.chat.ChatMessage;
+import com.theokanning.openai.completion.chat.ChatMessageRole;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class SutraExample {
+    public static void main(String[] args) {
+        // Create custom service with SUTRA base URL
+        String token = System.getenv("SUTRA_API_KEY"); // Get from environment variable
+        String baseUrl = "https://api.two.ai/v2";
+
+        // Initialize the service with custom settings
+        OpenAiService service = new OpenAiService(token, Duration.ofSeconds(30), baseUrl);
+
+        // Continue with the chat completion example...
+    }
+}
+```
+
+## 💬 Step 3: Basic Chat Completion
+
+```java
+// Create chat messages
+List<ChatMessage> messages = new ArrayList<>();
+messages.add(new ChatMessage(ChatMessageRole.SYSTEM.value(), "You are a helpful AI that answers concisely."));
+messages.add(new ChatMessage(ChatMessageRole.USER.value(), "Explain AI in 3 sentences in Spanish."));
+
+// Create chat completion request
+ChatCompletionRequest chatCompletionRequest = ChatCompletionRequest.builder()
+        .model("sutra-v2")
+        .messages(messages)
+        .maxTokens(1024)
+        .temperature(0.7)
+        .build();
+
+// Execute the request
+service.createChatCompletion(chatCompletionRequest)
+        .getChoices()
+        .forEach(choice -> {
+            System.out.println(choice.getMessage().getContent());
+        });
+```
+
+## 🛠 Troubleshooting
+
+- **Invalid API Key**: Ensure your API key is correct and stored securely.
+- **Model Not Found**: Use `sutra-v2`. SUTRA-V1 was deprecated on March 22, 2025.
+- **Rate Limits**: Reduce request frequency or contact TWO AI at [https://www.two.ai/support](https://www.two.ai/support).
+- **Connection Issues**: Verify your network connection and ensure the base URL is correct.
+
+## 📎 Resources
+
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+- [OpenAI Java Client](https://github.com/TheoKanning/openai-java)

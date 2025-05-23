@@ -1,0 +1,233 @@
+---
+title: SUTRA with LangChain
+---
+
+<div className="flex items-center gap-16">
+
+<img
+  src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+  width="130"
+  alt="two ai"
+/>
+<img
+  src="https://registry.npmmirror.com/@lobehub/icons-static-png/1.45.0/files/light/langchain.png"
+  width="120"
+/>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1OYpQFo88aLWbv0D1_DA2j4HZGRxTjRcK?usp=sharing)
+
+<div>
+  <h2>SUTRA by TWO Platforms</h2>
+  <p>SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.</p>
+
+  <h2>LangChain</h2>
+  <p>LangChain is a framework for developing applications powered by large language models (LLMs).</p>
+</div>
+</div>
+
+#SUTRA using Langchain
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1. A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+2. Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python installation is required.
+
+###Install Requirements
+
+```python
+!pip install -qU langchain_openai langchain_community tavily-python faiss-cpu tiktoken
+```
+
+####Setup API Keys
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+os.environ["TAVILY_API_KEY"] = userdata.get("TAVILY_API_KEY")
+os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
+```
+
+### Initialize SUTRA Model via Langchain:
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
+
+# Initialize SUTRA model (OpenAI-compatible)
+llm = ChatOpenAI(
+    api_key=os.getenv("SUTRA_API_KEY"),
+    base_url="https://api.two.ai/v2",  # Replace with actual endpoint
+    model="sutra-v2"
+)
+
+# Generate a simple chat completion
+response = llm.invoke([HumanMessage(content="What is LangChain?")])
+print(response.content)
+```
+
+### Multilingual capabilities using Langchain
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
+
+# Initialize the ChatOpenAI model
+chat = ChatOpenAI(
+    api_key=os.getenv("SUTRA_API_KEY"),
+    base_url="https://api.two.ai/v2",
+    model="sutra-v2",
+
+)
+
+# List of messages in different languages
+messages_list = [
+    HumanMessage(content="తెలుగులో ఒక కథ చెప్పు?"),                          # Telugu: "Tell a story in Telugu"
+    HumanMessage(content="Une histoire en français, s'il vous plaît."),      # French: "A story in French, please."
+    HumanMessage(content="Por favor, cuéntame una historia en español."),    # Spanish: "Please tell me a story in Spanish."
+    HumanMessage(content="कृपया हिंदी में एक कहानी सुनाइए।"),                     # Hindi: "Please tell a story in Hindi."
+    HumanMessage(content="Bitte erzähle mir eine Geschichte auf Deutsch.")   # German: "Please tell me a story in German."
+]
+
+# Loop through each language request
+for msg in messages_list:
+    response = chat.invoke([msg])
+    print(f"\nPrompt: {msg.content}")
+    print(f"Response: {response.content}\n")
+```
+
+### Building a Simple Chatbot with Langchain
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
+
+# Initialize the ChatOpenAI model
+chat = ChatOpenAI(
+    api_key=os.getenv("SUTRA_API_KEY"),
+    base_url="https://api.two.ai/v2",
+    model="sutra-v2"
+)
+
+# Start the chatbot conversation loop
+print("Chatbot: Hello! Type 'exit' to end the conversation.\n")
+
+chat_history = []
+
+while True:
+    user_input = input("You: ")  # Get user input
+
+    if user_input.lower() == "exit":
+        print("Chatbot: Goodbye! 👋")
+        break
+
+    # Add user message to chat history
+    chat_history.append(HumanMessage(content=user_input))
+
+    # Get response from AI
+    response = chat.invoke(chat_history)
+
+    # Print AI response
+    print("Chatbot:", response.content)
+
+    # Add AI response to chat history
+    chat_history.append(response)
+```
+
+###Langchain with the SUTRA model for Document Querying
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.vectorstores import FAISS
+from langchain.chains import RetrievalQA
+from langchain.schema import Document
+from langchain_openai import OpenAIEmbeddings
+
+# Use SUTRA for LLM
+llm = ChatOpenAI(
+    api_key=userdata.get("SUTRA_API_KEY"),
+    base_url="https://api.two.ai/v2",
+    model="sutra-v2",
+)
+
+# Hindi sample text
+text = """
+SUTRA दो प्लेटफ़ॉर्म्स द्वारा विकसित एक बहुभाषी बड़े भाषा मॉडल (LMLM) परिवार है।
+SUTRA की डुअल-ट्रांसफॉर्मर पद्धति MoE और Dense AI मॉडल आर्किटेक्चर दोनों की शक्ति को बढ़ाती है,
+जो 50+ से अधिक भाषाओं के लिए लागत-कुशल बहुभाषी क्षमताएं प्रदान करती है। यह संवाद, खोज,
+और उन्नत तर्क के लिए स्केलेबल एआई एप्लिकेशन को सक्षम बनाता है, जो विभिन्न भाषाओं, डोमेन और उपयोगों में उच्च प्रदर्शन सुनिश्चित करता है।
+"""
+
+# Split into chunks
+text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+docs = text_splitter.create_documents([text])
+
+# Embedding model
+embedding_model = OpenAIEmbeddings(
+    model="text-embedding-3-large",
+    openai_api_key=os.environ["OPENAI_API_KEY"]
+)
+
+# Vector store
+vectorstore = FAISS.from_documents(docs, embedding_model)
+
+# RetrievalQA Chain
+retriever = vectorstore.as_retriever()
+qa_chain = RetrievalQA.from_chain_type(llm=llm, retriever=retriever)
+
+# Ask question in Hindi
+query = "SUTRA कितनी भाषाओं का समर्थन करता है?"
+result = qa_chain({"query": query})
+
+# Print result
+print("उत्तर:", result["result"])
+```
+
+### Multilingual Tavily Agent Using SUTRA LMLMs
+
+```python
+from langchain.agents import Tool, AgentExecutor, initialize_agent
+from langchain.agents.agent_types import AgentType
+from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
+
+# Step 1: Define SUTRA LLM via LangChain
+llm = ChatOpenAI(
+    api_key=userdata.get("SUTRA_API_KEY"),
+    base_url="https://api.two.ai/v2",
+    model="sutra-v2"
+)
+
+# Step 2: Setup Tavily search tool
+search_tool = TavilySearchResults(max_results=2)
+
+# Step 3: Convert it to LangChain Tool
+search = Tool.from_function(
+    name="Tavily Search",
+    description="Real-time web search tool. उपयोगकर्ता के प्रश्नों के उत्तर खोजने के लिए वेब पर खोज करता है।",
+    func=search_tool.invoke
+)
+
+# Step 4: Initialize Agent
+agent = initialize_agent(
+    tools=[search],
+    llm=llm,
+    agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+    verbose=True
+)
+
+# Step 5: Multilingual Query Example
+query = "आईसीसी 2025 फाइनल किसने जीता?"  # Hindi: Who Won ICC 2025 Finals?
+
+# Step 6: Invoke agent
+response = agent.invoke({"input": query})
+print("उत्तर:", response["output"])
+```

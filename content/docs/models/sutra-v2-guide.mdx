@@ -1,0 +1,114 @@
+---
+title: SUTRA-V2 Guide
+---
+
+## 🤖 Build with SUTRA-V2 (Notebook-Based Guide)
+
+This guide walks you through setting up and building with **SUTRA-V2** using **Python in Google Colab**. It includes examples for completions, streaming, and multilingual output.
+
+---
+
+## 🔧 Prerequisites
+
+Before you begin:
+
+- Get your API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api)
+- Use **Google Colab** (no local setup required)
+
+---
+
+## 📦 Step 1: Install Dependencies
+
+```python
+!pip install -qU openai
+```
+
+---
+
+## 🔐 Step 2: Set Your API Key
+
+In **Google Colab**:
+
+- Click the 🔑 icon in the left sidebar
+- Add a new secret named: `SUTRA_API_KEY`
+
+```python
+from google.colab import userdata
+SUTRA_API_KEY = userdata.get("SUTRA_API_KEY")
+```
+
+---
+
+## 🤖 Step 3: Initialize Client
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    base_url='https://api.two.ai/v2',
+    api_key=SUTRA_API_KEY
+)
+```
+
+---
+
+## 💬 Step 4: Basic Completion
+
+```python
+response = client.chat.completions.create(
+    model='sutra-v2',
+    messages=[{"role": "user", "content": "Tell me about artificial intelligence in 3 sentences."}],
+    max_tokens=1024,
+    temperature=0.7
+)
+print(response.choices[0].message.content)
+```
+
+---
+
+## 🔁 Step 5: Streaming Response
+
+```python
+stream = client.chat.completions.create(
+    model='sutra-v2',
+    messages=[{"role": "user", "content": "Write a short story about a robot who discovers emotions."}],
+    max_tokens=1024,
+    temperature=0.7,
+    stream=True
+)
+
+for chunk in stream:
+    if chunk.choices and chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end='', flush=True)
+```
+
+---
+
+## 🌐 Step 6: Multilingual Support
+
+```python
+def get_response(prompt, lang):
+    print(f"[{lang}] {prompt}")
+    res = client.chat.completions.create(
+        model='sutra-v2',
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=1024,
+        temperature=0.7
+    )
+    print(res.choices[0].message.content)
+
+get_response("नमस्ते, आप कैसे हैं?", "Hindi")
+get_response("¿Qué es la inteligencia artificial?", "Spanish")
+```
+
+---
+
+## 🛠 Troubleshooting
+
+- **Invalid API Key**: Check spelling and Colab secret
+- **Rate Limit**: Upgrade plan or reduce frequency
+- **Empty Response**: Increase `max_tokens` or adjust your prompt
+
+---
+
+> ✅ Tip: You can duplicate and adapt this notebook for internal testing, demos, or custom workflows!

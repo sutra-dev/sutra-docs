@@ -1,0 +1,54 @@
+---
+title: SUTRA-V2 with Python SDK
+---
+
+This guide demonstrates how to use the **SUTRA-V2** model with the Python SDK to build multilingual AI applications. SUTRA-V2, developed by TWO AI, powers chat and instruction tasks via an OpenAI-compatible API.
+
+## 🔧 Prerequisites
+
+- Obtain your SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- Store the API key securely (e.g., in Google Colab secrets or environment variables).
+
+## 📦 Step 1: Install Dependencies
+
+```bash
+!pip install -qU openai
+```
+
+## 🔐 Step 2: Initialize SUTRA Client
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="YOUR_SUTRA_API_KEY",
+    base_url="https://api.two.ai/v2"
+)
+```
+
+## 💬 Step 3: Basic Chat Completion
+
+```python
+response = client.chat.completions.create(
+    model="sutra-v2",
+    messages=[
+        {"role": "system", "content": "You are a helpful AI that answers concisely."},
+        {"role": "user", "content": "Explain AI in 3 sentences in Spanish."}
+    ],
+    max_tokens=1024,
+    temperature=0.7
+)
+print(response.choices[0].message.content)
+```
+
+## 🛠 Troubleshooting
+
+- **Invalid API Key**: Ensure `YOUR_SUTRA_API_KEY` is correct and stored securely.
+- **Model Not Found**: Use `sutra-v2`. SUTRA-V1 was deprecated on March 22, 2025.
+- **Rate Limits**: Reduce request frequency or contact TWO AI at [https://www.two.ai/support](https://www.two.ai/support).
+
+## 📎 Resources
+
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+- [OpenAI Python SDK](https://platform.openai.com/docs/api-reference?lang=python)

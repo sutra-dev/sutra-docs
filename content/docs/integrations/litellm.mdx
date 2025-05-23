@@ -1,0 +1,76 @@
+---
+title: SUTRA with LiteLLM
+description: Integrate SUTRA models with LiteLLM for multilingual and reasoning-rich AI applications.
+---
+
+This guide shows you how to use **SUTRA models (V2 or R0)** via **LiteLLM**, a powerful open-source library that lets you call different LLM providers with a unified interface.
+
+## 📦 Step 1: Install Dependencies
+
+```bash
+pip install litellm
+```
+
+## 🔐 Step 2: Set Up API Key
+
+Export your SUTRA API key as an environment variable:
+
+```bash
+export OPENAI_API_KEY="your_sutra_api_key"
+```
+
+> Note: LiteLLM uses `OPENAI_API_KEY` for compatibility with OpenAI-style models.
+
+## ⚙️ Step 3: Configure LiteLLM for SUTRA
+
+Set up your call using SUTRA’s model and endpoint:
+
+```python
+import litellm
+
+response = litellm.completion(
+    model="sutra-v2",  # Or "sutra-r0" for reasoning
+    messages=[{"role": "user", "content": "Translate this to French: 'Good morning, how are you?'" }],
+    api_base="https://api.two.ai/v2"  # SUTRA base URL
+)
+
+print(response['choices'][0]['message']['content'])
+```
+
+## 🧠 Use SUTRA-R0 for Reasoning-Based Prompts
+
+```python
+response = litellm.completion(
+    model="sutra-r0",
+    messages=[{"role": "user", "content": "If A is greater than B and B is greater than C, who is greatest?"}],
+    api_base="https://api.two.ai/v2"
+)
+
+print(response['choices'][0]['message']['content'])
+```
+
+## 📎 Tips
+
+- Use `sutra-v2` for:
+
+  - Multilingual translation
+  - Summarization
+  - General Q&A
+
+- Use `sutra-r0` for:
+
+  - Reasoning
+  - Logic-based queries
+  - Legal/technical interpretation
+
+- No extra configuration is needed beyond the `api_base` and `model` values.
+
+## 🔗 Resources
+
+- [LiteLLM GitHub](https://github.com/BerriAI/litellm)
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+
+---
+
+Use **LiteLLM + SUTRA** for flexible, multilingual, and reasoning-capable AI applications through a single OpenAI-compatible API.
