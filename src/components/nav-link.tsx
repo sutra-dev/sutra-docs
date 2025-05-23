@@ -17,7 +17,7 @@ export const NavLink = ({ href, children, className, external }: Props) => {
       return path === "/";
     }
     if (href === "/docs") {
-      return path.startsWith("/docs") && !path.startsWith("/docs/cookbooks");
+      return path.startsWith("/docs") && !path.startsWith("/docs/cookbooks") && !path.startsWith("/docs/api-reference");
     }
     if (href === "/docs/cookbooks") {
       return path.startsWith("/docs/cookbooks");
@@ -37,7 +37,7 @@ export const NavLink = ({ href, children, className, external }: Props) => {
         href={href}
         className={cn(
           "w-full h-full block py-4 px-5 transition-colors",
-          "group-hover:text-foreground",
+          "group-hover:text-foreground", 
           isActive ? "text-foreground" : "text-muted-foreground"
         )}
         target={external ? "_blank" : "_parent"}
