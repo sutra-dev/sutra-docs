@@ -29,6 +29,7 @@ import {
   ResourceGridWithTwoLinks,
 } from "@/components/resource-grid";
 import { APIPage } from "fumadocs-openapi/ui";
+import CategoryCardGrid from "@/components/cookbooks/category-card-grid";
 
 export default async function Page({
   params,
@@ -83,6 +84,7 @@ export default async function Page({
               />
             ),
             APIPage: (props) => <APIPage {...openapi.getAPIPageProps(props)} />,
+            CategoryCardGrid: (props) => <CategoryCardGrid {...props} />,
             Step,
             Steps,
             File,

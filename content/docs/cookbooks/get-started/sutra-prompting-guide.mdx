@@ -1,0 +1,406 @@
+---
+title: SUTRA Prompting Guide
+---
+
+<img
+  src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+  width="120"
+/>
+
+## Introduction
+
+This notebook demonstrates how to use Sutra models through the OpenAI
+client interface. This approach allows you to leverage your existing
+OpenAI-based code and workflows while accessing Sutra's powerful
+language models, which excel at Indian languages and cultural contexts.
+
+### What You'll Learn
+
+- Setting up the OpenAI client to work with Sutra models
+- Best practices for prompting Sutra models
+- Practical examples across various use cases
+- Advanced techniques for getting the most out of Sutra
+
+<a
+  href="https://colab.research.google.com/drive/14cI_vUqW7U__0iwTq19CXesmLPPYSlfs?usp=sharing"
+  target="_parent"
+>
+  <img
+    src="https://colab.research.google.com/assets/colab-badge.svg"
+    alt="Open In Colab"
+  />
+</a>
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
+
+## Setup
+
+First, let's install the OpenAI client library.
+
+```python
+!pip install -q openai
+```
+
+### Import necessary libraries
+
+```python
+import os
+from openai import OpenAI
+from google.colab import userdata
+```
+
+## Authentication
+
+To use the Sutra API, you need to set up your API key.
+
+Set up authentication using Colab secrets.
+
+```python
+# Get API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get('SUTRA_API_KEY')
+```
+
+## Configuring OpenAI Client for Sutra
+
+To use Sutra models with the OpenAI client, we need to configure the
+client to point to Sutra's API endpoint.
+
+```python
+# Create the OpenAI client with Sutra's API endpoint
+client = OpenAI(
+    base_url="https://api.two.ai/v2",
+    api_key=os.environ.get("SUTRA_API_KEY")
+)
+```
+
+## Helper Function
+
+Let's create a helper function to easily generate responses from Sutra
+models using the OpenAI client.
+
+```python
+def generate_with_sutra(prompt, temperature=0.7, max_tokens=1000):
+    """Generate text using Sutra models via OpenAI client"""
+    response = client.chat.completions.create(
+        model="sutra-v2",
+        messages=[
+            {"role": "user", "content": prompt}
+        ],
+        temperature=temperature,
+        max_tokens=max_tokens
+    )
+    return response.choices[0].message.content
+```
+
+## 1. Basic Usage
+
+Let's start with some basic examples of using Sutra models through the
+OpenAI client.
+
+```python
+# Simple text generation
+prompt = "Explain the importance of the Indian monsoon season for agriculture."
+response = generate_with_sutra(prompt)
+print(response)
+```
+
+```python
+# Using Sutra model
+prompt = "Write a short poem about the Himalayas."
+
+print("Using sutra-v2 model:")
+response = generate_with_sutra(prompt)
+print(response)
+```
+
+## 2. Best Prompting Practices for Sutra Models
+
+Let's explore some best practices for crafting effective prompts for
+Sutra models.
+
+### Be Clear and Specific
+
+```python
+# Vague prompt
+vague_prompt = "Tell me about Indian cuisine."
+print("Response to vague prompt:")
+vague_response = generate_with_sutra(vague_prompt)
+print(vague_response[:300] + "...\n")
+
+# Specific prompt
+specific_prompt = "Explain the regional variations in South Indian breakfast dishes across Karnataka, Tamil Nadu, Kerala, and Andhra Pradesh. Include at least two signature dishes from each state and their key ingredients."
+print("Response to specific prompt:")
+specific_response = generate_with_sutra(specific_prompt)
+print(specific_response)
+```
+
+### Structure Your Prompts
+
+```python
+structured_prompt = """
+Context: I'm analyzing customer feedback for an e-commerce platform selling electronics in India.
+
+Task: Categorize the following customer comment into one of these categories: Product Quality, Shipping, Customer Service, Website Experience, or Price.
+
+Comment: "The delivery was super fast, but the packaging was damaged when it arrived. Fortunately, the product inside was intact."
+
+Format: Provide the category and a brief explanation for your choice.
+"""
+
+response = generate_with_sutra(structured_prompt)
+print(response)
+```
+
+### Specify the Desired Output Format
+
+```python
+format_prompt = """
+Provide information about three popular classical dance forms of India.
+
+Format your response as a markdown table with the following columns:
+- Dance Form
+- State of Origin
+- Key Characteristics
+- Famous Exponents
+- Traditional Costume Elements
+"""
+
+response = generate_with_sutra(format_prompt)
+print(response)
+```
+
+## 3. Multilingual Capabilities
+
+One of Sutra's key strengths is its exceptional performance with Indian
+languages. Let's explore this capability.
+
+```python
+# Hindi prompt
+hindi_prompt = "भारत में स्टार्टअप इकोसिस्टम के बारे में बताएं और इसके विकास के लिए तीन सुझाव दें।"
+response = generate_with_sutra(hindi_prompt)
+print(response)
+```
+
+```python
+# Code-switching prompt (mixing English and Hindi)
+code_switching_prompt = "Digital payments के बढ़ते चलन से भारतीय economy पर क्या प्रभाव पड़ रहा है? 5 key points में बताएं।"
+response = generate_with_sutra(code_switching_prompt)
+print(response)
+```
+
+```python
+# Translation with context
+translation_prompt = """
+Translate the following English text to Tamil. Maintain the technical terminology in English where appropriate:
+
+"Machine learning algorithms can process large datasets to identify patterns and make predictions without explicit programming. This has applications in healthcare, finance, and many other industries."
+"""
+response = generate_with_sutra(translation_prompt)
+print(response)
+```
+
+## 4. Advanced Prompting Techniques
+
+Let's explore some advanced techniques to get even better results from
+Sutra models.
+
+### Few-Shot Learning
+
+```python
+few_shot_prompt = """
+Classify each customer review as Positive, Neutral, or Negative.
+
+Review: "The product arrived on time and works perfectly. Very satisfied!"
+Sentiment: Positive
+
+Review: "Delivery was quick but the instruction manual is confusing."
+Sentiment: Neutral
+
+Review: "Poor quality product. Broke after two days of use. Waste of money."
+Sentiment: Negative
+
+Review: "Average product for the price. Nothing special but does the job."
+Sentiment:
+"""
+
+response = generate_with_sutra(few_shot_prompt)
+print(response)
+```
+
+### Chain-of-Thought Prompting
+
+```python
+cot_prompt = """
+Problem: A train leaves Delhi at 8:00 AM and travels at 60 km/h towards Mumbai, which is 1440 km away. Another train leaves Mumbai at 9:30 AM and travels at 90 km/h towards Delhi. At what time will the two trains meet?
+
+Let's solve this step by step:
+"""
+
+response = generate_with_sutra(cot_prompt)
+print(response)
+```
+
+### Role-Based Prompting
+
+```python
+role_prompt = """
+You are a financial advisor specializing in retirement planning for middle-class Indian families.
+
+A client comes to you with the following situation:
+- 45 years old software engineer
+- Monthly income: ₹1,50,000
+- Current savings: ₹30,00,000 in fixed deposits
+- Has a home loan with ₹40,00,000 remaining (EMI: ₹35,000)
+- Two children aged 12 and 15, planning for their higher education
+- Wants to retire at 60
+
+Provide a detailed retirement planning strategy for this client.
+"""
+
+response = generate_with_sutra(role_prompt)
+print(response)
+```
+
+## 5. Practical Use Cases
+
+Let's explore some practical applications of Sutra models using the
+OpenAI client.
+
+### Content Generation
+
+```python
+content_generation_prompt = """
+Write a short blog post introduction (150 words) about the benefits of incorporating traditional Indian herbs in modern cooking.
+The tone should be informative yet conversational, and the content should appeal to home cooks interested in exploring new flavors.
+"""
+
+response = generate_with_sutra(content_generation_prompt)
+print(response)
+```
+
+### Code Generation
+
+```python
+code_generation_prompt = """
+Write a Python function that takes a list of numbers and returns:
+1. The mean
+2. The median
+3. The mode (most frequent value)
+
+The function should handle empty lists and lists with one element appropriately.
+Include docstrings and comments explaining your approach.
+"""
+
+response = generate_with_sutra(code_generation_prompt)
+print(response)
+```
+
+### Educational Content
+
+```python
+education_prompt = """
+Create a lesson plan for a 45-minute class teaching the concept of photosynthesis to 8th-grade students in an Indian school.
+
+The lesson plan should include:
+1. Learning objectives (3-4 specific goals)
+2. Required materials
+3. A 5-minute warm-up activity
+4. 20 minutes of main content delivery with key points
+5. A 15-minute hands-on activity that demonstrates the concept
+6. A 5-minute assessment/exit ticket
+
+Make the content engaging and appropriate for 13-14 year old students with basic science knowledge.
+Include at least one connection to Indian agricultural practices or local plant species.
+"""
+
+response = generate_with_sutra(education_prompt)
+print(response)
+```
+
+## 6. Multi-Turn Conversations
+
+The OpenAI client also supports multi-turn conversations with Sutra
+models.
+
+```python
+def chat_with_sutra(messages, model="sutra-v2", temperature=0.7):
+    """Have a multi-turn conversation with Sutra models"""
+    response = client.chat.completions.create(
+        model=model,
+        messages=messages,
+        temperature=temperature
+    )
+    return response.choices[0].message.content
+
+# Example conversation
+conversation = [
+    {"role": "user", "content": "Can you tell me about some traditional Indian board games?"}
+]
+
+response = chat_with_sutra(conversation)
+print("Sutra:", response)
+
+# Add the assistant's response to the conversation
+conversation.append({"role": "assistant", "content": response})
+
+# Add a follow-up question
+conversation.append({"role": "user", "content": "Which of these games would be easiest to teach to children?"})
+
+response = chat_with_sutra(conversation)
+print("\nSutra:", response)
+```
+
+## 6. System Messages
+
+You can also use system messages to set the context or behavior of the
+model.
+
+```python
+messages_with_system = [
+    {"role": "system", "content": "You are a helpful assistant specializing in Indian history and culture. Provide detailed and accurate information with references where possible."},
+    {"role": "user", "content": "Tell me about the Gupta Empire."}
+]
+
+response = chat_with_sutra(messages_with_system)
+print(response)
+```
+
+## 9. Conclusion
+
+In this notebook, we've explored how to use Sutra models through the
+OpenAI client interface. This approach allows you to leverage your
+existing OpenAI-based code and workflows while accessing Sutra's
+powerful language models.
+
+### Key Takeaways
+
+1.  **Easy integration**: The OpenAI client can be configured to work
+    with Sutra models with minimal changes
+2.  **Familiar interface**: If you're already using OpenAI's API, you
+    can use the same patterns with Sutra
+3.  **Multilingual strength**: Sutra excels at Indian languages and
+    cultural contexts
+4.  **Advanced techniques**: Few-shot learning, chain-of-thought, and
+    role-based prompting work well with Sutra models
+
+By combining the familiar OpenAI client interface with Sutra's powerful
+models, you can build applications that leverage the best of both
+worlds.
+
+## 9. Additional Resources
+
+- [Sutra Documentation](https://docs.sutra.ai)
+- [OpenAI API Documentation](https://platform.openai.com/docs)
+- [Sutra Community Forum](https://community.sutra.ai)
+
+For more examples and use cases, explore other notebooks in the Sutra
+Cookbooks repository.

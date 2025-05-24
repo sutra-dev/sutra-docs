@@ -1,10 +1,6 @@
 ---
-title: SUTRA
+title: SUTRA vs OpenAI Models
 ---
-
-<div class="cell markdown" id="title">
-
-# SUTRA VS OpenAI Models
 
 <img
   src="https://sutra-docs.vercel.app/_next/image?url=%2Fsutra.png&w=256&q=75"
@@ -28,10 +24,6 @@ across various tasks and capabilities. By directly comparing these
 models, you can make informed decisions about which model best suits
 your specific use cases.
 
-</div>
-
-<div class="cell markdown">
-
 ## Get Your API Keys
 
 Before you begin, make sure you have:
@@ -43,34 +35,16 @@ Before you begin, make sure you have:
 This notebook is designed to run in Google Colab, so no local Python
 installation is required.
 
-</div>
-
-<div class="cell markdown" id="setup">
-
 ## Setup
 
 First, let's install the necessary libraries and set up our environment.
-
-</div>
-
-<div class="cell code"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;}"
-id="J5er0RGw56ip" outputId="3c159bb9-bffb-4fec-aa56-a0a3c137cd5f">
 
 ```python
 # Install required packages
 !pip install openai requests pandas matplotlib seaborn
 ```
 
-</div>
-
-<div class="cell markdown" id="0Cmnqa-G576Y">
-
 ### Import necessary libraries
-
-</div>
-
-<div class="cell code" id="install-packages">
 
 ```python
 # Import necessary libraries
@@ -85,18 +59,10 @@ from google.colab import userdata
 import html  # For escaping HTML entities
 ```
 
-</div>
-
-<div class="cell markdown" id="authentication">
-
 ## Authentication
 
 To compare both models, we need to set up API keys for both SUTRA and
 OpenAI.
-
-</div>
-
-<div class="cell code" id="api-keys">
 
 ```python
 # Get API key from Colab secrets
@@ -104,15 +70,7 @@ os.environ["SUTRA_API_KEY"] = userdata.get('SUTRA_API_KEY')
 os.environ["OPENAI_API_KEY"] = userdata.get('OPENAI_API_KEY')
 ```
 
-</div>
-
-<div class="cell markdown" id="oPRdHAb1QPlm">
-
 ### Create clients for both APIs
-
-</div>
-
-<div class="cell code" id="fzIZRpcBQT4T">
 
 ```python
 # Create clients for both APIs
@@ -126,18 +84,10 @@ openai_client = OpenAI(
 )
 ```
 
-</div>
-
-<div class="cell markdown" id="helper-functions">
-
 ## Helper Functions
 
 Let's create helper functions to interact with both APIs and evaluate
 their responses.
-
-</div>
-
-<div class="cell code" id="model-functions">
 
 ```python
 def get_sutra_response(prompt, temperature=0, max_tokens=1024):
@@ -250,20 +200,9 @@ def compare_responses(prompt, openai_model="gpt-4o", temperature=0, max_tokens=1
     }
 ```
 
-</div>
-
-<div class="cell markdown" id="general-knowledge">
-
 ## Comparison 1: General Knowledge and Factual Accuracy
 
 Let's compare how both models handle general knowledge questions.
-
-</div>
-
-<div class="cell code"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:1000}"
-id="general-knowledge-test"
-outputId="51089d8e-c9f5-4870-d4e8-68f89974356a">
 
 ```python
 general_knowledge_prompts = [
@@ -279,20 +218,10 @@ for prompt in general_knowledge_prompts:
     general_knowledge_results.append(result)
 ```
 
-</div>
-
-<div class="cell markdown" id="multilingual">
-
 ## Comparison 2: Multilingual Capabilities
 
 SUTRA V2 is known for its multilingual capabilities. Let's compare how
 it handles different languages compared to OpenAI models.
-
-</div>
-
-<div class="cell code"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:1000}"
-id="multilingual-test" outputId="e4934588-e027-4b75-8bfd-0d5c69b7b43f">
 
 ```python
 multilingual_prompts = {
@@ -311,20 +240,9 @@ for language, prompt in multilingual_prompts.items():
     multilingual_results.append(result)
 ```
 
-</div>
-
-<div class="cell markdown" id="code-generation">
-
 ## Comparison 3: Code Generation
 
 Let's compare the code generation capabilities of both models.
-
-</div>
-
-<div class="cell code"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:1000}"
-id="code-generation-test"
-outputId="879fdf27-6c0c-4dbc-899d-4fe834059fa6">
 
 ```python
 code_prompts = [
@@ -339,20 +257,9 @@ for prompt in code_prompts:
     code_results.append(result)
 ```
 
-</div>
-
-<div class="cell markdown" id="creative-writing">
-
 ## Comparison 4: Creative Writing
 
 Now let's compare creative writing capabilities.
-
-</div>
-
-<div class="cell code"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:1000}"
-id="creative-writing-test"
-outputId="70fa74fa-7c2d-4708-9e38-2fa03b83515e">
 
 ```python
 creative_prompts = [
@@ -367,19 +274,9 @@ for prompt in creative_prompts:
     creative_results.append(result)
 ```
 
-</div>
-
-<div class="cell markdown" id="reasoning">
-
 ## Comparison 5: Complex Reasoning
 
 Let's compare how both models handle complex reasoning tasks.
-
-</div>
-
-<div class="cell code"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:1000}"
-id="reasoning-test" outputId="0ec77123-827b-44a0-de37-75bf06065736">
 
 ```python
 reasoning_prompts = [
@@ -394,20 +291,9 @@ for prompt in reasoning_prompts:
     reasoning_results.append(result)
 ```
 
-</div>
-
-<div class="cell markdown" id="performance-analysis">
-
 ## Performance Analysis
 
 Let's analyze the performance of both models across different tasks.
-
-</div>
-
-<div class="cell code"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:1000}"
-id="performance-visualization"
-outputId="97925e09-0f9c-4ae9-86c8-dabb41af83d3">
 
 ```python
 # Combine all results
@@ -471,20 +357,9 @@ plt.tight_layout()
 plt.show()
 ```
 
-</div>
-
-<div class="cell markdown" id="response-length">
-
 ## Response Length Analysis
 
 Let's also compare the length of responses from both models.
-
-</div>
-
-<div class="cell code"
-colab="{&quot;base_uri&quot;:&quot;https://localhost:8080/&quot;,&quot;height&quot;:765}"
-id="length-visualization"
-outputId="11f4d94c-2a70-4fac-a8e4-1243755e391c">
 
 ```python
 # Extract response length data
@@ -529,10 +404,6 @@ plt.tight_layout()
 plt.show()
 ```
 
-</div>
-
-<div class="cell markdown" id="conclusion">
-
 ## Conclusion
 
 This notebook has provided a comparison between SUTRA V2 and OpenAI
@@ -574,5 +445,3 @@ The best model choice ultimately depends on your specific use case,
 language requirements, and performance needs. This comparison should
 help you make an informed decision based on your application's
 requirements.
-
-</div>

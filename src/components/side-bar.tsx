@@ -23,7 +23,13 @@ export default function ArticleLayout() {
   const pathname = usePathname();
 
   function getDefaultValue() {
-    const defaultValue = contents.findIndex((item) =>
+    let sidebarContents = contents;
+    if (pathname.includes("/docs/cookbooks")) {
+      sidebarContents = cookbooks;
+    } else {
+      sidebarContents = contents;
+    }
+    const defaultValue = sidebarContents.findIndex((item) =>
       item.list.some((listItem) => listItem.href === pathname)
     );
     return defaultValue === -1 ? 0 : defaultValue;
@@ -32,7 +38,7 @@ export default function ArticleLayout() {
   const [group, setGroup] = useState("docs");
 
   useEffect(() => {
-    const grp = pathname.includes("cookbooks") ? "cookbooks" : "docs";
+    const grp = pathname.includes("/docs/cookbooks") ? "cookbooks" : "docs";
     setGroup(grp);
     setCurrentOpen(getDefaultValue());
   }, [pathname]);

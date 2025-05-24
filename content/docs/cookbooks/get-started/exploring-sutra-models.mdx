@@ -1,0 +1,304 @@
+---
+title: Exploring SUTRA Models
+---
+
+<img
+  src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+  width="150"
+/>
+
+## Introduction
+
+SUTRA offers several specialized model variants, each designed for
+specific use cases and capabilities. This notebook explores the features
+of each Sutra model variant and provides examples of how to use them
+effectively in your applications.
+
+## Best Practices for Using SUTRA Models
+
+Here are some best practices for getting the most out of Sutra model
+variants:
+
+1.  **Select the right model for your task**:
+    - Use SUTRA-V2 for multilingual applications and general
+      conversational AI
+    - Use SUTRA-R0 for complex reasoning and problem-solving
+    - Use SUTRA-Q0 (Enterprise) for time-series analysis and forecasting
+2.  **Optimize your prompts**:
+    - Be specific and clear in your instructions
+    - Provide context when necessary
+    - Use examples to guide the model's output format
+3.  **Adjust temperature settings**:
+    - Lower temperature (0-0.3) for more deterministic, focused
+      responses
+    - Higher temperature (0.7-1.0) for more creative, varied responses
+4.  **Consider token limits**:
+    - Be mindful of input and output token limits
+    - Break complex tasks into smaller, manageable chunks
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
+
+## Setup
+
+First, let's install the necessary libraries and set up our environment.
+
+```python
+# Install required packages
+!pip install openai requests
+```
+
+### Import necessary libraries
+
+```python
+# Import necessary libraries
+import os
+from openai import OpenAI
+from IPython.display import display, Markdown, HTML
+from google.colab import userdata
+```
+
+## Authentication
+
+To use the Sutra API, you need to set up your API key.
+
+Set up authentication using Colab secrets.
+
+```python
+# Get API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get('SUTRA_API_KEY')
+```
+
+### Create the OpenAI client with Sutra
+
+```python
+# Create the OpenAI client with Sutra's API endpoint
+client = OpenAI(
+    base_url="https://api.two.ai/v2",
+    api_key=os.environ.get("SUTRA_API_KEY")
+)
+```
+
+## Helper Function
+
+Let's create a helper function to interact with the Sutra API.
+
+```python
+def get_model_response(model, prompt, temperature=0, max_tokens=1024):
+    """
+    Get a response from a specified Sutra model.
+
+    Args:
+        model (str): The model identifier (e.g., "sutra-v2", "sutra-r0")
+        prompt (str): The user prompt or question
+        temperature (float): Controls randomness (0 to 1)
+        max_tokens (int): Maximum number of tokens to generate
+
+    Returns:
+        str: The model's response
+    """
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            temperature=temperature
+        )
+
+        return response.choices[0].message.content
+
+    except Exception as e:
+        return f"Error: {str(e)}"
+```
+
+## SUTRA-V2: Multilingual AI Model
+
+SUTRA-V2 is a powerful multilingual AI model designed for instruction
+execution and conversational intelligence across 50+ languages. It
+excels in handling complex tasks with high accuracy and has deep
+proficiency across Latin, Indic, and Far Eastern languages.
+
+### Key Features
+
+- Support for 50+ languages
+- Conversational intelligence
+- Instruction following
+- Context-aware responses
+- Natural language understanding
+
+### Example: Multilingual Capabilities
+
+Let's explore SUTRA-V2's multilingual capabilities with examples in
+different languages.
+
+```python
+# Define prompts in different languages
+multilingual_examples = {
+    "English": "Explain the concept of artificial intelligence in simple terms.",
+    "Hindi": "कृत्रिम बुद्धिमत्ता की अवधारणा को सरल शब्दों में समझाएं।",
+    "Spanish": "Explica el concepto de inteligencia artificial en términos simples.",
+    "Chinese": "用简单的术语解释人工智能的概念。",
+    "Arabic": "اشرح مفهوم الذكاء الاصطناعي بمصطلحات بسيطة."
+}
+
+# Get responses from SUTRA-V2
+for language, prompt in multilingual_examples.items():
+    print(f"\n--- {language} Example ---")
+    print(f"Prompt: {prompt}")
+
+    response = get_model_response("sutra-v2", prompt)
+    print(f"\nResponse:\n{response}")
+    print("-" * 50)
+```
+
+### Example: Creative Writing
+
+SUTRA-V2 can also be used for creative writing tasks across different
+languages.
+
+```python
+creative_prompt = "Write a short poem about the changing seasons."
+
+print("Creative Writing Example:")
+print(f"Prompt: {creative_prompt}")
+
+response = get_model_response("sutra-v2", creative_prompt, temperature=0.7)
+print(f"\nResponse:\n{response}")
+```
+
+## SUTRA-R0: Advanced Reasoning Model
+
+SUTRA-R0 is designed for complex problem-solving and deep contextual
+understanding. It applies structured reasoning to tackle nuanced
+queries, multi-step problem-solving, and enterprise decision-making.
+
+### Key Features
+
+- Complex problem-solving
+- Logical reasoning
+- Multi-step decision processes
+- Deep contextual understanding
+- High-accuracy responses across domains
+
+### Example: Logical Reasoning
+
+Let's explore SUTRA-R0's reasoning capabilities with logical problems.
+
+```python
+reasoning_examples = [
+    "Solve the following logical puzzle: If all A are B, and some B are C, what can we conclude about A and C?",
+    "A ball and a bat cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost?",
+    "Analyze the following argument and identify any logical fallacies: 'All birds can fly. Penguins are birds. Therefore, penguins can fly.'"
+]
+
+for i, prompt in enumerate(reasoning_examples):
+    print(f"\n--- Reasoning Example {i+1} ---")
+    print(f"Prompt: {prompt}")
+
+    response = get_model_response("sutra-r0", prompt)
+    print(f"\nResponse:\n{response}")
+    print("-" * 50)
+```
+
+### Example: Step-by-Step Problem Solving
+
+SUTRA-R0 excels at breaking down complex problems into manageable steps.
+
+```python
+problem_solving_prompt = """
+Explain how to solve this physics problem step by step:
+A car accelerates from rest at a constant rate of 3 m/s². How far will it travel in 10 seconds?
+"""
+
+print("Step-by-Step Problem Solving Example:")
+print(f"Prompt: {problem_solving_prompt}")
+
+response = get_model_response("sutra-r0", problem_solving_prompt)
+print(f"\nResponse:\n{response}")
+```
+
+## SUTRA-Q0: Time-Series Large Quantitative Model
+
+SUTRA-Q0 is a time-series Large Quantitative Model (LQM) built for
+forecasting and analytical applications beyond text and chat. It's
+optimized for dynamic data patterns and enables enterprises to predict
+trends, detect anomalies, and make data-driven decisions.
+
+> Note: SUTRA-Q0 is available to SUTRA Enterprise customers.
+
+### Key Features
+
+- Time-series forecasting
+- Anomaly detection
+- Pattern recognition in data
+- Predictive analytics
+- Data-driven decision support
+
+### Example: Time-Series Analysis
+
+For enterprise users with access to SUTRA-Q0, here's an example of how
+you might use it for time-series analysis.
+
+```python
+# Note: This is a demonstration of how you might use SUTRA-Q0 if you have enterprise access
+time_series_prompt = """
+Analyze this time series data and identify trends and patterns:
+[10, 12, 15, 14, 16, 19, 22, 21, 24, 27, 26, 29, 33, 32, 35, 38]
+
+What forecast would you make for the next 5 data points?
+"""
+
+print("Time-Series Analysis Example (Enterprise Feature):")
+print(f"Prompt: {time_series_prompt}")
+
+# For demonstration purposes only - actual enterprise users would use "sutra-q0"
+response = get_model_response("sutra-v2", time_series_prompt)
+print(f"\nResponse:\n{response}")
+```
+
+### Example: Anomaly Detection
+
+Another powerful capability of SUTRA-Q0 is anomaly detection in
+datasets.
+
+```python
+# Note: This is a demonstration of how you might use SUTRA-Q0 if you have enterprise access
+anomaly_prompt = """
+Identify any anomalies in this dataset and explain your reasoning:
+[100, 102, 98, 103, 99, 101, 250, 97, 104, 100, 103, 97, 101]
+"""
+
+print("Anomaly Detection Example (Enterprise Feature):")
+print(f"Prompt: {anomaly_prompt}")
+
+# For demonstration purposes only - actual enterprise users would use "sutra-q0"
+response = get_model_response("sutra-v2", anomaly_prompt)
+print(f"\nResponse:\n{response}")
+```
+
+## Conclusion
+
+This notebook has explored the features and capabilities of different
+Sutra model variants. Each model is designed with specific strengths and
+use cases in mind:
+
+- **SUTRA-V2**: Excels in multilingual capabilities and conversational
+  AI
+- **SUTRA-R0**: Specializes in complex reasoning and problem-solving
+- **SUTRA-Q0**: Focuses on time-series analysis and quantitative tasks
+  (Enterprise)
+
+By understanding the unique capabilities of each model, you can select
+the most appropriate one for your specific use case and get the best
+results from the Sutra AI platform.
+
+For the latest information on Sutra models and their capabilities, visit
+the [official documentation](https://docs.two.ai/version-2/docs/models).

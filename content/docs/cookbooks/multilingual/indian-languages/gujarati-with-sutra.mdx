@@ -1,0 +1,277 @@
+---
+title: Using Sutra Model for Gujarati Language
+---
+
+# સુત્ર મોડેલનો ગુજરાતી ભાષા માટે ઉપયોગ
+
+<img
+  src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+  width="150"
+/>
+
+## પરિચય
+
+આ નોટબુકમાં અમે OpenAI ક્લાયન્ટ સાથે સુત્ર મોડેલનો ઉપયોગ ખાસ કરીને ગુજરાતી ભાષાના
+એપ્લિકેશન માટે કેવી રીતે કરવો તે દર્શાવીએ છીએ. સુત્ર ભારતીય ભાષાઓમાં પ્રક્રિયા
+કરવામાં અને સામગ્રી બનાવવામાં ઉત્કૃષ્ટ છે, જે ગુજરાતી ભાષાના કાર્યો માટે એક આદર્શ
+પસંદગી બનાવે છે.
+
+### તમે શું શીખશો
+
+- સુત્ર મોડેલ સાથે કામ કરવા માટે OpenAI ક્લાયન્ટ સેટ કરવું
+- ગુજરાતીમાં પ્રોમ્પ્ટ બનાવવા અને પ્રતિસાદનું અર્થઘટન કરવું
+- વિવિધ ગુજરાતી ભાષાના ઉપયોગના કેસનો અભ્યાસ
+- ગુજરાતીમાં સામગ્રી બનાવવા માટે શ્રેષ્ઠ પદ્ધતિઓ
+
+## તમારી API કી મેળવો
+
+શરૂ કરતા પહેલા, ખાતરી કરો કે તમારી પાસે:
+
+1.  SUTRA API કી ([TWO AI ના SUTRA API પેજ](https://www.two.ai/sutra/api)
+    પરથી મેળવો)
+2.  Python અને Jupyter નોટબુક્સની મૂળભૂત જાણકારી
+
+આ નોટબુક Google Colab માં ચલાવવા માટે ડિઝાઇન કરવામાં આવી છે, તેથી સ્થાનિક
+Python ઇન્સ્ટોલેશનની જરૂર નથી.
+
+## સેટઅપ
+
+પ્રથમ, જરૂરી લાઇબ્રેરી ઇન્સ્ટોલ કરો.
+
+```python
+# જરૂરી પેકેજ ઇન્સ્ટોલ કરો
+!pip install openai requests pandas matplotlib
+```
+
+### જરૂરી લાઇબ્રેરી ઇમ્પોર્ટ કરો
+
+```python
+# જરૂરી લાઇબ્રેરી ઇમ્પોર્ટ કરો
+import os
+import time
+import pandas as pd
+import matplotlib.pyplot as plt
+from openai import OpenAI
+from IPython.display import display, Markdown, HTML
+from google.colab import userdata
+```
+
+## પ્રમાણીકરણ
+
+સુત્ર API નો ઉપયોગ કરવા માટે, તમારે તમારી API કી સેટ કરવી પડશે.
+
+```python
+# જો તમે તેને કોડમાં ઉપયોગ કરવા માંગતા હો, ઉદાહરણ તરીકે:
+os.environ["SUTRA_API_KEY"] = userdata.get('SUTRA_API_KEY')
+```
+
+### સુત્ર API એન્ડપોઇન્ટ સાથે OpenAI ક્લાયન્ટ બનાવો
+
+```python
+# સુત્ર API એન્ડપોઇન્ટ સાથે OpenAI ક્લાયન્ટ બનાવો
+client = OpenAI(
+    base_url="https://api.two.ai/v2",
+    api_key=os.environ.get("SUTRA_API_KEY")
+)
+```
+
+## હેલ્પર ફંક્શન્સ
+
+ગુજરાતી ભાષાના કાર્યો માટે સુત્ર API સાથે ઇન્ટરેક્ટ કરવા માટે હેલ્પર ફંક્શન્સ બનાવો.
+
+```python
+import time
+from IPython.display import display, HTML
+
+def get_sutra_response(prompt, model="sutra-v2", temperature=0.7, max_tokens=1024):
+    """સુત્ર AI પાસેથી સરળ નોન-સ્ટ્રીમિંગ પ્રતિસાદ"""
+    try:
+        start_time = time.time()
+
+        # મૂળભૂત API કૉલ
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+
+        # પ્રતિસાદ સામગ્રી મેળવો
+        result = response.choices[0].message.content
+        time_taken = time.time() - start_time
+
+        # સરળ ડિસ્પ્લે
+        print(f"પ્રોમ્પ્ટ: {prompt}")
+        print(f"પ્રતિસાદ: {result}")
+        print(f"લાગેલો સમય: {time_taken:.2f}s")
+
+        return result, time_taken
+
+    except Exception as e:
+        error_msg = f"ભૂલ: {str(e)}"
+        print(error_msg)
+        return error_msg, 0
+
+def get_sutra_streaming_response(prompt, model="sutra-v2", temperature=0.7, max_tokens=1024):
+    """સુત્ર AI પાસેથી સરળ સ્ટ્રીમિંગ પ્રતિસાદ"""
+    try:
+        start_time = time.time()
+
+        # સ્ટ્રીમિંગ શરૂ કરો
+        stream = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens,
+            stream=True
+        )
+
+        print(f"પ્રોમ્પ્ટ: {prompt}")
+        print("પ્રતિસાદ:", end=" ")
+
+        full_response = ""
+
+        # ચંક્સ આવતા જાય તેમ પ્રિન્ટ કરો
+        for chunk in stream:
+            if chunk.choices[0].delta.content:
+                content = chunk.choices[0].delta.content
+                print(content, end="", flush=True)
+                full_response += content
+
+        time_taken = time.time() - start_time
+        print(f"\nલાગેલો સમય: {time_taken:.2f}s")
+
+        return full_response
+
+    except Exception as e:
+        error_msg = f"ભૂલ: {str(e)}"
+        print(error_msg)
+        return error_msg
+```
+
+## ૧. મૂળભૂત ગુજરાતી ભાષા નિર્માણ
+
+સુત્ર સાથે ગુજરાતી ટેક્સ્ટ બનાવવાના કેટલાક મૂળભૂત ઉદાહરણો સાથે શરૂઆત કરીએ.
+
+```python
+# સરળ ગુજરાતી ટેક્સ્ટ નિર્માણ
+gujarati_prompt = "નમસ્તે, મારું નામ રાહુલ છે. તમે કેમ છો?"
+
+response, time_taken = get_sutra_response(gujarati_prompt)
+```
+
+## ૨. ગુજરાતીમાં માહિતી પ્રાપ્તિ
+
+ગુજરાતીમાં માહિતી પ્રાપ્ત કરવા માટે સુત્રનો ઉપયોગ કરીએ.
+
+```python
+# ગુજરાતીમાં માહિતી પ્રાપ્તિ
+info_prompt = "ભારતના પાંચ મુખ્ય તહેવારો વિશે મને જણાવો અને તેમનું મહત્વ પ્રકાશિત કરો."
+
+response, time_taken = get_sutra_response(info_prompt)
+```
+
+## ૩. ગુજરાતીમાં સર્જનાત્મક લેખન
+
+સુત્ર ગુજરાતીમાં સર્જનાત્મક સામગ્રી બનાવી શકે છે.
+
+```python
+# ગુજરાતીમાં સર્જનાત્મક લેખન
+creative_prompt = "હિમાલય વિશે એક ટૂંકી કવિતા લખો."
+
+response, time_taken = get_sutra_response(creative_prompt, temperature=0.8)
+```
+
+## ૪. ગુજરાતી ટેક્સ્ટ સારાંશીકરણ
+
+સુત્ર ગુજરાતી ટેક્સ્ટનો સારાંશ બનાવી શકે છે.
+
+```python
+# સારાંશીકરણ માટે ટેક્સ્ટ
+long_text = """
+ગુજરાત એ ભારતનું એક રાજ્ય છે. તે ભારતના પશ્ચિમ ભાગમાં આવેલું છે. ગુજરાતની રાજધાની ગાંધીનગર છે, જ્યારે અમદાવાદ એ સૌથી મોટું શહેર છે. ગુજરાત એ ભારતનું પાંચમું સૌથી મોટું રાજ્ય છે. ગુજરાતની ભાષા ગુજરાતી છે. ગુજરાત એ મહાત્મા ગાંધી અને સરદાર વલ્લભભાઈ પટેલનું જન્મસ્થળ છે. ગુજરાતમાં ઘણા પ્રસિદ્ધ પર્યટન સ્થળો છે જેમ કે સોમનાથ મંદિર, દ્વારકા, ગીર રાષ્ટ્રીય ઉદ્યાન, કચ્છનું રણ, સાબરમતી આશ્રમ વગેરે. ગુજરાતમાં ઘણા ઉદ્યોગો છે. અમદાવાદ, સુરત, વડોદરા અને રાજકોટ એ ગુજરાતના મુખ્ય ઔદ્યોગિક શહેરો છે. ગુજરાત એ ભારતનું એક સમૃદ્ધ રાજ્ય છે. ગુજરાતમાં ઘણા પ્રસિદ્ધ વ્યક્તિઓ જન્મ્યા છે, જેમ કે મહાત્મા ગાંધી, સરદાર વલ્લભભાઈ પટેલ, મોરારજી દેસાઈ, નરેન્દ્ર મોદી વગેરે.
+"""
+
+summarize_prompt = f"નીચેના ટેક્સ્ટનો સારાંશ કરો: {long_text}"
+
+response, time_taken = get_sutra_response(summarize_prompt)
+```
+
+## ૫. ગુજરાતીમાં પ્રશ્ન-ઉત્તર
+
+સુત્ર ગુજરાતીમાં પ્રશ્નોના જવાબ આપી શકે છે.
+
+```python
+# પ્રશ્ન-ઉત્તર માટે સંદર્ભ
+context = """
+સરદાર વલ્લભભાઈ પટેલ (31 ઓક્ટોબર 1875 - 15 ડિસેમ્બર 1950) એ ભારતીય સ્વતંત્રતા સંગ્રામના એક અગ્રણી નેતા હતા. તેઓ ભારતના પ્રથમ ઉપ વડાપ્રધાન અને પ્રથમ ગૃહપ્રધાન હતા. તેમને "ભારતના લોખંડી પુરુષ" તરીકે ઓળખવામાં આવે છે. તેમણે ભારતના 562 રજવાડાઓનું એકીકરણ કર્યું હતું. સરદાર પટેલનો જન્મ ગુજરાતના નડિયાદ ખાતે થયો હતો. તેમણે ભારતની આઝાદી પછી દેશના એકીકરણમાં મહત્વપૂર્ણ ભૂમિકા ભજવી હતી. ગુજરાતના કેવડિયા ખાતે તેમની સ્મૃતિમાં "સ્ટેચ્યુ ઓફ યુનિટી" બનાવવામાં આવ્યું છે, જે વિશ્વની સૌથી ઊંચી પ્રતિમા છે.
+"""
+
+qa_prompt = f"સંદર્ભ: {context}\n\nપ્રશ્ન: સરદાર પટેલને કયા નામથી ઓળખવામાં આવે છે?"
+
+response, time_taken = get_sutra_response(qa_prompt)
+```
+
+## ૬. ગુજરાતી થી અંગ્રેજી અનુવાદ
+
+સુત્ર ગુજરાતીથી અંગ્રેજીમાં અનુવાદ કરી શકે છે.
+
+```python
+# ગુજરાતી થી અંગ્રેજી અનુવાદ
+gujarati_text = "કૃત્રિમ બુદ્ધિમત્તા આપણે જીવીએ છીએ અને કામ કરીએ છીએ તે રીતમાં પરિવર્તન લાવી રહી છે. તેના આરોગ્ય, શિક્ષણ, પરિવહન અને અન્ય ઘણા ક્ષેત્રોમાં ઉપયોગો છે. ટેકનોલોજી આગળ વધતી જાય છે, ત્યારે એ સુનિશ્ચિત કરવું મહત્વપૂર્ણ છે કે AI નો વિકાસ નૈતિક અને જવાબદારીપૂર્ણ રીતે થાય."
+
+translation_prompt = f"નીચેના ગુજરાતી ટેક્સ્ટનું અંગ્રેજીમાં અનુવાદ કરો: {gujarati_text}"
+
+response, time_taken = get_sutra_response(translation_prompt)
+```
+
+## ૭. અંગ્રેજી થી ગુજરાતી અનુવાદ
+
+સુત્ર અંગ્રેજીથી ગુજરાતીમાં અનુવાદ કરી શકે છે.
+
+```python
+# અંગ્રેજી થી ગુજરાતી અનુવાદ
+english_text = "Artificial intelligence is transforming the way we live and work. It has applications in healthcare, education, transportation, and many other fields. As technology advances, it's important to ensure that AI is developed ethically and responsibly."
+
+translation_prompt = f"નીચેના અંગ્રેજી ટેક્સ્ટનું ગુજરાતીમાં અનુવાદ કરો: {english_text}"
+
+response, time_taken = get_sutra_response(translation_prompt)
+```
+
+## ૮. ગુજરાતીમાં બ્લોગ પોસ્ટ બનાવવી
+
+સુત્ર ગુજરાતીમાં સંપૂર્ણ બ્લોગ પોસ્ટ બનાવી શકે છે.
+
+```python
+# ગુજરાતી બ્લોગ પોસ્ટ બનાવવી
+blog_prompt = "'ભારતીય વાનગીઓ અને આરોગ્ય પર તેની અસર' વિષય પર એક બ્લોગ પોસ્ટ લખો. શીર્ષક, પરિચય, મુખ્ય મુદ્દાઓ અને સમાપન શામેલ કરો."
+
+get_sutra_streaming_response(blog_prompt, max_tokens=1500)
+```
+
+## ૯. સમાપન
+
+આ નોટબુકમાં આપણે સુત્ર મોડેલનો ગુજરાતી ભાષા માટે ઉપયોગ કેવી રીતે કરવો તે જોયું. સુત્ર
+મોડેલ ગુજરાતી ભાષામાં વિવિધ કાર્યો કરવામાં સક્ષમ છે, જેમ કે:
+
+1.  મૂળભૂત ગુજરાતી ભાષા નિર્માણ
+2.  ગુજરાતીમાં માહિતી પ્રાપ્તિ
+3.  ગુજરાતીમાં સર્જનાત્મક લેખન
+4.  ગુજરાતી ટેક્સ્ટ સારાંશીકરણ
+5.  ગુજરાતીમાં પ્રશ્ન-ઉત્તર
+6.  ગુજરાતી-અંગ્રેજી અનુવાદ
+7.  ગુજરાતીમાં બ્લોગ પોસ્ટ બનાવવી
+
+સુત્ર મોડેલ ભારતીય ભાષાઓમાં વિશેષ ક્ષમતા દર્શાવે છે, અને ગુજરાતી ભાષા માટે તે એક
+શક્તિશાળી સાધન છે. વિવિધ એપ્લિકેશન્સ માટે સુત્ર મોડેલનો ઉપયોગ કરીને, તમે ગુજરાતી
+ભાષામાં વધુ કુદરતી અને સંદર્ભિત સામગ્રી બનાવી શકો છો.
+
+### આગળના પગલાં
+
+1.  વધુ જટિલ ગુજરાતી ભાષા કાર્યો માટે સુત્ર મોડેલનો ઉપયોગ કરો
+2.  ગુજરાતી ભાષા માટે કસ્ટમ પ્રોમ્પ્ટ ઇજનેરી તકનીકો વિકસાવો
+3.  ગુજરાતી ભાષામાં ચોક્કસ ડોમેન એપ્લિકેશન્સ માટે સુત્ર મોડેલનો ઉપયોગ કરો
+4.  ગુજરાતી ભાષા માટે સુત્ર મોડેલની ક્ષમતાઓ વધુ શોધો
+
+સુત્ર મોડેલની મદદથી ગુજરાતી ભાષામાં વધુ નવીન એપ્લિકેશન્સ વિકસાવવા માટે પ્રોત્સાહિત
+કરો!

@@ -550,7 +550,7 @@ export const contents: Content[] = [
 
 export const cookbooks: Content[] = [
   {
-    title: "Cookbooks",
+    title: "Get Started",
     Icon: () => (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -583,22 +583,304 @@ export const cookbooks: Content[] = [
       },
       {
         title: "Starter Guide",
-        href: "/docs/cookbooks/starter-guide",
+        href: "/docs/cookbooks/get-started/sutra-starter-guide",
         icon: Icons.book,
       },
       {
-        title: "SUTRA with Agno",
-        href: "/docs/cookbooks/sutra-with-agno",
+        title: "Basics of Sutra Streaming",
+        href: "/docs/cookbooks/get-started/basics-of-sutra-streaming",
         icon: Icons.book,
       },
       {
-        title: "SUTRA with LangChain",
-        href: "/docs/cookbooks/sutra-with-langchain",
+        title: "Exploring Sutra Models",
+        href: "/docs/cookbooks/get-started/exploring-sutra-models",
+        icon: Icons.book,
+      },
+      {
+        title: "Structured Output with Sutra",
+        href: "/docs/cookbooks/get-started/structured-output-with-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "Reasoning Quickstart",
+        href: "/docs/cookbooks/get-started/sutra-reasoning-quickstart",
+        icon: Icons.book,
+      },
+      {
+        title: "Prompting Guide",
+        href: "/docs/cookbooks/get-started/sutra-prompting-guide",
+        icon: Icons.book,
+      },
+    ],
+  },
+  {
+    title: "Agents",
+    Icon: () => (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.4em"
+        height="1.4em"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill="currentColor"
+          d="M2 6.95c0-.883 0-1.324.07-1.692A4 4 0 0 1 5.257 2.07C5.626 2 6.068 2 6.95 2c.386 0 .58 0 .766.017a4 4 0 0 1 2.18.904c.144.119.28.255.554.529L11 4c.816.816 1.224 1.224 1.712 1.495a4 4 0 0 0 .848.352C14.098 6 14.675 6 15.828 6h.374c2.632 0 3.949 0 4.804.77q.119.105.224.224c.77.855.77 2.172.77 4.804V14c0 3.771 0 5.657-1.172 6.828S17.771 22 14 22h-4c-3.771 0-5.657 0-6.828-1.172S2 17.771 2 14z"
+          opacity=".5"
+        ></path>
+        <path
+          fill="currentColor"
+          d="M20 6.238c0-.298-.005-.475-.025-.63a3 3 0 0 0-2.583-2.582C17.197 3 16.965 3 16.5 3H9.988c.116.104.247.234.462.45L11 4c.816.816 1.224 1.224 1.712 1.495a4 4 0 0 0 .849.352C14.098 6 14.675 6 15.829 6h.373c1.78 0 2.957 0 3.798.238"
+        ></path>
+        <path
+          fill="currentColor"
+          fillRule="evenodd"
+          d="M12.25 10a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75"
+          clipRule="evenodd"
+        ></path>
+      </svg>
+    ),
+    list: [
+      {
+        title: "Overview",
+        href: "/docs/cookbooks/agents",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with AGNO",
+        href: "/docs/cookbooks/agents/agno",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with PydanticAI",
+        href: "/docs/cookbooks/agents/pydanticai",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with OpenAI",
+        href: "/docs/cookbooks/agents/openai_agent_sdk",
+        icon: Icons.book,
+      },
+    ],
+  },
+  {
+    title: "Integrations",
+    Icon: () => (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.4em"
+        height="1.4em"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill="currentColor"
+          d="M2 6.95c0-.883 0-1.324.07-1.692A4 4 0 0 1 5.257 2.07C5.626 2 6.068 2 6.95 2c.386 0 .58 0 .766.017a4 4 0 0 1 2.18.904c.144.119.28.255.554.529L11 4c.816.816 1.224 1.224 1.712 1.495a4 4 0 0 0 .848.352C14.098 6 14.675 6 15.828 6h.374c2.632 0 3.949 0 4.804.77q.119.105.224.224c.77.855.77 2.172.77 4.804V14c0 3.771 0 5.657-1.172 6.828S17.771 22 14 22h-4c-3.771 0-5.657 0-6.828-1.172S2 17.771 2 14z"
+          opacity=".5"
+        ></path>
+        <path
+          fill="currentColor"
+          d="M20 6.238c0-.298-.005-.475-.025-.63a3 3 0 0 0-2.583-2.582C17.197 3 16.965 3 16.5 3H9.988c.116.104.247.234.462.45L11 4c.816.816 1.224 1.224 1.712 1.495a4 4 0 0 0 .849.352C14.098 6 14.675 6 15.829 6h.373c1.78 0 2.957 0 3.798.238"
+        ></path>
+        <path
+          fill="currentColor"
+          fillRule="evenodd"
+          d="M12.25 10a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75"
+          clipRule="evenodd"
+        ></path>
+      </svg>
+    ),
+    list: [
+      {
+        title: "Overview",
+        href: "/docs/cookbooks/integrations",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with Portkey",
+        href: "/docs/cookbooks/integrations/sutra-with-portkey",
         icon: Icons.book,
       },
       {
         title: "SUTRA with LlamaIndex",
-        href: "/docs/cookbooks/sutra-with-llamaindex",
+        href: "/docs/cookbooks/integrations/sutra-with-llamaindex",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with LangChain",
+        href: "/docs/cookbooks/integrations/sutra-with-langchain",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with Agno",
+        href: "/docs/cookbooks/integrations/sutra-with-agno",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with PydanticAI",
+        href: "/docs/cookbooks/integrations/sutra-with-litellm",
+        icon: Icons.book,
+      },
+    ],
+  },
+  {
+    title: "Examples",
+    Icon: () => (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.4em"
+        height="1.4em"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill="currentColor"
+          d="M2 6.95c0-.883 0-1.324.07-1.692A4 4 0 0 1 5.257 2.07C5.626 2 6.068 2 6.95 2c.386 0 .58 0 .766.017a4 4 0 0 1 2.18.904c.144.119.28.255.554.529L11 4c.816.816 1.224 1.224 1.712 1.495a4 4 0 0 0 .848.352C14.098 6 14.675 6 15.828 6h.374c2.632 0 3.949 0 4.804.77q.119.105.224.224c.77.855.77 2.172.77 4.804V14c0 3.771 0 5.657-1.172 6.828S17.771 22 14 22h-4c-3.771 0-5.657 0-6.828-1.172S2 17.771 2 14z"
+          opacity=".5"
+        ></path>
+        <path
+          fill="currentColor"
+          d="M20 6.238c0-.298-.005-.475-.025-.63a3 3 0 0 0-2.583-2.582C17.197 3 16.965 3 16.5 3H9.988c.116.104.247.234.462.45L11 4c.816.816 1.224 1.224 1.712 1.495a4 4 0 0 0 .849.352C14.098 6 14.675 6 15.829 6h.373c1.78 0 2.957 0 3.798.238"
+        ></path>
+        <path
+          fill="currentColor"
+          fillRule="evenodd"
+          d="M12.25 10a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75"
+          clipRule="evenodd"
+        ></path>
+      </svg>
+    ),
+    list: [
+      {
+        title: "Overview",
+        href: "/docs/cookbooks",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with OpenAI",
+        href: "/docs/cookbooks/examples/sutra-vs-openai-models",
+        icon: Icons.book,
+      },
+    ],
+  },
+  {
+    title: "RAG",
+    Icon: () => (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.4em"
+        height="1.4em"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill="currentColor"
+          d="M2 6.95c0-.883 0-1.324.07-1.692A4 4 0 0 1 5.257 2.07C5.626 2 6.068 2 6.95 2c.386 0 .58 0 .766.017a4 4 0 0 1 2.18.904c.144.119.28.255.554.529L11 4c.816.816 1.224 1.224 1.712 1.495a4 4 0 0 0 .848.352C14.098 6 14.675 6 15.828 6h.374c2.632 0 3.949 0 4.804.77q.119.105.224.224c.77.855.77 2.172.77 4.804V14c0 3.771 0 5.657-1.172 6.828S17.771 22 14 22h-4c-3.771 0-5.657 0-6.828-1.172S2 17.771 2 14z"
+          opacity=".5"
+        ></path>
+        <path
+          fill="currentColor"
+          d="M20 6.238c0-.298-.005-.475-.025-.63a3 3 0 0 0-2.583-2.582C17.197 3 16.965 3 16.5 3H9.988c.116.104.247.234.462.45L11 4c.816.816 1.224 1.224 1.712 1.495a4 4 0 0 0 .849.352C14.098 6 14.675 6 15.829 6h.373c1.78 0 2.957 0 3.798.238"
+        ></path>
+        <path
+          fill="currentColor"
+          fillRule="evenodd"
+          d="M12.25 10a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75"
+          clipRule="evenodd"
+        ></path>
+      </svg>
+    ),
+    list: [
+      {
+        title: "Overview",
+        href: "/docs/cookbooks",
+        icon: Icons.book,
+      },
+      {
+        title: "Chat with PDF using Pinecone",
+        href: "/docs/cookbooks/rag/chat-with-pdf-using-pinecone",
+        icon: Icons.book,
+      },
+      {
+        title: "Multilingual Chat with PDF",
+        href: "/docs/cookbooks/rag/multilingual-chat-with-pdf",
+        icon: Icons.book,
+      },
+    ],
+  },
+  {
+    title: "Multilingual",
+    Icon: () => (
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="1.4em"
+        height="1.4em"
+        viewBox="0 0 24 24"
+      >
+        <path
+          fill="currentColor"
+          d="M2 6.95c0-.883 0-1.324.07-1.692A4 4 0 0 1 5.257 2.07C5.626 2 6.068 2 6.95 2c.386 0 .58 0 .766.017a4 4 0 0 1 2.18.904c.144.119.28.255.554.529L11 4c.816.816 1.224 1.224 1.712 1.495a4 4 0 0 0 .848.352C14.098 6 14.675 6 15.828 6h.374c2.632 0 3.949 0 4.804.77q.119.105.224.224c.77.855.77 2.172.77 4.804V14c0 3.771 0 5.657-1.172 6.828S17.771 22 14 22h-4c-3.771 0-5.657 0-6.828-1.172S2 17.771 2 14z"
+          opacity=".5"
+        ></path>
+        <path
+          fill="currentColor"
+          d="M20 6.238c0-.298-.005-.475-.025-.63a3 3 0 0 0-2.583-2.582C17.197 3 16.965 3 16.5 3H9.988c.116.104.247.234.462.45L11 4c.816.816 1.224 1.224 1.712 1.495a4 4 0 0 0 .849.352C14.098 6 14.675 6 15.829 6h.373c1.78 0 2.957 0 3.798.238"
+        ></path>
+        <path
+          fill="currentColor"
+          fillRule="evenodd"
+          d="M12.25 10a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75"
+          clipRule="evenodd"
+        ></path>
+      </svg>
+    ),
+    list: [
+      {
+        title: "Overview",
+        href: "/docs/cookbooks",
+        icon: Icons.book,
+      },
+      {
+        group: true,
+        title: "Indian Languages",
+        href: "/docs/multilingual/indian-languages",
+        icon: Icons.book,
+      },
+      {
+        title: "Gujarati with SUTRA",
+        href: "/docs/cookbooks/multilingual/indian-languages/gujarati-with-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "Telugu with SUTRA",
+        href: "/docs/cookbooks/multilingual/indian-languages/telugu-with-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "Hindi with SUTRA",
+        href: "/docs/cookbooks/multilingual/indian-languages/hindi-with-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "Marathi with SUTRA",
+        href: "/docs/cookbooks/multilingual/indian-languages/marathi-with-sutra",
+        icon: Icons.book,
+      },
+      {
+        group: true,
+        title: "Foreign Languages",
+        href: "/docs/multilingual/foreign-languages",
+        icon: Icons.book,
+      },
+      {
+        title: "English with SUTRA",
+        href: "/docs/cookbooks/multilingual/foreign-languages/english-with-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "Korean with SUTRA",
+        href: "/docs/cookbooks/multilingual/foreign-languages/korean-with-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "French with SUTRA",
+        href: "/docs/cookbooks/multilingual/foreign-languages/french-with-sutra",
         icon: Icons.book,
       },
     ],
