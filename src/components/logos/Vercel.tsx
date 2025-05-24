@@ -16,7 +16,7 @@ export default function Vercel(props: SVGProps<SVGSVGElement>) {
       <path
         d="M24 22.525H0l12 -21.05 12 21.05z"
         fill="currentColor"
-        stroke-width="1"
+        strokeWidth={1}
       ></path>
     </svg>
   );

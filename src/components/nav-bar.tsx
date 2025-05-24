@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { ThemeToggle } from "@/components/theme-toggler";
-import { NavbarMobile, NavbarMobileBtn } from "./nav-mobile";
-import { NavLink } from "./nav-link";
-import { Logo } from "./logo";
+import Link from "next/link";
+import { Logo2, Wordmark } from "./logo";
 import LogoContextMenu from "./logo-context-menu";
+import { NavLink } from "./nav-link";
+import { NavbarMobile, NavbarMobileBtn } from "./nav-mobile";
 export const Navbar = () => {
   const logoAssets = {
     darkSvg: `
@@ -54,14 +54,15 @@ export const Navbar = () => {
       <nav className="md:grid grid-cols-12 md:border-b top-0 flex items-center justify-between ">
         <Link
           href="/"
-          className="md:border-r md:px-5 px-2.5 py-4 text-foreground md:col-span-2 shrink-0 transition-colors md:w-[268px] lg:w-[286px]"
+          className="md:border-r md:px-5 px-2.5 md:py-3 py-4 text-foreground md:col-span-2 shrink-0 transition-colors md:w-[280px]"
         >
           <div className="flex flex-col gap-2 w-full">
             <LogoContextMenu
               logo={
                 <div className="flex items-center gap-2">
-                  <Logo />
-                  <p className="select-none font-semibold text-lg">SUTRA</p>
+                  {/* <Logo /> */}
+                  <Logo2 height={30} width={30} />
+                  <Wordmark height={20} width={80} />
                 </div>
               }
             />

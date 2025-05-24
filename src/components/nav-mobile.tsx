@@ -1,16 +1,16 @@
 "use client";
-import { ChevronRight, Menu } from "lucide-react";
-import Link from "next/link";
-import { Fragment, createContext, useContext, useState } from "react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { contents, cookbooks } from "./sidebar-content";
-import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { ChevronRight, Menu } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { Fragment, createContext, useContext, useState } from "react";
+import { contents, cookbooks } from "./sidebar-content";
 
 interface NavbarMobileContextProps {
   isOpen: boolean;
@@ -211,10 +211,10 @@ export const navMenu: {
   },
   {
     name: "cookbooks",
-    path: "/cookbooks",
+    path: "/docs/cookbooks",
   },
   {
-    name: "community",
-    path: "/community",
+    name: "api reference",
+    path: "/docs/api-reference",
   },
 ];
