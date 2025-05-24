@@ -1,6 +1,6 @@
 import { ThemeToggle } from "@/components/theme-toggler";
 import Link from "next/link";
-import { Logo } from "./logo";
+import { Logo2, Wordmark } from "./logo";
 import LogoContextMenu from "./logo-context-menu";
 import { NavLink } from "./nav-link";
 import { NavbarMobile, NavbarMobileBtn } from "./nav-mobile";
@@ -60,8 +60,9 @@ export const Navbar = () => {
             <LogoContextMenu
               logo={
                 <div className="flex items-center gap-2">
-                  <Logo />
-                  <p className="select-none font-semibold text-lg">SUTRA</p>
+                  {/* <Logo /> */}
+                  <Logo2 height={30} width={30} />
+                  <Wordmark height={20} width={80} />
                 </div>
               }
             />
