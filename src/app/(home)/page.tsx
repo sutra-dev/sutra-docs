@@ -1,6 +1,6 @@
 import Section from "@/components/landing/section";
 import Hero from "@/components/landing/hero";
-import Features from "@/components/features";
+import Features from "@/components/landing/features";
 import Link from "next/link";
 
 async function getGitHubStars() {
