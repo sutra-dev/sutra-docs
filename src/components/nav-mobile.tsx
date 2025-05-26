@@ -162,7 +162,7 @@ function DocsNavBarContent() {
               </div>
             </AccordionTrigger>
             <AccordionContent className="pl-5 divide-y">
-              {menu.list.map((child) => (
+              {menu?.list?.map((child) => (
                 <Link
                   href={child.href}
                   key={child.title}

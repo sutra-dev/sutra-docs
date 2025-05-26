@@ -96,7 +96,7 @@ export function ResourceCardWithTwoLinks({
                 href={link.href}
                 key={link.href}
                 target={link.href.includes("http") ? "_blank" : "_self"}
-                className="text-sm w-full text-center p-3 hover:bg-muted/80 transition-colors"
+                className="text-sm w-full text-center p-3 hover:bg-muted/80 transition-colors no-underline"
               >
                 {link.label}
               </Link>
