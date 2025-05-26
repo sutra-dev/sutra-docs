@@ -1,0 +1,160 @@
+---
+title: SUTRA with PydanticAI
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img
+    src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+    width="130"
+  />
+  <img
+    src="https://images.lumacdn.com/cdn-cgi/image/format=auto,fit=cover,dpr=2,background=white,quality=75,width=400,height=400/event-covers/7b/af750bca-5957-41ca-9c6f-c47553f4ff2d.png"
+    width="130"
+  />
+</div>
+
+## SUTRA by TWO Platforms
+
+      SUTRA is a family of large multi-lingual language (LMLMs) models pioneered
+      by Two Platforms. SUTRA’s dual-transformer approach extends the power of
+      both MoE and Dense AI language model architectures, delivering
+      cost-efficient multilingual capabilities for over 50+ languages. It powers
+      scalable AI applications for conversation, search, and advanced reasoning,
+      ensuring high-performance across diverse languages, domains and
+      applications.
+
+## PydanticAI
+
+      PydanticAI is a Python agent framework designed to make it less painful to
+      build production grade applications with Generative AI.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
+
+## SUTRA using PydanticAI
+
+### Install Requirements
+
+```python
+# Install required packages
+!pip install "pydantic-ai-slim[openai]" --quiet
+```
+
+### Setup API Keys 🔑
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+```
+
+### Initialize Sutra Model via **PydanticAI**
+
+```python
+import os
+import nest_asyncio
+import asyncio
+from pydantic_ai import Agent
+from pydantic_ai.models.openai import OpenAIModel
+from pydantic_ai.providers.openai import OpenAIProvider
+
+# Required for running async in Colab
+nest_asyncio.apply()
+
+# ⚙️ Model Configuration
+sutra_provider = OpenAIProvider(
+    base_url="https://api.two.ai/v2",
+    api_key=os.environ["SUTRA_API_KEY"]
+)
+
+sutra_v2 = OpenAIModel("sutra-v2", provider=sutra_provider)
+sutra_r0 = OpenAIModel("sutra-r0", provider=sutra_provider)
+
+v2_agent = Agent(sutra_v2)
+r0_agent = Agent(sutra_r0)
+```
+
+### Multilingual Content Generation
+
+```python
+async def run_content_generation():
+    print("🌐 Multilingual Content Generation\n")
+    examples = {
+        "Hindi": "Write a short story about a robot in Hindi",
+        "Tamil": "Write a motivational speech for students in Tamil",
+        "Japanese": "Write a haiku about spring in Japanese",
+        "Arabic": "Write a children's story in Arabic",
+        "French": "Write a paragraph about climate change in French"
+    }
+    for lang, prompt in examples.items():
+        result = await v2_agent.run(prompt)
+        print(f"\n[{lang}]\n{result.output}\n")
+
+await run_content_generation()
+```
+
+### Multilingual Translation
+
+```python
+async def run_translation():
+    print("🌐 Multilingual Translation\n")
+    phrases = [
+        "Knowledge is power",
+        "The world is beautiful",
+        "Unity in diversity"
+    ]
+    target_languages = ["Telugu", "Spanish", "Russian", "Chinese", "Swahili"]
+
+    for phrase, lang in zip(phrases, target_languages):
+        prompt = f"Translate this to {lang}: '{phrase}'"
+        result = await v2_agent.run(prompt)
+        print(f"\nTo {lang}:\n{result.output}")
+
+await run_translation()
+```
+
+### Reasoning Capabilities
+
+```python
+async def run_reasoning():
+    print("🧠 Logical and Mathematical Reasoning\n")
+
+    # Logical reasoning in Greek
+    logic_prompt = """
+    Premise 1: All birds can fly.
+    Premise 2: Penguins are birds.
+    Conclusion: Penguins can fly.
+    Is this argument valid? Explain in Greek.
+    """
+    result = await r0_agent.run(logic_prompt)
+    print(f"\n[Logical Reasoning in Greek]\n{result.output}")
+
+    # Math reasoning in German
+    math_prompt = "Solve step by step and explain in German: If 3x + 6 = 21, what is x?"
+    result = await r0_agent.run(math_prompt)
+    print(f"\n[Math Reasoning in German]\n{result.output}")
+
+await run_reasoning()
+```
+
+### Code Generation in Multilingual Explanation
+
+```python
+async def run_code_gen():
+    print("💻 Code Generation with Explanation in Polish\n")
+    prompt = "Write a Python function to check for prime number and explain in Polish"
+    result = await v2_agent.run(prompt)
+    print(result.output)
+
+await run_code_gen()
+```

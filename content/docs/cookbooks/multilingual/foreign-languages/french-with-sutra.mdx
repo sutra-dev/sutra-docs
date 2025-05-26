@@ -1,0 +1,316 @@
+---
+title: Using Sutra Model for French Language
+---
+
+# Utilisation du modèle Sutra pour la langue **française** avec le client OpenAI
+
+<img
+  src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+  width="150"
+/>
+
+## Introduction
+
+Dans ce notebook, nous démontrons comment utiliser le modèle Sutra avec
+le client OpenAI spécifiquement pour des applications en langue
+**française**. Sutra excelle dans le traitement et la génération de
+contenu en langues indiennes, ce qui en fait un choix idéal pour les
+tâches en langue **française**.
+
+### Ce que vous allez apprendre
+
+- Configurer le client OpenAI pour fonctionner avec le modèle Sutra
+- Créer des invites en **français** et comprendre les réponses
+- Explorer divers cas d'utilisation de la langue **française**
+- Bonnes pratiques pour générer du contenu en **français**
+
+## Obtenez vos clés API
+
+Avant de commencer, assurez-vous d'avoir :
+
+1.  Une clé API SUTRA (Obtenez la vôtre sur la [page API SUTRA de TWO
+    AI](https://www.two.ai/sutra/api))
+2.  Une connaissance de base de Python et des notebooks Jupyter
+
+Ce notebook est conçu pour fonctionner dans Google Colab, donc aucune
+installation locale de Python n'est requise.
+
+## Configuration
+
+Tout d'abord, installez les bibliothèques requises.
+
+```python
+# Installer les packages requis
+
+!pip install openai requests pandas matplotlib
+```
+
+### Importer les bibliothèques requises
+
+```python
+# Importer les bibliothèques requises
+
+import os
+import time
+import pandas as pd
+import matplotlib.pyplot as plt
+from openai import OpenAI
+from IPython.display import display, Markdown, HTML
+from google.colab import userdata
+```
+
+## Authentification
+
+Pour utiliser l'API Sutra, vous devez définir votre clé API.
+
+```python
+# Si vous souhaitez l'utiliser dans le code, par exemple :
+os.environ["SUTRA_API_KEY"] = userdata.get('SUTRA_API_KEY')
+```
+
+### Créer un client OpenAI avec le point de terminaison de l'API Sutra
+
+```python
+# Créer un client OpenAI avec le point de terminaison de l'API Sutra
+client = OpenAI(
+base_url="https://api.two.ai/v2",
+api_key=os.environ.get("SUTRA_API_KEY")
+)
+```
+
+## Fonctions utilitaires
+
+Créer des fonctions utilitaires pour interagir avec l'API Sutra pour les
+tâches en langue **française**.
+
+```python
+def get_sutra_response(prompt, model="sutra-v2", temperature=0.7, max_tokens=1024):
+    """
+    Obtenir une réponse de Sutra pour l'invite donnée.
+
+    Args:
+        prompt (str): L'invite ou la question de l'utilisateur
+        model (str): Modèle Sutra à utiliser
+        temperature (float): Contrôle l'aléa (0 à 1)
+        max_tokens (int): Nombre maximal de tokens à générer
+
+    Returns:
+        str: Réponse du modèle
+        float: Temps pris pour obtenir la réponse
+    """
+    start_time = time.time()
+
+    try:
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            temperature=temperature
+        )
+
+        end_time = time.time()
+        result = response.choices[0].message.content
+        time_taken = end_time - start_time
+
+        # Afficher le résultat sans styles
+        display(HTML(f"<h4>Invite :</h4><p>{prompt}</p>"))
+        display(HTML(f"<h4>Réponse :</h4><p>{result}</p>"))
+        display(HTML(f"<p><b>Temps :</b> {time_taken:.2f} secondes</p>"))
+        display(HTML("<hr>"))
+
+        return result, time_taken
+
+    except Exception as e:
+        end_time = time.time()
+        return f"Erreur : {str(e)}", end_time - start_time
+
+
+def get_sutra_streaming_response(prompt, model="sutra-v2", temperature=0.7, max_tokens=1024):
+    """
+    Obtenir une réponse en streaming de Sutra pour l'invite donnée.
+
+    Args:
+        prompt (str): L'invite ou la question de l'utilisateur
+        model (str): Modèle Sutra à utiliser
+        temperature (float): Contrôle l'aléa (0 à 1)
+        max_tokens (int): Nombre maximal de tokens à générer
+
+    Returns:
+        str: Réponse complète du modèle
+    """
+    try:
+        stream = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            temperature=temperature,
+            stream=True
+        )
+
+        # Afficher l'invite sans styles
+        display(HTML(f"<h4>Invite :</h4><p>{prompt}</p>"))
+        display(HTML(f"<h4>Réponse :</h4>"))
+
+        full_response = ""
+        for chunk in stream:
+            if chunk.choices[0].delta.content is not None:
+                content = chunk.choices[0].delta.content
+                full_response += content
+                print(content, end="")
+        print("\n")
+        display(HTML("<hr>"))
+
+        return full_response
+
+    except Exception as e:
+        return f"Erreur : {str(e)}"
+```
+
+## 1. Génération de texte de base en **français**
+
+Commençons par quelques exemples de génération de texte en **français**
+avec Sutra.
+
+```python
+# Génération simple de texte en français
+francais_prompt = "Bonjour, je m'appelle Rahul. Comment ça va ?"
+
+response, time_taken = get_sutra_response(francais_prompt)
+```
+
+## 2. Recherche d'information en **français**
+
+Utilisons Sutra pour récupérer des informations en **français**.
+
+```python
+# Recherche d'information en français
+info_prompt = "Parlez-moi des cinq principaux festivals de l'Inde et mettez en évidence leur signification."
+
+response, time_taken = get_sutra_response(info_prompt)
+```
+
+## 3. Écriture créative en **français**
+
+Sutra peut générer du contenu créatif en **français**.
+
+```python
+# Écriture créative en français
+creative_prompt = "Écrivez un court poème sur l'Himalaya."
+
+response, time_taken = get_sutra_response(creative_prompt, temperature=0.8)
+```
+
+## 4. Résumé en **français**
+
+Sutra peut résumer efficacement un texte en **français**.
+
+```python
+# Texte à résumer
+long_text = """
+L'histoire de l'indépendance de l'Inde est longue et complexe. La domination britannique en Inde a commencé en 1757 après la bataille de Plassey, lorsque la East India Company a défait le Nawab du Bengale, Siraj-ud-Daula. Par la suite, la compagnie a progressivement étendu son influence, et en 1858, l'Inde est passée directement sous la couronne britannique.
+
+La rébellion de 1857, également connue sous le nom de Première guerre d'indépendance, fut la première grande révolte contre la domination britannique. Bien que cette rébellion ait échoué, elle a éveillé la conscience nationale chez les Indiens.
+
+Avec la formation du Congrès national indien en 1885, le mouvement pour l'indépendance est devenu plus organisé. Sous la direction de Mahatma Gandhi, des demandes d'indépendance ont été formulées par la résistance non violente et le Satyagraha.
+
+En 1942, le 'Quit India Movement' a été lancé, forçant les Britanniques à quitter l'Inde. Après la Seconde Guerre mondiale, la condition économique de la Grande-Bretagne s'est affaiblie, et finalement, l'Inde a obtenu son indépendance le 15 août 1947, bien que le pays ait été partitionné en Inde et Pakistan.
+"""
+
+summarize_prompt = f"Résumez le texte suivant en moins de 100 mots :\n\n{long_text}"
+
+summary, time_taken = get_sutra_response(summarize_prompt, temperature=0.3)
+```
+
+## 5. Réponse à des questions en **français**
+
+Utilisons Sutra pour répondre à des questions en **français**.
+
+```python
+# Contexte pour la réponse aux questions
+context = """
+La Constitution de l'Inde est la constitution écrite la plus longue du monde. Elle a été adoptée le 26 novembre 1949 et est entrée en vigueur le 26 janvier 1950. Dr. B. R. Ambedkar est considéré comme le principal architecte de la Constitution indienne. La constitution originale comptait 395 articles, 22 parties et 8 annexes. Actuellement, elle contient 448 articles, 25 parties et 12 annexes. Les mots 'Socialiste', 'Laïque' et 'Intégrité' ont été ajoutés au préambule par le 42e amendement (1976).
+"""
+
+qa_prompt = f"Répondez aux questions suivantes en vous basant sur les informations fournies :\n\n{context}\n\nQuestion 1 : Quand la Constitution indienne est-elle entrée en vigueur ?\nQuestion 2 : Qui était le principal architecte de la Constitution indienne ?\nQuestion 3 : Quels mots ont été ajoutés au préambule par le 42e amendement ?"
+
+answers, time_taken = get_sutra_response(qa_prompt, temperature=0.2)
+```
+
+## 6. Traduction **français**-**anglais**
+
+Sutra peut traduire efficacement entre **français** et **anglais**.
+
+```python
+# Traduction français vers anglais
+french_text = "La France est un pays riche en histoire, culture et art. Paris, sa capitale, est connue pour ses monuments emblématiques comme la Tour Eiffel et le Louvre."
+
+translate_fr_to_en_prompt = f"Translate the following French text into English:\n\n{french_text}"
+
+translation_en, time_taken = get_sutra_response(translate_fr_to_en_prompt)
+```
+
+```python
+# Traduction anglais vers français
+english_text = "Artificial intelligence is transforming the way we live and work. It has applications in healthcare, education, transportation, and many other fields. As technology advances, it's important to ensure that AI is developed ethically and responsibly."
+
+translate_en_to_fr_prompt = f"Translate the following English text into French:\n\n{english_text}"
+
+translation_fr, time_taken = get_sutra_response(translate_en_to_fr_prompt)
+```
+
+## 7. Analyse de sentiment en **français**
+
+Utilisons Sutra pour effectuer une analyse de sentiment sur un texte en
+**français**.
+
+```python
+# Analyse de sentiment en français
+reviews = [
+"Ce film était très bon. L'histoire était captivante et le jeu d'acteur excellent.",
+"La nourriture n'était pas du tout savoureuse et le service était très mauvais.",
+"Le produit est correct, mais le prix est un peu élevé.",
+"J'ai aimé ce livre, l'auteur a très bien expliqué le sujet.",
+"Le voyage était décevant, l'hôtel était sale et le personnel pas sympathique."
+]
+
+sentiment_prompt = "Effectuer une analyse de sentiment sur les critiques suivantes en français et classer chaque critique comme 'Positif', 'Négatif' ou 'Neutre' :\n\n"
+
+for i, review in enumerate(reviews):
+    sentiment_prompt += f"{i+1}. {review}\n"
+
+sentiment_analysis, time_taken = get_sutra_response(sentiment_prompt, temperature=0.1)
+```
+
+## 8. Génération de contenu en **français** pour divers formats
+
+Sutra peut générer du contenu en **français** pour divers formats.
+
+```python
+# Générer un article de blog en français
+blog_prompt = "Rédigez un article de blog sur le sujet 'La cuisine indienne et son impact sur la santé'. Incluez un titre, une introduction, les points principaux et une conclusion."
+
+blog_post = get_sutra_streaming_response(blog_prompt, temperature=0.7)
+```
+
+## 9. Conclusion
+
+Dans ce notebook, nous avons exploré l'utilisation du modèle Sutra avec
+le client OpenAI pour les applications en **français**. Nous avons
+couvert divers cas d'utilisation, notamment :
+
+- Génération de texte de base en français
+- Récupération d'informations en français
+- Écriture créative en français
+- Résumé de texte en français
+- Réponse aux questions en français
+- Traduction français-hindi
+- Analyse de sentiment en français
+- Génération de contenu en français pour divers formats
+- Changement de code en français
+- Compréhension du contexte culturel français
+- Génération de sorties structurées en français
+
+Les capacités impressionnantes de Sutra en français et dans d'autres
+langues indiennes en font un excellent choix pour les applications
+ciblant les utilisateurs francophones ou nécessitant un traitement en
+français.

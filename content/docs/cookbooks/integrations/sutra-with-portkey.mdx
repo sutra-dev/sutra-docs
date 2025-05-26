@@ -1,0 +1,237 @@
+---
+title: SUTRA x Portkey - The Gateway Cookbook
+---
+
+<div className="flex gap-2">
+  <img
+    src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+    width="150"
+/>
+
+<img
+  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRX8V9wZZ69LrmJjm8VmbSw_2FnBbUOtXDAAQ&s"
+    width="150"
+  />
+</div>
+
+This notebook provides a simple, easy-to-follow guide for using Sutra-v2
+models with Portkey's AI Gateway. We'll focus on the basics to get you
+up and running quickly.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    Page](https://app.portkey.ai/api-keys))
+2.  A Portkey API Key (Get yours at [PORTKEY API
+    Page](https://www.two.ai/sutra/api))
+3.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
+
+## 1. Install Required Packages
+
+First, let's install the Portkey and OpenAI packages:
+
+```python
+!pip install -q portkey-ai openai
+```
+
+## 2. Set Up Your API Keys
+
+You'll need both a Sutra API key and a Portkey API key. For security,
+we'll use environment variables:
+
+```python
+import os
+from google.colab import userdata
+
+# Set your API keys
+sutra_api_key = userdata.get('SUTRA_API_KEY')
+portkey_api_key = userdata.get('PORTKEY_API_KEY')
+```
+
+## 3. Initialize Portkey with Sutra-v2
+
+Now we'll set up Portkey to work with Sutra-v2 models:
+
+```python
+from portkey_ai import Portkey
+
+
+# Initialize Portkey client with Sutra as the provider
+client = Portkey(
+    api_key=portkey_api_key,
+    provider="custom",  # Using custom provider for Sutra
+    base_url="https://api.two.ai/v2",  # Sutra API endpoint
+    Authorization=sutra_api_key  # Sutra API key
+)
+
+print("Portkey client initialized with Sutra-v2!")
+```
+
+```python
+# Make a request through your AI Gateway
+response = client.chat.completions.create(
+    messages=[{"role": "user", "content": "Who is founder of sutra?"}],
+    model="sutra-v2"
+)
+response.choices[0].message.content
+```
+
+## 4. Create a Simple Helper Function
+
+Let's create a simple function to generate text using Sutra-v2 models
+through Portkey:
+
+```python
+def ask_sutra(prompt, model="sutra-v2", temperature=0.7, max_tokens=500):
+    """Simple function to get responses from Sutra-v2 via Portkey"""
+    response = client.chat.completions.create(
+        model=model,
+        messages=[
+            {"role": "user", "content": prompt}
+        ],
+        temperature=temperature,
+        max_tokens=max_tokens
+    )
+    return response.choices[0].message.content
+```
+
+## 5. Try a Simple Example
+
+Let's test our setup with a basic prompt:
+
+```python
+# Test with a simple prompt
+simple_prompt = "Explain the importance of AI in modern healthcare in India."
+response = ask_sutra(simple_prompt)
+print(response)
+```
+
+## 6. Try Multilingual Capabilities
+
+Sutra-v2 excels at Indian languages. Let's test it with a Hindi prompt:
+
+```python
+# Hindi prompt
+hindi_prompt = "भारत में कृत्रिम बुद्धिमत्ता (AI) के महत्व के बारे में बताएं।"
+hindi_response = ask_sutra(hindi_prompt)
+print(hindi_response)
+```
+
+## 7. Creative Writing Example
+
+Let's try a creative writing prompt:
+
+```python
+# Creative writing prompt
+creative_prompt = "Write a short poem about the beauty of the Himalayas."
+creative_response = ask_sutra(creative_prompt)
+print(creative_response)
+```
+
+## 8. Using Basic Portkey Features
+
+Let's try a simple Portkey feature - automatic retries for reliability:
+
+```python
+# Configure retries
+retry_config = {
+    "retry": {
+        "attempts": 3,  # Retry up to 3 times
+        "initial_delay": 1  # Start with a 1-second delay
+    }
+}
+
+# Create a client with retry configuration
+retry_client = client.with_options(config=retry_config)
+
+# Function to use the retry-enabled client
+def ask_with_retry(prompt, model="sutra-v2"):
+    response = retry_client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=500
+    )
+    return response.choices[0].message.content
+```
+
+### Test with a prompt
+
+```python
+# Test with a prompt
+retry_prompt = "What are the major festivals celebrated in different regions of India?"
+retry_response = ask_with_retry(retry_prompt)
+print(retry_response)
+```
+
+## 9. Simple Caching for Better Performance
+
+Let's implement basic caching to improve response times for repeated
+queries:
+
+```python
+# Configure simple caching
+cache_config = {
+    "cache": {
+        "enabled": True,  # Enable caching
+        "ttl": 3600  # Cache for 1 hour (in seconds)
+    }
+}
+
+# Create a client with caching
+cached_client = client.with_options(config=cache_config)
+
+# Function to demonstrate caching
+def test_simple_caching(prompt):
+    import time
+
+    print("First request (cache miss):")
+    start_time = time.time()
+    response1 = cached_client.chat.completions.create(
+        model="sutra-v2",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=500
+    )
+    time1 = time.time() - start_time
+    print(f"Time taken: {time1:.2f} seconds")
+    print(f"Response: {response1.choices[0].message.content[:150]}...\n")
+
+    print("Second request with same prompt (cache hit):")
+    start_time = time.time()
+    response2 = cached_client.chat.completions.create(
+        model="sutra-v2",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=500
+    )
+    time2 = time.time() - start_time
+    print(f"Time taken: {time2:.2f} seconds")
+    print(f"Response: {response2.choices[0].message.content[:150]}...")
+
+    if time2 < time1:
+        print(f"\nCaching improved response time by {time1/time2:.1f}x!")
+```
+
+### Test caching
+
+```python
+# Test caching
+cache_prompt = "Explain the concept of artificial intelligence to a 10-year-old child."
+test_simple_caching(cache_prompt)
+```
+
+## 10. Conclusion
+
+In this simple guide, you've learned how to:
+
+1.  Set up Portkey with Sutra-v2 models
+2.  Create a simple helper function for generating text
+3.  Test Sutra-v2's capabilities with different types of prompts
+4.  Use basic Portkey features like retries and caching
+
+This integration gives you the best of both worlds: Sutra-v2's powerful
+language capabilities (especially for Indian languages) and Portkey's
+reliability features.

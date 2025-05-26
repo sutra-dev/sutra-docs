@@ -1,27 +1,39 @@
 ---
-title: SUTRA with LlamaIndex
+title: SUTRA with LlamaIndex 🦙
 ---
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1IzEMvNDPmPa8OWYLUn2Y_7XA-xq1UUKX?usp=sharing)
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  &#10;
+  <img
+    src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+    width="130"
+  />
+  <img
+    src="https://registry.npmmirror.com/@lobehub/icons-static-png/1.45.0/files/light/langchain.png"
+    width="120"
+  />
+</div>
 
-## SUTRA by TWO Platforms
+# SUTRA by TWO Platforms
 
 SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
 
-# LlamaIndex 🦙
+## LlamaIndex 🦙
 
 LlamaIndex is the leading framework for building LLM-powered agents over your data with LLMs and workflows.
 
-#SUTRA With LlamaIndex 🦙
+## SUTRA With LlamaIndex 🦙
 
-## Get Your API Keys
+### Get Your API Keys
 
 Before you begin, make sure you have:
 
-1. A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
-2. Basic familiarity with Python and Jupyter notebooks
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
 
-This notebook is designed to run in Google Colab, so no local Python installation is required.
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
 
 ### Install Requirements
 
@@ -40,16 +52,16 @@ os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
 os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
 ```
 
-### Initialize SUTRA Model via LlamaIndex 🦙:
+### Initialize Sutra Model via LlamaIndex 🦙
 
 ```python
 import os
 from llama_index.llms.openai_like import OpenAILike
 
-# Initialize SUTRA as an OpenAI-compatible LLM
+# Initialize Sutra as an OpenAI-compatible LLM
 llm = OpenAILike(
     model="sutra-v2",                             # Model name
-    api_base="https://api.two.ai/v2",            # SUTRA API base
+    api_base="https://api.two.ai/v2",            # Sutra API base
     api_key=os.getenv("SUTRA_API_KEY"),          # API Key from environment
     is_chat_model=True                           # Set True for chat-based models
 )
@@ -59,22 +71,16 @@ response = llm.complete("Give me 3 tips to stay productive while working from ho
 print(response.text)
 ```
 
-    1. **Establish a Dedicated Workspace**: Create a specific area in your home that is designated for work. This helps to mentally separate work from personal life, reducing distractions and improving focus. Ensure this space is comfortable, well-lit, and equipped with all necessary tools.
-
-    2. **Set a Structured Schedule**: Develop a daily routine that includes set working hours, breaks, and time for meals. Stick to this schedule as closely as possible to maintain a sense of normalcy and discipline. Use tools like calendars or task management apps to plan your day effectively.
-
-    3. **Limit Distractions**: Identify common distractions in your home environment and take steps to minimize them. This could involve turning off notifications on your phone, using noise-canceling headphones, or setting boundaries with family members during work hours. Consider techniques like the Pomodoro Technique to maintain focus and productivity.
-
 ### Multilingual capabilities using LlamaIndex 🦙
 
 ```python
 from llama_index.llms.openai_like import OpenAILike
 
-# Initialize SUTRA LLM with necessary parameters
+# Initialize Sutra LLM with necessary parameters
 llm = OpenAILike(
-    model="sutra-v2",                    # SUTRA model name
-    api_base="https://api.two.ai/v2",    # SUTRA API base URL
-    api_key=os.getenv("SUTRA_API_KEY"),  # SUTRA API key
+    model="sutra-v2",                    # Sutra model name
+    api_base="https://api.two.ai/v2",    # Sutra API base URL
+    api_key=os.getenv("SUTRA_API_KEY"),  # Sutra API key
     is_chat_model=True,                  # Mandatory: Set to True for chat-based models
 )
 
@@ -102,11 +108,11 @@ from llama_index.llms.openai_like import OpenAILike
 from llama_index.core.llms import ChatMessage
 
 
-# Initialize the SUTRA model via LlamaIndex
+# Initialize the Sutra model via LlamaIndex
 llm = OpenAILike(
-    model="sutra-v2",                    # SUTRA model name
-    api_base="https://api.two.ai/v2",    # SUTRA API base URL
-    api_key=os.getenv("SUTRA_API_KEY"),  # SUTRA API key
+    model="sutra-v2",                    # Sutra model name
+    api_base="https://api.two.ai/v2",    # Sutra API base URL
+    api_key=os.getenv("SUTRA_API_KEY"),  # Sutra API key
     is_chat_model=True,                  # Mandatory for chat-based models
 )
 
@@ -125,7 +131,7 @@ while True:
     # Add user message to chat history
     chat_history.append(ChatMessage(role="user", content=user_input))
 
-    # Get response from SUTRA via LlamaIndex
+    # Get response from Sutra via LlamaIndex
     response = llm.chat(chat_history)
 
     # Print response content
@@ -135,14 +141,7 @@ while True:
     chat_history.append(response.message)
 ```
 
-    Chatbot: Hello! Type 'exit' to end the conversation.
-
-    You: hi
-    Chatbot: Hello! How can I assist you today?
-    You: exit
-    Chatbot: Goodbye! 👋
-
-### LlamaIndex 🦙 with the SUTRA model for Document Querying
+### LlamaIndex 🦙 with the Sutra model for Document Querying
 
 ```python
 import os
@@ -183,7 +182,7 @@ index = VectorStoreIndex.from_documents(
     storage_context=storage_context,
 )
 
-# 5. Set up SUTRA LLM
+# 5. Set up Sutra LLM
 sutra_llm = OpenAILike(
     model="sutra-v2",
     api_base="https://api.two.ai/v2",
@@ -191,7 +190,7 @@ sutra_llm = OpenAILike(
     is_chat_model=True,
 )
 
-# 6. Query the index using the SUTRA LLM
+# 6. Query the index using the Sutra LLM
 query_engine = index.as_query_engine(llm=sutra_llm)
 response = query_engine.query("SUTRA कितनी भाषाओं का समर्थन करता है?")
 
@@ -199,9 +198,7 @@ response = query_engine.query("SUTRA कितनी भाषाओं का �
 print("उत्तर:", response.response)
 ```
 
-    उत्तर: SUTRA 50+ से अधिक भाषाओं का समर्थन करता है।
-
-###Multilingual Chat with SUTRA LLM
+### Multilingual Chat with Sutra LLM
 
 ```python
 # Step 1: Import dependencies
@@ -210,7 +207,7 @@ from IPython.display import display
 from llama_index.llms.openai_like import OpenAILike
 from llama_index.core.chat_engine import SimpleChatEngine
 
-# Step 2: Set up SUTRA LLM
+# Step 2: Set up Sutra LLM
 sutra_llm = OpenAILike(
     api_base="https://api.two.ai/v2",
     api_key=os.getenv("SUTRA_API_KEY"),
@@ -277,10 +274,10 @@ def on_send_click(b):
     messages.append(f"User: {user_text}")
     chat_log.value = '\n'.join(messages)
 
-    # Create prompt for SUTRA LLM
+    # Create prompt for Sutra LLM
     full_prompt = f"Please respond only in {language}. User: {user_text}\nAssistant:"
 
-    # Get response from SUTRA LLM
+    # Get response from Sutra LLM
     response = chat_engine.chat(full_prompt)
     assistant_reply = response.response.strip()
 

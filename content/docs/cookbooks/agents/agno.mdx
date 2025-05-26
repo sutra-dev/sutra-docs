@@ -1,0 +1,215 @@
+---
+title: SUTRA with AGNO
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img
+    src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+    width="120"
+  />
+  <img
+    src="https://images.crunchbase.com/image/upload/c_pad,f_auto,q_auto:eco,dpr_1/fc52752016ff487da8e4686a2b7fcb6d"
+    width="120"
+  />
+</div>
+
+## SUTRA by TWO Platforms
+
+      SUTRA is a family of large multi-lingual language (LMLMs) models pioneered
+      by Two Platforms. SUTRA’s dual-transformer approach extends the power of
+      both MoE and Dense AI language model architectures, delivering
+      cost-efficient multilingual capabilities for over 50+ languages. It powers
+      scalable AI applications for conversation, search, and advanced reasoning,
+      ensuring high-performance across diverse languages, domains and
+      applications.
+
+## What is Agno?
+
+Agno is a lightweight library for building agents with memory,
+knowledge, tools, and reasoning capabilities. It's model-agnostic,
+allowing you to connect to 23+ model providers without lock-in.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
+
+## Setup and Installation
+
+First, let's install the required packages:
+
+```python
+!pip install openai agno duckduckgo-search
+```
+
+## Setting up Environment Variables
+
+You'll need to set up your API keys. For security reasons, it's best to
+use environment variables:
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+os.environ["TAVILY_API_KEY"] = userdata.get("TAVILY_API_KEY")
+os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
+```
+
+## Basic Usage of SUTRA with OpenAI Client
+
+Let's first see how to use SUTRA with the standard OpenAI client:
+
+```python
+from openai import OpenAI
+
+# Initialize the client with Sutra's API endpoint
+client = OpenAI(
+    base_url='https://api.two.ai/v2',
+    api_key=os.environ["SUTRA_API_KEY"]
+)
+
+# Simple completion with Sutra
+response = client.chat.completions.create(
+    model="sutra-v2",  # Use Sutra model
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant that specializes in Indian languages and culture."},
+        {"role": "user", "content": "Tell me about the importance of the Ganga river in Indian culture."}
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+## Multilingual Capabilities of SUTRA
+
+One of Sutra's strengths is its multilingual capabilities. Let's test it
+with Hindi:
+
+```python
+# Hindi example
+response = client.chat.completions.create(
+    model="sutra-v2",
+    messages=[
+        {"role": "system", "content": "आप एक सहायक AI हैं जो हिंदी में उत्तर देती है।"},
+        {"role": "user", "content": "भारतीय संस्कृति में गंगा नदी का क्या महत्व है?"}
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+## Integrating SUTRA with Agno Agent
+
+Now, let's integrate Sutra with Agno to create an intelligent agent.
+We'll create a custom OpenAI model class for Agno that uses Sutra:
+
+```python
+from agno.agent import Agent
+from agno.models.openai.like import OpenAILike
+
+# Initialize the Agent with Sutra model via OpenAILike wrapper
+agent = Agent(
+    model=OpenAILike(
+        id="sutra-v2",
+        api_key=os.getenv("SUTRA_API_KEY"),
+        base_url="https://api.two.ai/v2"
+    ),
+    markdown=True
+)
+
+# Create a basic Sutra agent
+sutra_agent = Agent(
+    description="You are a helpful assistant that specializes in Indian languages and culture.",
+    markdown=True
+)
+
+# Test the agent
+sutra_agent.print_response("Tell me about the history of yoga in India.", stream=True)
+```
+
+## Adding Tools to the SUTRA Agent
+
+Let's enhance our Sutra agent by adding tools, such as web search
+capabilities:
+
+```python
+from agno.tools.duckduckgo import DuckDuckGoTools
+
+# Create a Sutra agent with web search capability
+sutra_agent_with_tools = Agent(
+    description="You are a helpful assistant that specializes in Indian languages, culture, and current events.",
+    tools=[DuckDuckGoTools()],
+    show_tool_calls=True,
+    markdown=True
+)
+
+# Test the agent with a query that might require web search
+sutra_agent_with_tools.print_response("What are the recent developments in India's space program in hindi?", stream=True)
+```
+
+## Creating a Multilingual SUTRA Agent with Reasoning
+
+Now, let's create a more advanced SUTRA agent that can handle multiple
+languages and has reasoning capabilities:
+
+```python
+from agno.tools.reasoning import ReasoningTools
+
+# Create a multilingual Sutra agent with reasoning capabilities
+multilingual_sutra_agent = Agent(
+    description="You are a multilingual assistant that can communicate in various Indian languages and has strong reasoning abilities.",
+    tools=[
+        ReasoningTools(add_instructions=True),
+        DuckDuckGoTools()
+    ],
+    instructions=[
+        "You can respond in the language used by the user.",
+        "Use reasoning to analyze complex questions before answering.",
+        "If needed, search the web for current information."
+    ],
+    show_tool_calls=True,
+    markdown=True
+)
+
+# Test with a complex reasoning task in English
+multilingual_sutra_agent.print_response(
+    "Analyze the impact of climate change on agricultural practices in India. What adaptations are farmers making?",
+    stream=True,
+    show_full_reasoning=True
+)
+```
+
+```python
+# Test with a Hindi query
+multilingual_sutra_agent.print_response(
+    "भारत में जलवायु परिवर्तन का कृषि पर क्या प्रभाव पड़ रहा है? किसान कैसे अनुकूलन कर रहे हैं?",
+    stream=True,
+    show_full_reasoning=True
+)
+```
+
+## Conclusion
+
+In this notebook, we've demonstrated how to use the Sutra model with the
+OpenAI client and integrate it with Agno to create intelligent agents.
+We've explored:
+
+1.  Basic usage of Sutra with the OpenAI client
+2.  Multilingual capabilities of SUTRA
+3.  Creating a simple Sutra agent with Agno
+4.  Adding tools like web search to the SUTRA agent
+5.  Building a multilingual SUTRA agent with reasoning capabilities
+
+Sutra's strong multilingual capabilities, especially for Indian
+languages, combined with Agno's flexible agent framework, provide a
+powerful platform for building intelligent applications that can
+understand and respond in multiple languages and leverage various tools
+and knowledge sources.

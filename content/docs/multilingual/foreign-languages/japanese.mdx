@@ -1,0 +1,60 @@
+---
+title: SUTRA-V2 Japanese Notebook
+---
+
+このノートブックでは、**SUTRA-V2**を使用して**日本語**で多言語AIアプリケーションを作成する方法を説明します。TWO AIが開発したSUTRA-V2は、日本語を含む50以上の言語をサポートし、OpenAI互換APIを通じてチャットおよび指示タスクを実行します。
+
+## 🔧 前提条件 (Prerequisites)
+
+- [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api)からSUTRA APIキーを取得してください。
+- APIキーを安全に保管してください（例：Google Colabのシークレットまたは環境変数として）。
+
+## 📦 ステップ1：依存関係のインストール (Install Dependencies)
+
+```bash
+!pip install -qU openai
+```
+
+## 🔐 ステップ2：SUTRAクライアントの初期化 (Initialize SUTRA Client)
+
+```python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="your-api-key-here",  # SUTRA APIキー
+    base_url="https://api.two.ai/v1"  # SUTRA APIエンドポイント
+)
+```
+
+## 💬 ステップ3：日本語での会話 (Japanese Conversation)
+
+```python
+response = client.chat.completions.create(
+    model="sutra-v2",
+    messages=[
+        {"role": "system", "content": "あなたは親切で知識豊富なアシスタントです。"},
+        {"role": "user", "content": "こんにちは！日本の歴史について教えてください。"}
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+## 🌟 主な機能
+
+- 日本語での自然な会話
+- 高度な文脈理解
+- 複雑な質問への対応
+- 文化的に適切な応答
+
+## 📝 注意事項
+
+- 応答の品質を確保するため、明確で具体的なプロンプトを使用してください。
+- センシティブな情報の取り扱いには注意してください。
+- APIの利用制限に注意してください。
+
+## 🔗 参考リンク
+
+- [SUTRA公式ドキュメント](https://docs.two.ai)
+- [APIリファレンス](https://docs.two.ai/reference)
+- [サンプルコード](https://github.com/sutra-dev/sutra-cookbook)

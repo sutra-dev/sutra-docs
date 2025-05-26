@@ -1,0 +1,223 @@
+---
+title: Getting Structured Output from SUTRA
+---
+
+<img
+  src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+  width="150"
+/>
+
+## Introduction
+
+This notebook demonstrates techniques for getting consistent, structured
+responses from SUTRA, making it easier to integrate the model's outputs
+into your applications.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
+
+## Setup
+
+Install necessary packages and set up the environment.
+
+```python
+# Install required packages
+!pip install -qU openai
+```
+
+### Import necessary libraries
+
+```python
+# Import necessary libraries
+import os
+import json
+import re
+from openai import OpenAI
+from google.colab import userdata
+from IPython.display import Markdown, display
+from pprint import pprint
+
+print('Setup complete.')
+```
+
+### Authentication
+
+Set up authentication using Colab secrets.
+
+```python
+# Get API key from Colab secrets
+api_key = userdata.get("SUTRA_API_KEY")
+```
+
+### Initialize the client with SUTRA's API endpoint
+
+```python
+# Initialize the client
+client = OpenAI(
+        base_url='https://api.two.ai/v2',
+        api_key=api_key
+    )
+print("OpenAI client initialized successfully.")
+```
+
+### Helper Function
+
+A helper function to make API calls and display results.
+
+```python
+def get_sutra_response(prompt, temperature=0.2, max_tokens=1024):
+    """Get a response from SUTRA with the given prompt."""
+    if not api_key:
+        return 'API key not configured.'
+    try:
+        response = client.chat.completions.create(
+            model='sutra-v2',
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=max_tokens,
+            temperature=temperature
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        return f'Error calling API: {e}'
+
+def display_response(prompt, temperature=0.2):
+    """Display the prompt and response."""
+    response = get_sutra_response(prompt, temperature)
+    print("📝 Prompt:")
+    print(prompt)
+    print("\n🤖 Response:")
+    print(response)
+    print("\n" + "-" * 80)
+    return response
+```
+
+## 1. Getting JSON Output
+
+Ask SUTRA to generate a JSON object.
+
+```python
+json_prompt = """
+Generate a JSON object for a product with the fields: id, name, price, and category.
+Respond with ONLY a valid JSON object, no explanation, no markdown, no comments.
+"""
+
+json_response = display_response(json_prompt)
+
+# Verify JSON
+try:
+    parsed_json = json.loads(json_response)
+    print("✅ Valid JSON!")
+    pprint(parsed_json)
+except json.JSONDecodeError as e:
+    print(f"❌ Invalid JSON: {e}")
+```
+
+## 2. Generating Tabular Data (Markdown)
+
+Ask SUTRA to format data as a markdown table.
+
+```python
+table_prompt = """
+Generate a markdown table of 3 major planets with columns: Planet, Diameter (km), Moons.
+"""
+
+table_response = display_response(table_prompt)
+
+# Display rendered markdown table
+display(Markdown(table_response))
+```
+
+## 3. Structured Lists
+
+Generate a structured list, like a nested outline.
+
+```python
+list_prompt = """
+Generate a nested markdown list outlining the steps to bake a cake (2 main steps, 2-3 sub-steps each).
+"""
+
+list_response = display_response(list_prompt)
+
+# Display rendered markdown list
+display(Markdown(list_response))
+```
+
+## 4. Structured Extraction from Text
+
+Extract specific information from text into a structured format (JSON).
+
+```python
+extraction_prompt = """
+Extract the following details from the text into a JSON object:
+
+Text: "The Apollo 11 mission launched on July 16, 1969, from Kennedy Space Center."
+
+Required JSON keys:
+- mission_name
+- launch_date
+- launch_location
+
+Respond with only a valid JSON object, without any explanation, formatting, or markdown. Do not include code blocks.
+"""
+
+
+extraction_response = display_response(extraction_prompt)
+
+# Verify JSON
+try:
+    parsed_json = json.loads(extraction_response)
+    print("✅ Valid JSON!")
+    pprint(parsed_json)
+except json.JSONDecodeError as e:
+    print(f"❌ Invalid JSON: {e}")
+```
+
+## 5. Few-Shot Prompting for Structure
+
+Provide examples within the prompt to guide the model towards the
+desired structure.
+
+```python
+few_shot_prompt = """
+Extract city and country from the text into JSON.
+
+Example 1:
+Text: "Paris is the capital of France."
+Output: {"city": "Paris", "country": "France"}
+
+Example 2:
+Text: "Tokyo is a major city in Japan."
+Output: {"city": "Tokyo", "country": "Japan"}
+
+Now, process this text:
+Text: "Berlin is located in Germany."
+Output:
+"""
+
+few_shot_response = display_response(few_shot_prompt)
+
+# Verify JSON
+try:
+    # The response might just be the JSON string without explanation
+    parsed_json = json.loads(few_shot_response.strip())
+    print("✅ Valid JSON!")
+    pprint(parsed_json)
+except json.JSONDecodeError as e:
+    print(f"❌ Invalid JSON: {e}")
+```
+
+## Conclusion & Best Practices
+
+- Be explicit about the desired format.
+- Use examples (few-shot prompting).
+- Use delimiters (like `json ...`).
+- Use a lower temperature (e.g., 0.1-0.3) for consistency.
+- Validate the output in your code.

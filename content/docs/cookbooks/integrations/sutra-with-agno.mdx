@@ -1,43 +1,54 @@
 ---
-title: SUTRA with AGNO
+title: SUTRA with Agno
 ---
 
-<div className="flex items-center gap-4">
-  <img src="/sutra.png" width="120" alt="SUTRA Logo" />
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  &#10;
+  <img
+    src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+    width="120"
+  />
   <img
     src="https://images.crunchbase.com/image/upload/c_pad,f_auto,q_auto:eco,dpr_1/fc52752016ff487da8e4686a2b7fcb6d"
     width="120"
-    alt="AGNO Logo"
   />
 </div>
 
-# SUTRA with AGNO: Building Intelligent Agents
+## SUTRA by TWO Platforms
 
-<div>
-  <h2>SUTRA by TWO Platforms</h2>
-  <p>SUTRA is a family of large multi-lingual language models (LMLMs) pioneered by Two Platforms. SUTRA's dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.</p>
+SUTRA is a family of larges multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
 
-  <h2>Agno</h2>
-  <p>Agno is a developer-friendly framework to build intelligent agents with memory, tools, and reasoning. It simplifies creating multimodal, agentic workflows with built-in FastAPI routes, chat UI, and performance monitoring.</p>
-</div>
+## Agno
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1UCgEFAbydLXMFm1t4R3dwtBRDN0Npmg-)
+Agno is a developer-friendly framework to build intelligent agents with memory, tools, and reasoning. It simplifies creating multimodal, agentic workflows with built-in FastAPI routes, chat UI, and performance monitoring.
+
+<a
+  href="https://colab.research.google.com/drive/1YfiFkNW35VPdfsDJwUYgCSrP3BoCFxnp?usp=sharing"
+  target="_parent"
+>
+  <img
+    src="https://colab.research.google.com/assets/colab-badge.svg"
+    alt="Open In Colab"
+  />
+</a>
 
 ## Get Your API Keys
 
 Before you begin, make sure you have:
 
-1. A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
-2. Basic familiarity with Python and Jupyter notebooks
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
 
-This guide is designed to run in Google Colab, so no local Python installation is required.
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
 
-## SUTRA using Agno
+## Sutra using Agno
 
 ### Install Requirements
 
 ```python
-!pip install -qU openai agno tavily-python pypdf lancedb
+!pip install -qU openai agno tavily-python duckduckgo-search
 ```
 
 ### Setup API Keys
@@ -52,14 +63,14 @@ os.environ["TAVILY_API_KEY"] = userdata.get("TAVILY_API_KEY")
 os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
 ```
 
-## Initialize Agent with SUTRA Model
+### Initialize Agent with Sutra Model:
 
 ```python
 import os
 from agno.agent import Agent
 from agno.models.openai.like import OpenAILike
 
-# Initialize the Agent with SUTRA model via OpenAILike wrapper
+# Initialize the Agent with Sutra model via OpenAILike wrapper
 agent = Agent(
     model=OpenAILike(
         id="sutra-v2",
@@ -70,7 +81,7 @@ agent = Agent(
 )
 ```
 
-### Send Message to Agent and Get Response
+### Send Message to Agent and Get Response:
 
 ```python
 # Send the message to the agent and get the response
@@ -80,7 +91,7 @@ response = agent.run("Who are you?")
 print(response.content)
 ```
 
-### Define Multilingual Prompts
+### Define Multilingual Prompts:
 
 ```python
 from agno.agent import Agent
@@ -104,7 +115,7 @@ prompts = [
 ]
 ```
 
-### Process Prompts and Print Responses
+### Process Prompts and Print Responses:
 
 ```python
 for prompt in prompts:
@@ -112,7 +123,7 @@ for prompt in prompts:
     print(f"\n📝 Prompt: {prompt}\n📘 Response: {response.content}\n")
 ```
 
-### Initialize SUTRA Model and Start Chatbot Interaction
+### Initialize Sutra Model and Start Chatbot Interaction
 
 ```python
 from agno.agent import Agent
@@ -139,7 +150,7 @@ while True:
     print("Bot:", response.content)
 ```
 
-### Initialize Agent with SUTRA Model and Tavily Tool
+### Initialize Agent with Sutra Model and Tavily Tool
 
 ```python
 import os
@@ -147,7 +158,7 @@ from agno.agent import Agent
 from agno.models.openai.like import OpenAILike
 from agno.tools.tavily import TavilyTools
 
-# Initialize the agent with SUTRA model and Tavily tool
+# Initialize the agent with Sutra model and Tavily tool
 agent = Agent(
     model=OpenAILike(
         id="sutra-v2",
@@ -169,7 +180,7 @@ response = agent.run("About SUTRA by TWO AI")
 print(response.content)
 ```
 
-### Agentic RAG with LanceDB using SUTRA LLM in Agno Framework
+### Agentic RAG with LanceDB using Sutra LLM in Agno Framework
 
 ```python
 import os
@@ -193,7 +204,7 @@ knowledge_base = PDFUrlKnowledgeBase(
 # Step 2: Load knowledge base (Run only once; comment in later runs)
 knowledge_base.load()
 
-# Step 3: Define the Agent using SUTRA (OpenAI-compatible via OpenAILike)
+# Step 3: Define the Agent using Sutra (OpenAI-compatible via OpenAILike)
 agent = Agent(
     model=OpenAILike(
         id="sutra-v2",
@@ -252,4 +263,27 @@ agent.print_response(
     "Suggest thriller movies with IMDb rating above 8. I enjoyed Parasite, The Dark Knight, and Inception.",
     stream=True
 )
+```
+
+### Latest News Summarizer
+
+```python
+from agno.agent import Agent
+from agno.models.openai.like import OpenAILike
+from agno.tools.duckduckgo import DuckDuckGoTools
+
+agent = Agent(
+    model=OpenAILike(
+        id="sutra-v2",
+        api_key=os.getenv("SUTRA_API_KEY"),
+        base_url="https://api.two.ai/v2"
+
+    ),
+    description="You are an assistant that provides up-to-date news summaries.",
+    tools=[DuckDuckGoTools()],
+    show_tool_calls=True,
+    markdown=True
+)
+
+agent.print_response("Summarize the latest developments in renewable energy.", stream=True)
 ```

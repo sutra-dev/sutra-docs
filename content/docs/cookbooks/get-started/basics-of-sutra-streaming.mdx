@@ -1,0 +1,321 @@
+---
+title: Basics of SUTRA Streaming with OpenAI Client
+---
+
+<img
+  src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+  width="120"
+/>
+
+## Introduction
+
+This beginner-friendly notebook shows you how to use Sutra's streaming
+feature with the OpenAI client. Streaming lets you see responses as
+they're being generated (word by word), instead of waiting for the
+complete response.
+
+### Why Use Streaming?
+
+- **Feels faster**: Users see text appearing immediately
+- **More interactive**: Creates a more natural conversation experience
+- **Better for long responses**: Users can start reading while the rest
+  is being generated
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
+
+## Setup
+
+Install necessary packages and set up the environment.
+
+```python
+# Install the OpenAI library
+!pip install -q openai
+```
+
+### Import necessary libraries
+
+```python
+# Import necessary libraries
+import os
+import json
+import re
+from openai import OpenAI
+from google.colab import userdata
+```
+
+### Authentication
+
+Set up authentication using Colab secrets.
+
+```python
+# Get API key from Colab secrets
+api_key = userdata.get("SUTRA_API_KEY")
+```
+
+### Initialize the client with SUTRA's API endpoint
+
+```python
+# Initialize the client
+client = OpenAI(
+        base_url='https://api.two.ai/v2',
+        api_key=api_key
+    )
+```
+
+## 2. Basic Streaming - Your First Example
+
+Let's create a simple function to stream responses from Sutra.
+
+```python
+def stream_response(prompt):
+    print("Streaming response...")
+
+    stream = client.chat.completions.create(
+        model="sutra-v2",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.7,
+        max_tokens=500,
+        stream=True
+    )
+
+    full_response = ""
+    for chunk in stream:
+        if chunk.choices[0].delta.content:
+            content = chunk.choices[0].delta.content
+            full_response += content
+            print(content, end="", flush=True)
+
+    print("\n\n--- Done! ---")
+    return full_response
+```
+
+### Now let's try it with a simple question:
+
+```python
+# Try our streaming function with a simple prompt
+prompt = "Explain what artificial intelligence is to a 10-year old."
+response = stream_response(prompt)
+```
+
+## 3. Having a Conversation
+
+Now let's try having a back-and-forth conversation with streaming
+responses.
+
+```python
+def chat_with_streaming(messages):
+    """Have a conversation with streaming responses"""
+    print("Streaming response...")
+
+    stream = client.chat.completions.create(
+        model="sutra-v2",
+        messages=messages,  # Pass the entire conversation history
+        temperature=0.7,
+        max_tokens=500,
+        stream=True
+    )
+
+    full_response = ""
+    for chunk in stream:
+        if chunk.choices[0].delta.content is not None:
+            content = chunk.choices[0].delta.content
+            full_response += content
+            print(content, end="", flush=True)
+
+    print("\n\n--- Done! ---")
+    return full_response
+```
+
+```python
+# Start a conversation
+conversation = [
+    {"role": "user", "content": "Tell me about some popular Indian street foods."}
+]
+
+# First message
+print("You: Tell me about some popular Indian street foods.")
+print("\nSutra: ", end="")
+response = chat_with_streaming(conversation)
+
+# Add the response to our conversation history
+conversation.append({"role": "assistant", "content": response})
+
+# Second message - follow up question
+conversation.append({"role": "user", "content": "Which one of these is your favorite and why?"})
+
+print("\nYou: Which one of these is your favorite and why?")
+print("\nSutra: ", end="")
+response = chat_with_streaming(conversation)
+```
+
+## 4. Simple Word Counter
+
+Let's create a simple example that counts words as they're being
+generated.
+
+```python
+def simple_stream_with_word_count(prompt):
+    """Stream response and display word count"""
+    print("Streaming response...")
+
+    stream = client.chat.completions.create(
+        model="sutra-v2",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.7,
+        max_tokens=500,
+        stream=True
+    )
+
+    full_response = ""
+
+    for chunk in stream:
+        if chunk.choices[0].delta.content is not None:
+            content = chunk.choices[0].delta.content
+            full_response += content
+            print(content, end="", flush=True)
+
+    words = full_response.split()
+    print(f"\n\n[Total words: {len(words)}]")
+    print("--- Done! ---")
+    return full_response
+```
+
+### Try the word counter
+
+```python
+# Try the word counter
+prompt = "Write a short paragraph about the importance of clean water."
+response = simple_stream_with_word_count(prompt)
+```
+
+## 5. Handling Errors
+
+Let's create a simple function that handles errors when streaming.
+
+```python
+def safe_stream(prompt):
+    """Stream response with simple fallback on error"""
+    try:
+        print("Streaming response...")
+        stream = client.chat.completions.create(
+            model="sutra-v2",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.7,
+            max_tokens=500,
+            stream=True
+        )
+
+        full_response = ""
+        for chunk in stream:
+            if chunk.choices[0].delta.content:
+                content = chunk.choices[0].delta.content
+                full_response += content
+                print(content, end="", flush=True)
+
+        print("\n\n--- Done! ---")
+        return full_response
+
+    except:
+        print("\nError during streaming. Falling back...")
+        try:
+            response = client.chat.completions.create(
+                model="sutra-v2",
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0.7,
+                max_tokens=500
+            )
+            result = response.choices[0].message.content
+            print(result)
+            print("\n--- Done (fallback) ---")
+            return result
+        except:
+            return "Sorry, something went wrong. Please try again."
+```
+
+### Try our error-handling function
+
+```python
+# Try our error-handling function
+prompt = "What is Transformer Architecture form in simple terms."
+response = safe_stream(prompt)
+```
+
+## 6. Practical Example: Interactive Story
+
+Let's create a simple interactive story generator that you can try out.
+
+```python
+def interactive_story():
+    """Simple interactive story generator"""
+    print("=== Interactive Story Generator ===\n")
+    print("Create a short story with your input.")
+    print("You can guide the direction after each paragraph.\n")
+
+    # Ask for the initial story idea
+    story_idea = input("What should the story be about? ")
+
+    # Initialize the conversation
+    conversation = [
+        {"role": "system", "content": "You are a creative storyteller. Write vivid and engaging stories one paragraph at a time."},
+        {"role": "user", "content": f"Write the first paragraph of a short story about {story_idea}. Keep it to 3–5 sentences."}
+    ]
+
+    # Generate the story in 3 parts
+    for i in range(3):
+        print(f"\n--- Paragraph {i + 1} ---\n")
+
+        # Generate and display the paragraph
+        response = chat_with_streaming(conversation)
+        conversation.append({"role": "assistant", "content": response})
+
+        # Ask for user input to guide the next part
+        if i < 2:
+            direction = input("\nWhat should happen next? ")
+            conversation.append({
+                "role": "user",
+                "content": f"Continue the story with this idea: {direction}. Keep it to one paragraph (3–5 sentences)."
+            })
+
+    print("\n=== Story Complete! ===")
+    return "Story complete!"
+```
+
+# interactive story generator
+
+```python
+interactive_story()
+```
+
+```json
+{ "type": "string" }
+```
+
+## 7. Conclusion
+
+Congratulations! You've learned the basics of using Sutra's streaming
+capabilities with the OpenAI client. Here's what we covered:
+
+1.  **Basic setup** - How to connect to Sutra using the OpenAI client
+2.  **Simple streaming** - Getting responses word by word
+3.  **Conversations** - Having back-and-forth chats with streaming
+4.  **Word counting** - A simple example of processing streamed content
+5.  **Error handling** - Making your code more robust
+6.  **Interactive stories** - A fun application of streaming
+
+Happy coding!
+
+## 8. Additional Resources
+
+- [Follow SUTRA on X (Twitter)](https://x.com/sutra_dev)
+
+For more examples, check out other notebooks in the Sutra Cookbooks
+repository.

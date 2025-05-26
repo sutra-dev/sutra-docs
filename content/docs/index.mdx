@@ -1,77 +1,92 @@
 ---
-title: Introduction
-description: Introduction to Better Auth.
+title: Introduction to SUTRA
 ---
 
-# Get Started with SUTRA™
+SUTRA, developed by TWO AI, is a family of multilingual large language models (LLMs) designed for developers, data scientists, and enterprises. Its dual-transformer architecture, combining Mixture of Experts (MoE) and dense transformer layers, delivers high performance across over 50 languages, enabling efficient, context-aware AI solutions for prototyping and production.
 
-**SUTRA™** is a family of multilingual large language models (LMLMs) developed by **TWO AI**.It is built with a powerful **dual-transformer architecture** that combines **Mixture of Experts (MoE)** and **dense transformer layers**, enabling highly efficient performance across more than **50 global and regional languages**.
+## Optimized For
 
-SUTRA is designed to serve developers, data scientists, and enterprise teams looking for advanced language intelligence that scales—from **rapid prototyping** to **full-scale production**.
+- Conversational AI: Build multilingual chatbots and assistants.
+- Multilingual Understanding: Support diverse languages fluently.
+- Context-Aware Reasoning: Solve complex, multi-step problems.
+- Knowledge Extraction: Summarize and process content.
+- Retrieval-Augmented Generation (RAG): Enhance responses with external data.
 
----
+## Key Capabilities
 
-## 🧠 Optimized For
+- Multilingual Support: Fluency in over 50 languages, including Hindi, Tamil, Japanese, and Spanish, with strong Multilingual MMLU scores (e.g., Hindi: 81.44, Gujarati: 79.39).
+- High Throughput: Optimized for low-latency, real-time applications.
+- Structured Output: Generate JSON or task-specific formats via prompts.
+- Advanced Reasoning: Handle logic-driven tasks and multi-turn conversations with SUTRA-R0.
+- API Compatibility: Integrates with OpenAI-compatible APIs and tools.
+- Ecosystem Support: Compatible with LangChain, CrewAI, LiteLLM, and more.
 
-💬 Conversational AI  
-🌍 Multilingual understanding  
-🧩 Context-aware reasoning  
-📄 Knowledge extraction and summarization  
-🔍 Retrieval-augmented generation (RAG)
+## Supported Languages
 
----
+SUTRA supports a wide range of languages for global and regional applications:
 
-## 🔑 Key Capabilities
+- Indian: Hindi, Bengali, Tamil, Telugu, Kannada, Marathi, Punjabi, Urdu
+- Asian: Japanese, Korean, Chinese, Thai, Vietnamese, Indonesian
+- European: English, French, Spanish, German, Portuguese, Russian
+- Other: Arabic, Turkish, Swahili
+- Efficient Tokenizer: Reduces token usage by 3-5x for non-English languages, lowering costs.
 
-## **SUTRA models offer:**
+## Common Use Cases
 
-### 🌐 Multilingual Mastery
+| Use Case                | Description                                                      |
+| ----------------------- | ---------------------------------------------------------------- |
+| Chatbots & Assistants   | Create multilingual support for customer service or education.   |
+| Document Understanding  | Summarize, extract, or translate content.                        |
+| Search & Discovery      | Enable semantic search in multiple languages.                    |
+| Education & EdTech      | Generate quizzes or explainers in regional languages.            |
+| Multilingual Interfaces | Build products with native-language support.                     |
+| GovTech & AgriTech      | Provide local-language interfaces for rural or government users. |
 
-Native-level fluency across 50+ languages including **Hindi**, **Bengali**, **Gujarati**, **Tamil**, **Telugu**, **Japanese**, **Korean**, and more.
+## Step 1: Get Started
 
-### ⚡ High Throughput
+1. Obtain an API Key: Sign up at [TWO AI SUTRA API](https://www.two.ai/sutra/api).
+2. Test on ChatSUTRA: Explore capabilities at [chat.two.ai](https://chat.two.ai).
+3. Install Dependencies:
+   ```bash
+   pip install openai
+   ```
 
-Efficient inference with **low latency** for real-time use cases.
+## Step 2: Basic Usage with SUTRA-V2
 
-### 📦 Structured Output Support
+```python
+from openai import OpenAI
 
-Return **JSON**, **key-value pairs**, and task-specific formats via **prompt engineering**.
+# Initialize SUTRA client
+client = OpenAI(
+    api_key="YOUR_SUTRA_API_KEY",
+    base_url="https://api.two.ai/v2"
+)
 
-### 🧠 Advanced Reasoning
+# Basic chat completion
+response = client.chat.completions.create(
+    model="sutra-v2",
+    messages=[
+        {"role": "system", "content": "You are a helpful AI."},
+        {"role": "user", "content": "Explain AI in three sentences in Tamil."}
+    ],
+    max_tokens=1024,
+    temperature=0.7
+)
+print(response.choices[0].message.content)
+```
 
-Handle complex prompts requiring **logic**, **step-by-step computation**, and **multi-turn memory**.
+## Troubleshooting
 
-### 🔗 API-Compatible
+- Invalid API Key: Verify at [TWO AI SUTRA API](https://www.two.ai/sutra/api).
+- Model Not Found: Use `sutra-v2` for conversations or `sutra-r0` for reasoning. SUTRA-V1 was deprecated on March 22, 2025.
+- Rate Limits: Reduce request frequency.
+- Language Issues: Ensure prompts align with the target language’s script and syntax.
 
-Seamless integration using an **OpenAI-compatible API structure**, **SDKs**, and **toolchains**.
+## Resources
 
-### 🧰 Open SDK Ecosystem
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+- [ChatSUTRA](https://chat.two.ai)
+- [TWO AI Blog](https://www.two.ai/blog)
 
-Supported in **LangChain**, **CrewAI**, **Agno**, **LiteLLM**, and more.
-
----
-
-## 🌍 Supported Languages
-
-SUTRA is built for **global reach** and **local impact**. Some of the supported languages include:
-
-- **Indian Languages:** Hindi, Bengali, Gujarati, Tamil, Telugu, Kannada, Malayalam, Punjabi, Marathi, Urdu
-- **Asian Languages:** Japanese, Korean, Chinese
-- **European Languages:** English, French, Spanish, German, Portuguese, Russian, Italian
-- **Middle Eastern & African Languages:** Arabic, Turkish, Swahili
-- **Southeast Asian Languages:** Thai, Vietnamese, Indonesian, Filipino
-
----
-
-## 💼 Common Use Cases
-
-| Use Case                             | Description                                                               |
-| ------------------------------------ | ------------------------------------------------------------------------- |
-| 💬 **Chatbots & Virtual Assistants** | Build multilingual assistants for customer support, education, and sales. |
-| 📄 **Document Understanding**        | Summarize, extract, and translate structured or unstructured content.     |
-| 🔍 **Search & Discovery**            | Semantic search across large datasets in multiple languages.              |
-| 📚 **Education & EdTech**            | Generate quizzes, explainers, and flashcards in regional languages.       |
-| 🌐 **Multilingual Interfaces**       | Enable your products to speak and understand diverse native tongues.      |
-| 🧑‍🌾 **GovTech & AgriTech**            | Local language interfaces for government schemes and rural knowledge.     |
-
----
+Build scalable, multilingual AI applications with SUTRA, tailored to your needs.

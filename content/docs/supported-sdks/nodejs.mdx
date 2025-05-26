@@ -1,27 +1,29 @@
 ---
-title: SUTRA-V2 with Node.js SDK
+title: SUTRA-V2 with NodeJs SDK
 ---
 
-This guide demonstrates how to use the **SUTRA-V2** model with the Node.js SDK to build scalable, multilingual AI applications. SUTRA-V2, developed by TWO AI, supports chat and instruction tasks via an OpenAI-compatible API.
+This guide demonstrates how to use the **SUTRA-V2** model with the NodeJs SDK to build multilingual AI applications. SUTRA-V2, developed by TWO AI, powers chat and instruction tasks via an OpenAI-compatible API.
 
 ## 🔧 Prerequisites
 
 - Obtain your SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
-- Store the API key securely (e.g., as an environment variable).
+- Store the API key securely (e.g., in environment variables or a secure configuration system).
 
 ## 📦 Step 1: Install Dependencies
 
 ```bash
 npm install openai
+# or
+yarn add openai
 ```
 
 ## 🔐 Step 2: Initialize SUTRA Client
 
 ```javascript
-const { OpenAI } = require("openai");
+import OpenAI from "openai";
 
 const client = new OpenAI({
-  apiKey: process.env.SUTRA_API_KEY || "YOUR_SUTRA_API_KEY",
+  apiKey: process.env.SUTRA_API_KEY, // Use environment variables for security
   baseURL: "https://api.two.ai/v2",
 });
 ```
@@ -29,37 +31,55 @@ const client = new OpenAI({
 ## 💬 Step 3: Basic Chat Completion
 
 ```javascript
-async function main() {
-  try {
-    const response = await client.chat.completions.create({
-      model: "sutra-v2",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful AI that answers concisely.",
-        },
-        { role: "user", content: "Explain AI in 3 sentences in Hindi." },
-      ],
-      max_tokens: 1024,
-      temperature: 0.7,
-    });
-    console.log(response.choices[0].message.content);
-  } catch (error) {
-    console.error("Error:", error.message);
-  }
+async function generateResponse() {
+  const response = await client.chat.completions.create({
+    model: "sutra-v2",
+    messages: [
+      {
+        role: "system",
+        content: "You are a helpful AI that answers concisely.",
+      },
+      { role: "user", content: "Explain AI in 3 sentences in Spanish." },
+    ],
+    max_tokens: 1024,
+    temperature: 0.7,
+  });
+
+  console.log(response.choices[0].message.content);
 }
 
-main();
+generateResponse();
+```
+
+## 🌐 Browser Usage
+
+For browser environments, you'll need to handle CORS and API key security:
+
+```javascript
+// IMPORTANT: Never expose your API key in client-side code
+// Use a backend proxy or service to make API calls
+
+import OpenAI from "openai";
+
+// This should be handled by your backend
+const client = new OpenAI({
+  apiKey: "YOUR_SUTRA_API_KEY", // This should come from your backend
+  baseURL: "https://api.two.ai/v2",
+  dangerouslyAllowBrowser: true, // Only use this flag with proper security measures
+});
+
+// Rest of the code is similar to the Node.js example
 ```
 
 ## 🛠 Troubleshooting
 
-- **Invalid API Key**: Ensure `SUTRA_API_KEY` is set correctly in your environment (e.g., `.env`).
+- **Invalid API Key**: Ensure your API key is correct and stored securely.
 - **Model Not Found**: Use `sutra-v2`. SUTRA-V1 was deprecated on March 22, 2025.
 - **Rate Limits**: Reduce request frequency or contact TWO AI at [https://www.two.ai/support](https://www.two.ai/support).
+- **CORS Issues**: If using in browser, ensure you're using a backend proxy to make API calls.
 
 ## 📎 Resources
 
 - [SUTRA API](https://www.two.ai/sutra/api)
 - [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
-- [OpenAI Node.js SDK](https://platform.openai.com/docs/api-reference?lang/node.js)
+- [OpenAI NodeJs SDK](https://platform.openai.com/docs/api-reference?lang=node.js)

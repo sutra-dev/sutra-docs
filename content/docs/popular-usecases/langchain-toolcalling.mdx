@@ -25,7 +25,7 @@ from langchain_core.messages import HumanMessage, SystemMessage
 import os
 
 # Set SUTRA API key
-api_key = os.getenv("SUTRA_API_KEY", "YOUR_SUTRA_API_KEY")
+api_key = os.getenv("SUTRA_API_KEY")
 
 # Initialize SUTRA-V2 with ChatOpenAI
 llm = ChatOpenAI(
@@ -60,7 +60,7 @@ messages = [
 
 # Invoke the LLM with the tool
 response = llm_with_tools.invoke(messages)
-print(response.tool_calls)  # Displays the tool call result
+print(response.content)  # Displays the tool call result
 ```
 
 ## 🌟 Why LangChain Tool Calling?
@@ -79,5 +79,4 @@ print(response.tool_calls)  # Displays the tool call result
 
 - [SUTRA API](https://www.two.ai/sutra/api)
 - [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
-- [LangChain Documentation](https://python.langchain.com/docs)
 - [ChatSUTRA](https://chat.two.ai)

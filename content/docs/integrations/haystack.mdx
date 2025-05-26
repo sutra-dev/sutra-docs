@@ -6,7 +6,7 @@ title: Haystack Integration
 
 ## title: Haystack with SUTRA
 
-This guide walks you through using **SUTRA models (V2 or R0)** within the **Haystack** ecosystem to build powerful, production-ready AI applications. With Haystack, you can create retrieval-augmented generation (RAG) pipelines, question-answering systems, and semantic search workflows that leverage SUTRA’s multilingual and reasoning capabilities.
+This guide walks you through using **SUTRA V2** within the **Haystack** ecosystem to build powerful, production-ready AI applications. With Haystack, you can create retrieval-augmented generation (RAG) pipelines, question-answering systems, and semantic search workflows that leverage SUTRA’s multilingual and reasoning capabilities.
 
 ## 📦 Step 1: Install Dependencies
 
@@ -26,17 +26,18 @@ api_key = "YOUR_SUTRA_API_KEY"
 
 ## ⚙️ Step 3: Initialize Haystack Pipeline with SUTRA
 
-Configure a Haystack pipeline using `OpenAIChatGenerator` to integrate `sutra-v2` for multilingual chat or `sutra-r0` for advanced reasoning.
+Configure a Haystack pipeline using `OpenAIChatGenerator` to integrate `sutra-v2` for multilingual chat.
 
 ```python
 from haystack import Pipeline
 from haystack.dataclasses import ChatMessage
+from haystack.utils import Secret
 from haystack.components.generators.chat import OpenAIChatGenerator
 
 # Initialize SUTRA client
 client = OpenAIChatGenerator(
     model="sutra-v2",  # or "sutra-r0" for reasoning tasks
-    api_key=api_key,
+    api_key=Secret.from_token(os.getenv("SUTRA_API_KEY")),
     api_base_url="https://api.two.ai/v2"
 )
 ```
@@ -56,58 +57,7 @@ messages = [
     ChatMessage.from_user("Explain the benefits of AI in education in French.")
 ]
 response = pipeline.run({"generator": {"messages": messages}})
-print(response["generator"]["replies"][0].content)
-```
-
-## 🧠 Step 5: Build a RAG Pipeline with SUTRA-R0
-
-Use `sutra-r0` in a retrieval-augmented generation (RAG) pipeline to answer complex queries with reasoning, leveraging an in-memory document store.
-
-```python
-from haystack import Pipeline, Document
-from haystack.dataclasses import ChatMessage
-from haystack.components.builders import PromptBuilder
-from haystack.components.retrievers.in_memory import InMemoryBM25Retriever
-from haystack.document_stores.in_memory import InMemoryDocumentStore
-from haystack.components.generators.chat import OpenAIChatGenerator
-
-# Initialize document store and add sample documents
-document_store = InMemoryDocumentStore()
-document_store.write_documents([
-    Document(content="AI enhances education by personalizing learning experiences."),
-    Document(content="AI-driven tools improve student engagement through interactive content."),
-    Document(content="AI can automate grading, saving teachers time for instruction.")
-])
-
-# Define prompt template
-template = """
-Given the following information, answer the question with structured reasoning.
-
-Context: {% for document in documents %} {{ document.content }} {% endfor %}
-Question: {{ query }}
-"""
-
-# Initialize pipeline components
-pipeline = Pipeline()
-pipeline.add_component("retriever", InMemoryBM25Retriever(document_store=document_store))
-pipeline.add_component("prompt_builder", PromptBuilder(template=template))
-pipeline.add_component("generator", OpenAIChatGenerator(
-    model="sutra-r0",
-    api_key=api_key,
-    api_base_url="https://api.two.ai/v2"
-))
-
-# Connect components
-pipeline.connect("retriever", "prompt_builder.documents")
-pipeline.connect("prompt_builder", "generator.messages")
-
-# Run the pipeline
-query = "How does AI improve education?"
-response = pipeline.run({
-    "prompt_builder": {"query": query},
-    "retriever": {"query": query}
-})
-print(response["generator"]["replies"][0].content)
+print(response["generator"]["replies"][0].text)
 ```
 
 ## 🛠 Troubleshooting

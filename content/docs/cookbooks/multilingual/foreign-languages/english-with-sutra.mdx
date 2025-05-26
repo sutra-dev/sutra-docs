@@ -1,0 +1,294 @@
+---
+title: Using Sutra Model for English Language
+---
+
+<img
+  src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+  width="150"
+/>
+
+## Introduction
+
+In this notebook, we demonstrate how to use the Sutra model with the
+OpenAI client specifically for English language applications. Sutra
+excels in processing and generating content in Indian languages, making
+it an ideal choice for English language tasks.
+
+### What You Will Learn
+
+- Setting up the OpenAI client to work with the Sutra model
+- Creating prompts in English and understanding the responses
+- Exploring various English language use cases
+- Best practices for generating content in English
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
+
+## Setup
+
+First, install the required libraries.
+
+```python
+# Install required packages
+!pip install openai
+```
+
+### Import required libraries
+
+```python
+# Import required libraries
+import os
+import time
+from openai import OpenAI
+from IPython.display import display, Markdown, HTML
+from google.colab import userdata
+```
+
+## Authentication
+
+To use the Sutra API, you need to set your API key.
+
+```python
+# If you want to use it in code, for example:
+os.environ["SUTRA_API_KEY"] = userdata.get('SUTRA_API_KEY')
+```
+
+### Create OpenAI Client with Sutra API Endpoint
+
+```python
+# Create OpenAI Client with Sutra API Endpoint
+client = OpenAI(
+    base_url="https://api.two.ai/v2",
+    api_key=os.environ.get("SUTRA_API_KEY")
+)
+```
+
+## Helper Functions
+
+Create helper functions to interact with the Sutra API for English
+language tasks.
+
+```python
+import time
+from IPython.display import display, HTML
+
+def get_sutra_response(prompt, model="sutra-v2", temperature=0.7, max_tokens=1024):
+    """Simple non-streaming response from Sutra AI"""
+    try:
+        start_time = time.time()
+
+        # Basic API call
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+
+        # Get the response content
+        result = response.choices[0].message.content
+        time_taken = time.time() - start_time
+
+        # Simple display
+        print(f"Prompt: {prompt}")
+        print(f"Response: {result}")
+        print(f"Time taken: {time_taken:.2f}s")
+
+        return result, time_taken
+
+    except Exception as e:
+        error_msg = f"Error: {str(e)}"
+        print(error_msg)
+        return error_msg, 0
+
+def get_sutra_streaming_response(prompt, model="sutra-v2", temperature=0.7, max_tokens=1024):
+    """Simple streaming response from Sutra AI"""
+    try:
+        start_time = time.time()
+
+        # Start streaming
+        stream = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens,
+            stream=True
+        )
+
+        print(f"Prompt: {prompt}")
+        print("Response:", end=" ")
+
+        full_response = ""
+
+        # Print chunks as they come
+        for chunk in stream:
+            if chunk.choices[0].delta.content:
+                content = chunk.choices[0].delta.content
+                print(content, end="", flush=True)
+                full_response += content
+
+        time_taken = time.time() - start_time
+        print(f"\nTime taken: {time_taken:.2f}s")
+
+        return full_response
+
+    except Exception as e:
+        error_msg = f"Error: {str(e)}"
+        print(error_msg)
+        return error_msg
+```
+
+## 1. Basic English Language Generation
+
+Let's start with some basic examples of generating English text with
+Sutra.
+
+```python
+# Simple English Text Generation
+english_prompt = "Hello, my name is Rahul. How are you?"
+
+response, time_taken = get_sutra_response(english_prompt)
+```
+
+## 2. Information Retrieval in English
+
+Let's use Sutra to retrieve information in English.
+
+```python
+# Information Retrieval in English
+info_prompt = "Tell me about the five major festivals of India and highlight their significance."
+
+response, time_taken = get_sutra_response(info_prompt)
+```
+
+## 3. Creative Writing in English
+
+Sutra can generate creative content in English.
+
+```python
+# Creative Writing in English
+creative_prompt = "Write a short poem about the Himalayas."
+
+response, time_taken = get_sutra_response(creative_prompt, temperature=0.8)
+```
+
+## 4. Summarization in English
+
+Sutra can effectively summarize English text.
+
+```python
+# Text for Summarization
+long_text = """
+The history of India's independence is long and complex. British rule in India began in 1757 after the Battle of Plassey, when the East India Company defeated the Nawab of Bengal, Siraj-ud-Daula. Subsequently, the company gradually expanded its area of influence, and by 1858, India came directly under the British Crown.
+
+The 1857 rebellion, also known as the First War of Independence, was the first major revolt against British rule. Although this rebellion failed, it awakened national consciousness among Indians.
+
+With the formation of the Indian National Congress in 1885, the independence movement became more organized. Under the leadership of Mahatma Gandhi, demands for independence were made through non-violent resistance and Satyagraha.
+
+In 1942, the 'Quit India Movement' was launched, forcing the British to leave India. After World War II, Britain's economic condition weakened, and eventually, India gained independence on August 15, 1947, although the country was partitioned into India and Pakistan.
+"""
+
+summarize_prompt = f"Summarize the following text in less than 100 words:\n\n{long_text}"
+
+summary, time_taken = get_sutra_response(summarize_prompt, temperature=0.3)
+```
+
+## 5. Question-Answering in English
+
+Let's use Sutra for question-answering in English.
+
+```python
+# Context for Question-Answering
+context = """
+The Constitution of India is the longest written constitution in the world. It was adopted on November 26, 1949, and came into effect on January 26, 1950. Dr. B. R. Ambedkar is considered the chief architect of the Indian Constitution. The original constitution had 395 articles, 22 parts, and 8 schedules. Currently, it has 448 articles, 25 parts, and 12 schedules. The words 'Socialist', 'Secular', and 'Integrity' were added to the preamble by the 42nd Amendment (1976).
+"""
+
+qa_prompt = f"Answer the following questions based on the information provided:\n\n{context}\n\nQuestion 1: When did the Indian Constitution come into effect?\nQuestion 2: Who was the chief architect of the Indian Constitution?\nQuestion 3: Which words were added to the preamble by the 42nd Amendment?"
+
+answers, time_taken = get_sutra_response(qa_prompt, temperature=0.2)
+```
+
+## 6. English-Hindi Translation
+
+Sutra can effectively translate between Hindi and English.
+
+```python
+# Hindi to English Translation
+hindi_text = "भारत एक विविधतापूर्ण देश है जहाँ कई भाषाएँ, धर्म और संस्कृतियाँ एक साथ विकसित होती हैं। इसकी समृद्ध परंपराएँ और इतिहास इसे दुनिया में एक अनोखा स्थान देते हैं।"
+
+translate_hi_to_en_prompt = f"Translate the following Hindi text into English:\n\n{hindi_text}"
+
+translation_en, time_taken = get_sutra_response(translate_hi_to_en_prompt)
+```
+
+```python
+# English to Hindi Translation
+english_text = "Artificial intelligence is transforming the way we live and work. It has applications in healthcare, education, transportation, and many other fields. As technology advances, it's important to ensure that AI is developed ethically and responsibly."
+
+translate_en_to_hi_prompt = f"Translate the following English text into Hindi:\n\n{english_text}"
+
+translation_hi, time_taken = get_sutra_response(translate_en_to_hi_prompt)
+```
+
+## 7. English Sentiment Analysis
+
+Let's use Sutra to perform sentiment analysis on English text.
+
+```python
+# English Reviews for Sentiment Analysis
+reviews = [
+    "This movie was very good. The story was engaging and the acting was excellent.",
+    "The food was not at all tasty and the service was very poor.",
+    "The product is okay, but the price is a bit high.",
+    "I liked this book, the author explained the topic very well.",
+    "The trip was disappointing, the hotel was dirty and the staff was unfriendly."
+]
+
+sentiment_prompt = "Perform sentiment analysis on the following English reviews and classify each as 'Positive', 'Negative', or 'Neutral':\n\n"
+
+for i, review in enumerate(reviews):
+    sentiment_prompt += f"{i+1}. {review}\n"
+
+sentiment_analysis, time_taken = get_sutra_response(sentiment_prompt, temperature=0.1)
+```
+
+## 8. English Content Generation for Various Formats
+
+Sutra can generate English content in various formats.
+
+```python
+# Generate English blog post
+blog_prompt = "Write a blog post on the topic 'Indian Cuisine and Its Impact on Health'. Include a title, introduction, main points, and conclusion."
+
+blog_post = get_sutra_streaming_response(blog_prompt, temperature=0.7)
+```
+
+## 9. Conclusion
+
+In this notebook, we explored the use of the Sutra model with the OpenAI
+client for **English language applications**. We covered various use
+cases, including:
+
+- Basic English text generation
+- Information retrieval in English
+- Creative writing in English
+- English text summarization
+- English question answering
+- English-Hindi translation
+- Sentiment analysis in English
+- English content generation in various formats
+- English code-switching
+- Understanding English cultural context
+- Structured output generation in English
+
+Sutra’s strong capabilities in English and other Indian languages make
+it an excellent choice for applications targeting English-speaking users
+or requiring English language processing.

@@ -14,17 +14,17 @@ import {
 
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-import { GithubStat } from "./github-stat";
-import { Ripple } from "./ripple";
-import IntegrationsSection from "./landing/integrations";
+import { GithubStat } from "../github-stat";
+import { Ripple } from "../ripple";
+import IntegrationsSection from "../landing/integrations";
 const features = [
   {
     id: 1,
-    title: "COOKBOOKS",
+    title: "MULTILINGUAL SUPPORT",
     description:
-      "Explore our collection of cookbooks to kickstart your projects with practical examples and templates.",
-    icon: PlugZap2Icon,
-    href: "https://github.com/sutra-dev/sutra-cookbook",
+      "Reach a global audience with built-in support for multiple languages in your applications.",
+    icon: ShieldCheckIcon,
+    href: "/docs/multilingual/indian-languages/hindi",
   },
   {
     id: 2,
@@ -32,51 +32,23 @@ const features = [
     description:
       "Experiment with our tools and features in an interactive playground designed for developers.",
     icon: PlugIcon,
-    href: "/docs",
+    href: "https://playground.two.ai/",
   },
   {
     id: 3,
-    title: "API KEY",
-    description:
-      "Generate and manage your API keys to securely integrate with our services and unlock full functionality.",
-    icon: Webhook,
-    href: "https://www.two.ai/#platforms-intro",
-  },
-  {
-    id: 4,
-    title: "MULTILINGUAL SUPPORT",
-    description:
-      "Reach a global audience with built-in support for multiple languages in your applications.",
-    icon: ShieldCheckIcon,
-    href: "/docs",
-  },
-  {
-    id: 5,
     title: "CHATSUTRA",
     description:
       "India’s AI Assistant by TWO AI, supporting 50+ languages for seamless multilingual conversations.",
     icon: LockClosedIcon,
     href: "https://chat.two.ai/",
   },
-  {
-    id: 6,
-    title: "API REFERENCE",
-    description:
-      "Dive into our comprehensive API reference to understand endpoints, parameters, and responses in detail.",
-    icon: RabbitIcon,
-    href: "/docs",
-  },
 ];
 
 export default function Features({ stars }: { stars: string | null }) {
   return (
-    <div className="md:w-10/12 mt-10 mx-auto font-geist relative md:border-l-0 md:border-b-0 md:border-[1.2px] rounded-none -pr-2 dark:bg-black/[0.95]">
+    <div className="md:w-10/12 mt-10 mx-auto font-geist relative  md:border-b-0 md:border-[1.2px] rounded-none -pr-2 dark:bg-black/[0.95]">
       <div className="w-full md:mx-0">
-        <div className="grid grid-cols-1 relative md:grid-rows-2 md:grid-cols-3 border-b-[1.2px]">
-          <div className="hidden md:grid top-1/2 left-0 -translate-y-1/2 w-full grid-cols-3 z-10 pointer-events-none select-none absolute">
-            <Plus className="w-8 h-8 text-neutral-300 translate-x-[16.5px] translate-y-[.5px] ml-auto dark:text-neutral-600" />
-            <Plus className="w-8 h-8 text-neutral-300 ml-auto translate-x-[16.5px] translate-y-[.5px] dark:text-neutral-600" />
-          </div>
+        <div className="grid grid-cols-1 relative md:grid-cols-3 border-b-[1.2px]">
           {features.map((feature, index) => (
             <div
               key={feature.id}
@@ -85,12 +57,6 @@ export default function Features({ stars }: { stars: string | null }) {
                 index >= 3 && "md:border-t-[1.2px]"
               )}
             >
-              {/* <div className="flex items-center gap-2 my-1">
-                <feature.icon className="w-4 h-4" />
-                <p className="text-gray-600 dark:text-gray-400">
-                  {feature.label}
-                </p>
-              </div> */}
               <div className="mt-2">
                 <div className="max-w-full">
                   <div className="flex gap-3 ">

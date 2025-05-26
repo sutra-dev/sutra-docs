@@ -1,0 +1,90 @@
+---
+title: Models Deprecations
+---
+
+# SUTRA Model Deprecations
+
+📢 **Stay Updated with SUTRA Model Transitions**  
+This guide provides information on deprecated SUTRA models, including timelines, migration steps, and resources to transition to newer models like SUTRA-V2. Ensure your applications remain compatible and leverage the latest features, such as improved multilingual performance and enhanced efficiency.
+
+## 🔧 Overview
+
+TWO AI is committed to advancing its SUTRA family of multilingual AI models, delivering cutting-edge capabilities for conversation, search, and quantitative analysis. As part of this evolution, older models may be deprecated to make way for newer, more efficient versions. Below, we outline the deprecation process and steps to transition smoothly.
+
+## 🛑 Deprecated Models
+
+### SUTRA-V1
+
+- **Deprecation Date**: March 22, 2025, at 11:55 PM PST
+- **Details**: The SUTRA-V1 API, designed for multilingual conversational tasks, has been replaced by SUTRA-V2, which offers improved performance, image processing, and full compatibility with OpenAI’s API specifications.[](https://www.two.ai/blog/sutra-v2-is-here)
+- **Action Required**: Migrate to SUTRA-V2 to ensure continued support and access to new features like streaming mode and faster response times.
+
+### SUTRA-Q0 (Hypothetical Future Deprecation)
+
+- **Status**: Active as of May 22, 2025
+- **Details**: SUTRA-Q0, a time-series quantitative AI model, is currently supported for forecasting and analytical tasks. No deprecation has been announced, but future updates may introduce newer quantitative models (e.g., SUTRA-Q series advancements).
+- **Recommendation**: Monitor TWO AI announcements for updates on SUTRA-Q0 and prepare to transition to newer models if announced.
+
+## 🚀 Step 1: Check Your Current Model
+
+Identify which SUTRA model your application uses:
+
+- **SUTRA-V1**: Used for multilingual conversation and instruction tasks.
+- **SUTRA-Q0**: Used for time-series forecasting, anomaly detection, and trend analysis in domains like finance and healthcare.
+- Visit [docs.two.ai](https://docs.two.ai) to confirm your model version and review API usage.
+
+## 🔐 Step 2: Obtain or Verify Your API Key
+
+To access newer models, ensure you have a valid SUTRA API key:
+
+- Get your API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- Set your API key as an environment variable:
+
+```bash
+export SUTRA_API_KEY="your-api-key-here"
+```
+
+Then in your Python code:
+
+```python
+import os
+SUTRA_API_KEY = os.getenv("SUTRA_API_KEY")
+```
+
+## 🔄 Step 3: Transition to SUTRA-V2
+
+For SUTRA-V1 users, update your code to use SUTRA-V2:
+
+- **Update Model Name**: Replace `sutra-v1` with `sutra-v2` in your API calls.
+- **Initialize Client**:
+
+```python
+from openai import OpenAI
+client = OpenAI(
+    base_url='https://api.two.ai/v2',
+    api_key=SUTRA_API_KEY
+)
+```
+
+- **Test Basic Completion**:
+
+```python
+response = client.chat.completions.create(
+    model='sutra-v2',
+    messages=[{"role": "user", "content": "Tell me about AI advancements in 3 sentences."}],
+    max_tokens=1024,
+    temperature=0.7
+)
+print(response.choices[0].message.content)
+```
+
+## 🛠 Troubleshooting
+
+- **API Key Errors**: Verify your `SUTRA_API_KEY` spelling and ensure it’s stored securely in Colab secrets.
+- **Model Not Found**: Update your model name (e.g., `sutra-v2` instead of `sutra-v1`) in API calls.
+- **Rate Limits**: If you encounter rate limits, consider upgrading your plan or reducing request frequency.
+- **Incompatible Code**: Ensure your code aligns with OpenAI-compatible SDKs for SUTRA-V2. Refer to [docs.two.ai](https://docs.two.ai) for updated examples.
+
+## ℹ️ Additional Resources
+
+- **Newsletter**: Sign up for the TWO AI Newsletter at [www.two.ai](https://www.two.ai) to stay informed about model updates and deprecations.

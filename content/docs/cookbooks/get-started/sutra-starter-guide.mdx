@@ -1,23 +1,37 @@
 ---
-title: SUTRA Starter Guide
+title: SUTRA Starter Guide - Setup & Basic Usage
 ---
 
-<img src="/sutra.png" width="150" alt="SUTRA Logo" />
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1j7B8mDIU8KMZ_IB-oaL_qLqXmWYYh0Xu?usp=sharing)
+<img
+  src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+  width="150"
+/>
 
 ## Introduction to SUTRA
 
-SUTRA is a family of large multi-lingual language models (LMLMs) developed by [TWO AI](https://www.two.ai). SUTRA's dual-transformer architecture extends the power of both MoE (Mixture of Experts) and Dense AI language model approaches, delivering cost-efficient multilingual capabilities across 50+ languages.
+SUTRA is a family of large multi-lingual language models (LMLMs)
+developed by [TWO AI](https://www.two.ai). SUTRA's dual-transformer
+architecture extends the power of both MoE (Mixture of Experts) and
+Dense AI language model approaches, delivering cost-efficient
+multilingual capabilities across 50+ languages.
+
+SUTRA powers scalable AI applications for:
+
+- Conversation
+- Search
+- Advanced reasoning
+- Multilingual content generation
 
 ## Get Your API Keys
 
 Before you begin, make sure you have:
 
-1. A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
-2. Basic familiarity with Python and Jupyter notebooks
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
 
-This guide is designed to run in Google Colab, so no local Python installation is required.
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
 
 ## Step 1: Installation
 
@@ -32,12 +46,14 @@ print("✅ OpenAI SDK installed successfully!")
 
 ## Step 2: Authentication
 
-SUTRA uses API keys for authentication. In Google Colab, we recommend using the `userdata` feature to securely store your API key.
+SUTRA uses API keys for authentication. In Google Colab, we recommend
+using the `userdata` feature to securely store your API key.
 
 ### Setting up your API key in Colab:
 
-1. Click on the 🔑 icon in the left sidebar
-2. Add a new secret with the name "SUTRA_API_KEY" and your API key as the value
+1.  Click on the 🔑 icon in the left sidebar
+2.  Add a new secret with the name "SUTRA_API_KEY" and your API key as
+    the value
 
 Then run the cell below to access your API key:
 
@@ -49,7 +65,9 @@ SUTRA_API_KEY = userdata.get("SUTRA_API_KEY")
 
 ## Step 3: Basic Usage with OpenAI SDK
 
-SUTRA's API is compatible with the OpenAI SDK, making it easy to integrate into existing workflows. Let's set up the client and make a simple request:
+SUTRA's API is compatible with the OpenAI SDK, making it easy to
+integrate into existing workflows. Let's set up the client and make a
+simple request:
 
 ```python
 from openai import OpenAI
@@ -99,7 +117,8 @@ for chunk in stream:
 
 ## Step 5: Multilingual Capabilities
 
-One of SUTRA's key strengths is its multilingual support. Let's try it in different languages:
+One of SUTRA's key strengths is its multilingual support. Let's try it
+in different languages:
 
 ```python
 # Function to get response in a specific language
@@ -232,7 +251,9 @@ For more complex applications, you can integrate SUTRA with LangChain:
 # Install LangChain
 !pip install -qU langchain langchain-openai langchain_community
 print("✅ LangChain installed successfully!")
+```
 
+```python
 from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage, SystemMessage
 
@@ -259,13 +280,15 @@ print(response.content)
 
 If you encounter issues:
 
-1. **Authentication Errors**: Verify your API key is correct and properly set
-2. **Rate Limiting**: Check if you've exceeded your API usage limits
-3. **Connection Issues**: Ensure you have internet connectivity and the API endpoint is accessible
-4. **Response Format**: Make sure you're correctly parsing the response object
+1.  **Authentication Errors**: Verify your API key is correct and
+    properly set
+2.  **Rate Limiting**: Check if you've exceeded your API usage limits
+3.  **Connection Issues**: Ensure you have internet connectivity and the
+    API endpoint is accessible
+4.  **Response Format**: Make sure you're correctly parsing the response
+    object
 
 ## Resources
 
-- [Official Documentation](https://docs.two.ai/version-2/docs/get-started-with-sutra)
 - [TWO AI Website](https://www.two.ai)
-- [Follow TWO AI on Twitter](https://twitter.com/two_platforms)
+- [Follow SUTRA on X (Twitter)](https://x.com/sutra_dev)

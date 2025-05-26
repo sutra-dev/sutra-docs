@@ -1,48 +1,47 @@
 ---
-title: SUTRA with LangChain
+title: SUTRA with Langchain
 ---
 
-<div className="flex items-center gap-16">
-
-<img
-  src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
-  width="130"
-  alt="two ai"
-/>
-<img
-  src="https://registry.npmmirror.com/@lobehub/icons-static-png/1.45.0/files/light/langchain.png"
-  width="120"
-/>
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1OYpQFo88aLWbv0D1_DA2j4HZGRxTjRcK?usp=sharing)
-
-<div>
-  <h2>SUTRA by TWO Platforms</h2>
-  <p>SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.</p>
-
-  <h2>LangChain</h2>
-  <p>LangChain is a framework for developing applications powered by large language models (LLMs).</p>
-</div>
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  &#10;
+  <img
+    src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew"
+    width="130"
+  />
+  <img
+    src="https://registry.npmmirror.com/@lobehub/icons-static-png/1.45.0/files/light/langchain.png"
+    width="120"
+  />
 </div>
 
-#SUTRA using Langchain
+## SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+## LangChain
+
+LangChain is a framework for developing applications powered by large language models (LLMs).
+
+## Sutra using Langchain
 
 ## Get Your API Keys
 
 Before you begin, make sure you have:
 
-1. A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
-2. Basic familiarity with Python and Jupyter notebooks
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
 
-This notebook is designed to run in Google Colab, so no local Python installation is required.
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
 
-###Install Requirements
+### Install Requirements
 
 ```python
 !pip install -qU langchain_openai langchain_community tavily-python faiss-cpu tiktoken
 ```
 
-####Setup API Keys
+### Setup API Keys
 
 ```python
 import os
@@ -51,16 +50,16 @@ from google.colab import userdata
 # Set the API key from Colab secrets
 os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
 os.environ["TAVILY_API_KEY"] = userdata.get("TAVILY_API_KEY")
-os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
+#os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
 ```
 
-### Initialize SUTRA Model via Langchain:
+### Initialize Sutra Model via Langchain:
 
 ```python
 from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage
 
-# Initialize SUTRA model (OpenAI-compatible)
+# Initialize Sutra model (OpenAI-compatible)
 llm = ChatOpenAI(
     api_key=os.getenv("SUTRA_API_KEY"),
     base_url="https://api.two.ai/v2",  # Replace with actual endpoint
@@ -140,7 +139,7 @@ while True:
     chat_history.append(response)
 ```
 
-###Langchain with the SUTRA model for Document Querying
+### Langchain with the Sutra model for Document Querying
 
 ```python
 from langchain_openai import ChatOpenAI
@@ -150,7 +149,7 @@ from langchain.chains import RetrievalQA
 from langchain.schema import Document
 from langchain_openai import OpenAIEmbeddings
 
-# Use SUTRA for LLM
+# Use Sutra for LLM
 llm = ChatOpenAI(
     api_key=userdata.get("SUTRA_API_KEY"),
     base_url="https://api.two.ai/v2",
@@ -190,7 +189,7 @@ result = qa_chain({"query": query})
 print("उत्तर:", result["result"])
 ```
 
-### Multilingual Tavily Agent Using SUTRA LMLMs
+### Multilingual Tavily Agent Using Sutra LMLMs
 
 ```python
 from langchain.agents import Tool, AgentExecutor, initialize_agent
@@ -199,7 +198,7 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage
 
-# Step 1: Define SUTRA LLM via LangChain
+# Step 1: Define Sutra LLM via LangChain
 llm = ChatOpenAI(
     api_key=userdata.get("SUTRA_API_KEY"),
     base_url="https://api.two.ai/v2",

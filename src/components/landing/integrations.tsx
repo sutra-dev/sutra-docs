@@ -1,10 +1,10 @@
 import {
-  Gemini,
-  VSCodium,
   Langchain,
-  OpenAI,
   LlamaIndex,
   Vercel,
+  CrewAI,
+  Agno,
+  LiteLLM,
 } from "@/components/logos";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -18,13 +18,13 @@ export default function IntegrationsSection() {
           <div className="relative mx-auto flex max-w-sm items-center justify-between">
             <div className="space-y-6">
               <IntegrationCard position="left-top">
-                <Gemini />
+                <Langchain />
               </IntegrationCard>
               <IntegrationCard position="left-middle">
-                <OpenAI />
+                <LlamaIndex />
               </IntegrationCard>
               <IntegrationCard position="left-bottom">
-                <Langchain />
+                <Vercel />
               </IntegrationCard>
             </div>
             <div className="mx-auto my-2 flex w-fit justify-center gap-2">
@@ -44,13 +44,13 @@ export default function IntegrationsSection() {
 
             <div className="space-y-6">
               <IntegrationCard position="right-top">
-                <VSCodium />
+                <CrewAI />
               </IntegrationCard>
               <IntegrationCard position="right-middle">
-                <Vercel />
+                <LiteLLM />
               </IntegrationCard>
               <IntegrationCard position="right-bottom">
-                <LlamaIndex />
+                <Agno />
               </IntegrationCard>
             </div>
           </div>
