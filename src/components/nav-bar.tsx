@@ -85,11 +85,11 @@ export const navMenu = [
     path: "/docs",
   },
   {
-    name: "cookbooks",
-    path: "/docs/cookbooks",
-  },
-  {
     name: "api reference",
     path: "/docs/api-reference",
+  },
+  {
+    name: "cookbooks",
+    path: "/docs/cookbooks",
   },
 ];

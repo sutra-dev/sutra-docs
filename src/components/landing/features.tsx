@@ -20,19 +20,19 @@ import IntegrationsSection from "../landing/integrations";
 const features = [
   {
     id: 1,
-    title: "PLAYGROUND",
-    description:
-      "Experiment with our tools and features in an interactive playground designed for developers.",
-    icon: PlugIcon,
-    href: "/docs",
-  },
-  {
-    id: 2,
     title: "MULTILINGUAL SUPPORT",
     description:
       "Reach a global audience with built-in support for multiple languages in your applications.",
     icon: ShieldCheckIcon,
-    href: "/docs",
+    href: "/docs/multilingual/indian-languages/hindi",
+  },
+  {
+    id: 2,
+    title: "PLAYGROUND",
+    description:
+      "Experiment with our tools and features in an interactive playground designed for developers.",
+    icon: PlugIcon,
+    href: "https://playground.two.ai/",
   },
   {
     id: 3,

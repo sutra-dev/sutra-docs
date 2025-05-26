@@ -18,13 +18,17 @@ const tabs: { name: "main.py" | "index.ts"; code: string }[] = [
     name: "main.py",
     code: `import os
 from openai import OpenAI
+
 client = OpenAI(
-    api_key=os.getenv("SUTRA_API_KEY", "YOUR_SUTRA_API_KEY"),
+    api_key=os.getenv("SUTRA_API_KEY"),
     base_url="https://api.two.ai/v2"
 )
 response = client.chat.completions.create(
     model="sutra-v2",
-    messages=[{"role": "user", "content": "Tell me about Mars exploration in three sentences."}],
+    messages=[{
+    "role": "user", 
+    "content": "How many languages do you know?"
+    }],
     max_tokens=1024,
     temperature=0.7
 )
@@ -33,21 +37,22 @@ print(response.choices[0].message.content)`,
   {
     name: "index.ts",
     code: `import { OpenAI } from "openai";
-async function main() {
-    const client = new OpenAI({
-        apiKey: process.env.SUTRA_API_KEY || "YOUR_SUTRA_API_KEY",
-        baseURL: "https://api.two.ai/v2"
-    });
-    const response = await client.chat.completions.create({
-        model: "sutra-v2",
-        messages: [{ role: "user", content: "Tell me about Mars exploration in three sentences." }],
-        max_tokens: 1024,
-        temperature: 0.7
-    });
-    console.log(response.choices[0].message.content);
-}
-main();
-  }`,
+
+const client = new OpenAI({
+    apiKey: process.env.SUTRA_API_KEY,
+    baseURL: "https://api.two.ai/v2"
+});
+const response = await client.chat.completions.create({
+    model: "sutra-v2",
+    messages: [{
+        role: "user",
+        content: "How many languages do you know?"
+      }],
+    max_tokens: 1024,
+    temperature: 0.7
+});
+console.log(response.choices[0].message.content);
+`,
   },
 ];
 
@@ -242,25 +247,6 @@ function CodePreview() {
                       </pre>
                     )}
                   </Highlight>
-                </motion.div>
-                <motion.div layout className="self-end">
-                  <Link
-                    href="/docs/getting-started"
-                    className="shadow-md  border shadow-primary-foreground mb-4 ml-auto mr-4 mt-auto flex cursor-pointer items-center gap-2 px-3 py-1 transition-all ease-in-out hover:opacity-70"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="1em"
-                      height="1em"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        fill="currentColor"
-                        d="M10 20H8V4h2v2h2v3h2v2h2v2h-2v2h-2v3h-2z"
-                      ></path>
-                    </svg>
-                    <p className="text-sm">Demo</p>
-                  </Link>
                 </motion.div>
               </div>
             </div>
