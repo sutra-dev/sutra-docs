@@ -195,23 +195,6 @@ export const contents: Content[] = [
         ),
         href: "/docs/integrations/haystack",
       },
-      {
-        title: "FastAPI",
-        icon: () => (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="1.2em"
-            height="1.2em"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="currentColor"
-              d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10s10-4.5 10-10S17.5 2 12 2m-1.9 16c-2.1 0-3.8-1.8-3.8-4s1.7-4 3.8-4c1.5 0 2.4.5 3.1 1.2l-1.5 1.5c-.4-.4-.8-.6-1.6-.6c-1.1 0-1.9.9-1.9 1.9s.8 1.9 1.9 1.9c.8 0 1.2-.3 1.7-.7l1.5 1.5c-.7.7-1.6 1.3-3.2 1.3m8.5-3h-2.2l-2.2 2.2l-1.6-1.6l2.2-2.2V11l3.8 3.8z"
-            />
-          </svg>
-        ),
-        href: "/docs/integrations/fastapi",
-      },
     ],
   },
   {
