@@ -1,0 +1,299 @@
+---
+title: SUTRA Multilingual Chat with PDF
+---
+
+The notebook demonstrates a Retrieval-Augmented Generation (RAG) system using the SUTRA LLM model by Two Platforms to answer questions about uploaded PDF documents in over 50 languages. It leverages LangChain for document processing and conversation management, FAISS for vector storage, and the SUTRA LLM for multilingual responses.
+
+## Overview
+
+The SUTRA LLM is a family of large multilingual language models (LMLMs) supporting over 50 languages, utilizing a dual-transformer approach combining Mixture of Experts (MoE) and Dense AI architectures. This notebook showcases a RAG-based application where users can upload a PDF, process its content, and ask questions in their preferred language. The system retrieves relevant document chunks using FAISS and generates answers with the SUTRA LLM (`sutra-v2` model), maintaining conversation history with LangChain’s memory module.
+
+The notebook includes:
+
+- Installation of required packages.
+- Setup of SUTRA and OpenAI API keys.
+- Loading and chunking PDF documents.
+- Creating embeddings and a FAISS vector store.
+- Setting up a conversational RAG chain with memory.
+- Querying the system in multiple languages.
+
+The final UI section, which provides an interactive widget-based interface, is excluded from this documentation as requested.
+
+## Prerequisites
+
+To run this Jupyter notebook, ensure you have the following:
+
+- **Python** (v3.8 or higher, preferably Python 3 as specified in the notebook)
+- **pip** (Python package manager)
+- **Jupyter Notebook** or **Google Colab** (designed for Colab)
+- **Required packages**:
+  - `langchain` (`pip install langchain`)
+  - `langchain_openai` (`pip install langchain-openai`)
+  - `langchain-community` (`pip install langchain-community`)
+  - `faiss-cpu` (`pip install faiss-cpu`)
+  - `pypdf` (`pip install pypdf`)
+  - `python-docx` (`pip install python-docx`)
+  - `requests` (`pip install requests`)
+  - `google-colab` (for Colab-specific secrets management, pre-installed in Colab)
+- A valid **Sutra API key** (obtain from [Two AI's SUTRA API page](https://www.two.ai/sutra/api))
+- An **OpenAI API key** (for embeddings, obtain from [OpenAI](https://platform.openai.com/account/api-keys))
+- A modern web browser (e.g., Chrome, Firefox) for accessing Colab
+
+## Setup Instructions
+
+### Option 1: Run in Google Colab
+
+1. Create a new Google Colab notebook by visiting [Google Colab](https://colab.research.google.com/) and clicking "New Notebook".
+2. Set up API keys in Colab Secrets:
+   - Go to the “Secrets” tab in Colab (lock icon in the sidebar).
+   - Add secrets named `SUTRA_API_KEY` and `OPENAI_API_KEY` with their respective values.
+3. Run the cells in sequence to install dependencies, set up the environment, process a PDF, and query the system.
+4. No local installation is required, as Colab provides the Python environment.
+
+### Option 2: Run Locally
+
+1. **Install Dependencies**:
+   ```bash
+   pip install langchain langchain-openai langchain-community faiss-cpu pypdf python-docx requests jupyter python-dotenv
+   ```
+2. **Set Up Environment Variables**:
+   Create a `.env` file in the project directory with:
+   ```bash
+   SUTRA_API_KEY=your_sutra_api_key_here
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+   Alternatively, set the environment variables manually:
+   ```bash
+   export SUTRA_API_KEY=your_sutra_api_key_here
+   export OPENAI_API_KEY=your_openai_api_key_here
+   ```
+3. **Save the Notebook**:
+   Save the provided code as `multilingual_chat_with_pdf.ipynb`.
+4. **Run the Notebook**:
+   Launch Jupyter Notebook:
+   ```bash
+   jupyter notebook
+   ```
+   Open `multilingual_chat_with_pdf.ipynb` in the browser and run the cells in sequence.
+
+## Notebook Code
+
+The following sections present the Python code from the notebook, organized by its steps (excluding the final UI section).
+
+### 1. Install Required Packages
+
+Install the necessary Python packages for document processing, embeddings, and LLM integration.
+
+```python
+!pip install -q langchain langchain_openai langchain-community faiss-cpu requests pypdf python-docx
+```
+
+### 2. Setup API Keys
+
+Configure SUTRA and OpenAI API keys, using Colab Secrets for security in Google Colab.
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
+```
+
+For local environments, load API keys from a `.env` file using `python-dotenv`:
+
+```python
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+os.environ["SUTRA_API_KEY"] = os.getenv("SUTRA_API_KEY")
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+```
+
+### 3. Load the PDF Document
+
+Load a PDF file (e.g., the example uses `NIPS-2017-attention-is-all-you-need-Paper.pdf`).
+
+```python
+from langchain_community.document_loaders import PyPDFLoader
+
+# Replace with your PDF path
+loader = PyPDFLoader("/content/NIPS-2017-attention-is-all-you-need-Paper.pdf")
+documents = loader.load()
+print(f"Loaded {len(documents)} pages.")
+```
+
+### 4. Split Documents into Chunks
+
+Split the PDF content into manageable chunks for vector storage.
+
+```python
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=1000,
+    chunk_overlap=100
+)
+chunks = text_splitter.split_documents(documents)
+print(f"Split into {len(chunks)} chunks.")
+```
+
+### 5. Create Embeddings and FAISS Vector Store
+
+Generate embeddings for the document chunks and store them in a FAISS vector store.
+
+```python
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
+
+embeddings = OpenAIEmbeddings()
+vectorstore = FAISS.from_documents(chunks, embeddings)
+retriever = vectorstore.as_retriever()
+```
+
+### 6. Set Up Conversation Memory and RAG Chain
+
+Configure conversation memory and a RAG chain for contextual question answering.
+
+```python
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationalRetrievalChain
+from langchain_openai import ChatOpenAI
+
+memory = ConversationBufferMemory(
+    memory_key="chat_history",
+    return_messages=True
+)
+
+# RAG model using Sutra
+rag_chain = ConversationalRetrievalChain.from_llm(
+    llm=ChatOpenAI(
+        api_key=os.getenv("SUTRA_API_KEY"),
+        base_url="https://api.two.ai/v2",
+        model="sutra-v2",
+        temperature=0.5
+    ),
+    retriever=retriever,
+    memory=memory
+)
+```
+
+### 7. Ask Questions (Supports Multiple Languages)
+
+Define a function to ask questions about the PDF in the specified language.
+
+```python
+def ask_question(question, language="English"):
+    rag_response = rag_chain.invoke(question)
+    context = rag_response["answer"]
+
+    prompt = f"""
+    You are a helpful assistant that answers questions about documents.
+    Use the following context to answer the question:
+
+    CONTEXT:
+    {context}
+
+    Please respond in {language}.
+
+    Question: {question}
+    """
+
+    chat = ChatOpenAI(
+        api_key=os.getenv("SUTRA_API_KEY"),
+        base_url="https://api.two.ai/v2",
+        model="sutra-v2",
+        temperature=0.7
+    )
+
+    from langchain.schema import HumanMessage
+    response = chat.invoke([HumanMessage(content=prompt)])
+    return response.content
+```
+
+### 8. Try It Out
+
+Test the system with a sample question in a chosen language.
+
+```python
+response = ask_question("what is transformer", language="Hindi")
+print("🔹 Response:\n", response)
+```
+
+## Functionality
+
+- **PDF Processing**: Uses `PyPDFLoader` to load PDF documents and `RecursiveCharacterTextSplitter` to split them into chunks (1000 characters with 100-character overlap).
+- **Vector Storage**: Creates embeddings with `OpenAIEmbeddings` and stores them in a FAISS vector store for efficient retrieval.
+- **RAG Pipeline**: Implements a `ConversationalRetrievalChain` with the SUTRA LLM (`sutra-v2`) to retrieve relevant chunks and generate answers, maintaining context with `ConversationBufferMemory`.
+- **Multilingual Support**: Supports over 50 languages (e.g., English, Hindi, Tamil) via SUTRA’s multilingual capabilities, specified in the `ask_question` function.
+- **Question Answering**: Answers questions based on the PDF content, using retrieved context to ensure relevance and accuracy.
+- **Error Handling**: Implicitly handles errors through try-except blocks in the UI section (excluded here) and requires proper API key setup.
+
+## Usage Examples
+
+### Example 1: English Query
+
+1. Load the PDF (`NIPS-2017-attention-is-all-you-need-Paper.pdf`).
+2. Run the `ask_question` function:
+   ```python
+   response = ask_question("What is the Transformer model?", language="English")
+   print(response)
+   ```
+3. Expected output:
+   ```
+   The Transformer is a neural network architecture introduced in the 2017 paper "Attention Is All You Need" by Vaswani et al. It relies entirely on attention mechanisms, eliminating the need for recurrent or convolutional layers. The model consists of an encoder-decoder structure, where the encoder processes the input sequence into continuous representations, and the decoder generates the output sequence. Key features include self-attention, multi-headed attention, and parallelization, enabling faster training and state-of-the-art performance in tasks like machine translation.
+   ```
+
+### Example 2: Hindi Query
+
+1. Load the same PDF.
+2. Run the `ask_question` function:
+   ```python
+   response = ask_question("What is transformer", language="Hindi")
+   print(response)
+   ```
+3. Expected output (as shown in the notebook):
+   ```
+   Transformer एक न्यूरल नेटवर्क आर्किटेक्चर है जो पूरी तरह से ध्यान तंत्र (attention mechanisms) पर निर्भर करता है, जिससे पुनरावृत्त (recurrent) या संकुचन (convolutional) परतों की आवश्यकता समाप्त हो जाती है। इसे 2017 में वासवानी और अन्य द्वारा लिखी गई पत्र "Attention Is All You Need" में पेश किया गया था।
+   ...
+   कुल मिलाकर, Transformer आर्किटेक्चर आधुनिक गहरी सीखने के अनुप्रयोगों में एक मौलिक आधार बन गया है।
+   ```
+
+### Example 3: Spanish Query
+
+1. Load the PDF.
+2. Run:
+   ```python
+   response = ask_question("¿Qué es el modelo Transformer?", language="Spanish")
+   print(response)
+   ```
+3. Expected output:
+   ```
+   El Transformer es una arquitectura de red neuronal presentada en el artículo de 2017 "Attention Is All You Need" por Vaswani et al. Se basa completamente en mecanismos de atención, eliminando la necesidad de capas recurrentes o convolucionales. Consta de una estructura codificador-decodificador, donde el codificador procesa la secuencia de entrada en representaciones continuas, y el decodificador genera la secuencia de salida. Características clave incluyen la autoatención, atención multi-cabeza y paralelización, lo que permite un entrenamiento más rápido y un rendimiento de vanguardia en tareas como la traducción automática.
+   ```
+
+## Notes
+
+- **API Keys**: Requires both a SUTRA API key (for the LLM) and an OpenAI API key (for embeddings). Obtain from [Two AI](https://www.two.ai/sutra/api) and [OpenAI](https://platform.openai.com/account/api-keys), respectively, and store securely in Colab Secrets or a `.env` file.
+- **PDF Processing**: Uses `PyPDFLoader` for text extraction. Scanned or image-based PDFs may require OCR tools (not included). Update the PDF path in Step 3 to match your file location.
+- **Multilingual Support**: SUTRA supports over 50 languages, but response quality depends on the model’s proficiency in the selected language.
+- **RAG Limitations**: Answer accuracy relies on the quality of retrieved chunks and the PDF’s content. Adjust `chunk_size` (1000) or `chunk_overlap` (100) for better performance if needed.
+- **Conversation Memory**: Maintains chat history via `ConversationBufferMemory`, but the notebook uses a deprecated version. Consider updating to LangChain’s latest memory module (see warning in Step 6).
+- **Dependencies**: Ensure `faiss-cpu` is used for local setups. For GPU support, install `faiss-gpu`.
+- **Extensibility**:
+  - Add support for other file formats (e.g., `.docx`) using `python-docx`.
+  - Enhance the RAG chain with custom prompts or additional context.
+  - Integrate a UI (like the excluded widget-based interface) for interactive use.
+- **Limitations**:
+  - Requires a stable internet connection for API calls.
+  - Colab’s free tier may have resource constraints for large PDFs or frequent queries.
+  - The notebook assumes the PDF is text-based and accessible at the specified path.
+
+## Resources
+
+- [Sutra API Documentation](https://www.two.ai/sutra/api)
+- [LangChain Documentation](https://python.langchain.com/docs/get_started/introduction)
+- [FAISS Documentation](https://github.com/facebookresearch/faiss)
+- [PyPDF Documentation](https://pypdf.readthedocs.io/en/stable/)

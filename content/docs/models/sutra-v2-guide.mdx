@@ -27,14 +27,17 @@ Before you begin:
 
 ## 🔐 Step 2: Set Your API Key
 
-In **Google Colab**:
+Set your SUTRA API key as an environment variable:
 
-- Click the 🔑 icon in the left sidebar
-- Add a new secret named: `SUTRA_API_KEY`
+```bash
+export SUTRA_API_KEY="your-api-key-here"
+```
+
+Then in your Python code:
 
 ```python
-from google.colab import userdata
-SUTRA_API_KEY = userdata.get("SUTRA_API_KEY")
+import os
+SUTRA_API_KEY = os.getenv("SUTRA_API_KEY")
 ```
 
 ---
@@ -110,5 +113,3 @@ get_response("¿Qué es la inteligencia artificial?", "Spanish")
 - **Empty Response**: Increase `max_tokens` or adjust your prompt
 
 ---
-
-> ✅ Tip: You can duplicate and adapt this notebook for internal testing, demos, or custom workflows!

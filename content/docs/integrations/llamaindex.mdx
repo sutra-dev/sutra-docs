@@ -1,82 +1,124 @@
 ---
 title: LlamaIndex with SUTRA
-description: Integrate SUTRA models with LlamaIndex for multilingual RAG and reasoning-rich applications.
 ---
 
-This guide walks you through integrating **SUTRA** models (`sutra-v2` or `sutra-r0`) with **LlamaIndex** (formerly GPT Index), enabling **RAG (retrieval-augmented generation)** workflows for multilingual and reasoning-rich document querying.
+This guide walks you through using **SUTRA models (V2 or R0)** with LlamaIndex for building powerful RAG applications. LlamaIndex enables you to create document-aware chatbots and multilingual search systems using SUTRA's language capabilities across 50+ languages.
 
 ## 📦 Step 1: Install Dependencies
 
 ```bash
-pip install -qU llama-index openai
+!pip install -qU llama-index llama-index-llms-openai-like llama-index-vector-stores-faiss faiss-cpu ipywidgets
 ```
 
-## 🔐 Step 2: Setup API Key
+## 🔐 Step 2: Setup API Keys
 
 ```python
 import os
-os.environ["OPENAI_API_KEY"] = "YOUR_SUTRA_API_KEY"
-```
+from llama_index.llms.openai_like import OpenAILike
 
-> **Note:** LlamaIndex uses the `OPENAI_API_KEY` environment variable.
-
-## ⚙️ Step 3: Configure LlamaIndex to Use SUTRA
-
-```python
-from llama_index.llms import OpenAI
-from llama_index import VectorStoreIndex, SimpleDirectoryReader
-
-llm = OpenAI(
-    model="sutra-v2",  # Or "sutra-r0" for reasoning
-    api_base="https://api.two.ai/v2"
-)
-```
-
-## 📂 Step 4: Load & Index Documents
-
-```python
-documents = SimpleDirectoryReader("data").load_data()
-index = VectorStoreIndex.from_documents(documents, llm=llm)
-```
-
-## 🔍 Step 5: Query the Index
-
-```python
-query_engine = index.as_query_engine()
-response = query_engine.query("Summarize this content in Hindi.")
-print(response)
-```
-
----
-
-## 🧠 Advanced: Use `sutra-r0` for Reasoning-Based Retrieval
-
-```python
-r0_llm = OpenAI(
-    model="sutra-r0",
-    api_base="https://api.two.ai/v2"
+# Initialize Sutra as an OpenAI-compatible LLM
+llm = OpenAILike(
+    model="sutra-v2",                             # Model name
+    api_base="https://api.two.ai/v2",            # Sutra API base
+    api_key=os.getenv("SUTRA_API_KEY"),          # API Key from environment
+    is_chat_model=True                           # Set True for chat-based models
 )
 
-index = VectorStoreIndex.from_documents(documents, llm=r0_llm)
-query_engine = index.as_query_engine()
-response = query_engine.query("What logical arguments are presented in this article?")
-print(response)
 ```
 
----
+## ⚙️ Step 3: Test SUTRA with Simple Completion
+
+Let's test the SUTRA model with a simple completion task. This example demonstrates basic text generation:
+
+```python
+
+# Send a message in English
+response = llm.complete("Give me 3 tips to stay productive while working from home.")
+print(response.text)
+```
+
+## 🔍 Step 4: Multilingual Capabilities
+
+```python
+from llama_index.llms.openai_like import OpenAILike
+
+# Initialize Sutra LLM with necessary parameters
+llm = OpenAILike(
+    model="sutra-v2",                    # Sutra model name
+    api_base="https://api.two.ai/v2",    # Sutra API base URL
+    api_key=os.getenv("SUTRA_API_KEY"),  # Sutra API key
+    is_chat_model=True,                  # Mandatory: Set to True for chat-based models
+)
+
+# Multilingual prompts
+prompts = [
+    "తెలుగులో ఒక కథ చెప్పు?",                         # Telugu
+    "Une histoire en français, s'il vous plaît.",     # French
+    "Por favor, cuéntame una historia en español.",   # Spanish
+    "कृपया हिंदी में एक कहानी सुनाइए।",                    # Hindi
+    "Bitte erzähle mir eine Geschichte auf Deutsch."  # German
+]
+
+# Loop through each prompt and print the response
+for prompt in prompts:
+    response = llm.complete(prompt)
+    print(f"\nPrompt: {prompt}")
+    print(f"Response: {str(response)}\n")
+```
+
+## 🧠 Step 5: Interactive Chat Interface
+
+```python
+import os
+from llama_index.llms.openai_like import OpenAILike
+from llama_index.core.llms import ChatMessage
+
+
+# Initialize the Sutra model via LlamaIndex
+llm = OpenAILike(
+    model="sutra-v2",                    # Sutra model name
+    api_base="https://api.two.ai/v2",    # Sutra API base URL
+    api_key=os.getenv("SUTRA_API_KEY"),  # Sutra API key
+    is_chat_model=True,                  # Mandatory for chat-based models
+)
+
+# Start the chatbot conversation loop
+print("Chatbot: Hello! Type 'exit' to end the conversation.\n")
+
+chat_history = []
+
+while True:
+    user_input = input("You: ")  # Get user input
+
+    if user_input.lower() == "exit":
+        print("Chatbot: Goodbye! 👋")
+        break
+
+    # Add user message to chat history
+    chat_history.append(ChatMessage(role="user", content=user_input))
+
+    # Get response from Sutra via LlamaIndex
+    response = llm.chat(chat_history)
+
+    # Print response content
+    print("Chatbot:", response.message.content)
+
+    # Add AI response to chat history
+    chat_history.append(response.message)
+```
 
 ## 📎 Tips
 
-- ✅ Use `sutra-v2` for **multilingual summarization, Q&A, translation**.
-- ✅ Use `sutra-r0` for **logic-driven prompts and analysis**.
-- ✂️ Preprocess large documents for better **chunking and retrieval**.
-
----
+- Always set `is_chat_model=True` when using SUTRA V2 for chat functionality
+- For chat applications, maintain the chat history as shown in Step 5
+- Temperature settings affect response creativity:
+  - Lower (0.2-0.4) for consistent, factual responses
+  - Higher (0.7-0.9) for more creative and varied outputs
+- Remember to handle your API key securely using environment variables
 
 ## 🔗 Resources
 
 - [LlamaIndex Documentation](https://docs.llamaindex.ai/)
-- [SUTRA Tokenizer](https://sutra.two.ai/tokenizer)
 - [Get Your API Key](https://www.two.ai/sutra/api)
 
 ---

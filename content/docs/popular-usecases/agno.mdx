@@ -21,23 +21,23 @@ This notebook demonstrates how to use **SUTRA** with **Agno** (formerly PhiData)
 ```python
 from agno.agent import Agent
 import os
-from openai import OpenAI
+from agno.models.openai.like import OpenAILike
+
 
 # Set SUTRA API key
-api_key = os.getenv("SUTRA_API_KEY", "YOUR_SUTRA_API_KEY")
+api_key = os.getenv("SUTRA_API_KEY")
 
-# Initialize OpenAI client for SUTRA
-client = OpenAI(
-    api_key=api_key,
-    base_url="https://api.two.ai/v2"
-)
 
-# Create Agno agent with SUTRA-V2
+# Initialize the Agent with Sutra model via OpenAILike wrapper
 agent = Agent(
-    model="sutra-v2",
+    model=OpenAILike(
+        id="sutra-v2",
+        api_key=api_key,
+        base_url="https://api.two.ai/v2"
+    ),
+    markdown=True,
     description="A multilingual assistant powered by SUTRA-V2",
     instructions=["Answer concisely in the requested language."],
-    client=client
 )
 ```
 

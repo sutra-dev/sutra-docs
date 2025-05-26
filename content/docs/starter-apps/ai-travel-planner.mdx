@@ -1,0 +1,294 @@
+---
+title: SUTRA AI Travel Planner - Streamlit App with LangChain
+---
+
+This MDX file documents the **Streamlit-based SUTRA AI Travel Planner** application, sourced from the [Sutra Cookbook repository](https://github.com/sutra-dev/sutra-cookbook/blob/main/starter-apps/ai-travel-planner/app.py). The app leverages the SUTRA LLM model via LangChain to generate personalized travel itineraries based on user inputs such as destination, travel dates, budget, and preferences. It uses Streamlit for a user-friendly interface and supports streaming responses for a dynamic experience.
+
+## Overview
+
+The SUTRA AI Travel Planner allows users to input travel details (destination, start/end dates, budget, and preferences like adventure or relaxation) and generates a tailored travel itinerary in the selected language. The app uses the SUTRA LLM (`sutra-v2` model) for itinerary generation, Streamlit for the UI, and maintains a history of generated itineraries using session state.
+
+## Prerequisites
+
+To run this Streamlit app, ensure you have the following installed:
+
+- **Python** (v3.8 or higher)
+- **pip** (Python package manager)
+- **Streamlit** (`pip install streamlit`)
+- **LangChain OpenAI** (`pip install langchain-openai`)
+- **python-dotenv** (`pip install python-dotenv`)
+- A valid **Sutra API key** (set in a `.env` file as `SUTRA_API_KEY`)
+- A modern web browser (e.g., Chrome, Firefox)
+
+## Setup Instructions
+
+1. **Install Dependencies**:
+
+   ```bash
+   pip install streamlit langchain-openai python-dotenv
+   ```
+
+2. **Set Up Environment Variables**:
+   Create a `.env` file in the project directory with the following content:
+
+   ```bash
+   SUTRA_API_KEY=your_sutra_api_key_here
+   ```
+
+3. **Save the Code**:
+   Save the provided code in a file named `app.py`.
+
+4. **Run the Application**:
+
+   ```bash
+   streamlit run app.py
+   ```
+
+   This will start the Streamlit server, and the app will be accessible at `http://localhost:8501`.
+
+## Streamlit App Code
+
+Below is the complete Python code for the Streamlit app, implementing the AI Travel Planner functionality.
+
+```python
+import streamlit as st
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
+from langchain.callbacks.base import BaseCallbackHandler
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+api_key = os.getenv("SUTRA_API_KEY")
+
+# Page configuration
+st.set_page_config(
+    page_title="Sutra AI Travel Planner",
+    page_icon="✈️",
+    layout="wide"
+)
+
+# Define supported languages
+languages = [
+    "English", "Hindi", "Gujarati", "Bengali", "Tamil",
+    "Telugu", "Kannada", "Malayalam", "Punjabi", "Marathi",
+    "Urdu", "Assamese", "Odia", "Sanskrit", "Korean",
+    "Japanese", "Arabic", "French", "German", "Spanish",
+    "Portuguese", "Russian", "Chinese", "Vietnamese", "Thai",
+    "Indonesian", "Turkish", "Polish", "Ukrainian", "Dutch",
+    "Italian", "Greek", "Hebrew", "Persian", "Swedish",
+    "Norwegian", "Danish", "Finnish", "Czech", "Hungarian",
+    "Romanian", "Bulgarian", "Croatian", "Serbian", "Slovak",
+    "Slovenian", "Estonian", "Latvian", "Lithuanian", "Malay",
+    "Tagalog", "Swahili"
+]
+
+# Streaming callback handler
+class StreamHandler(BaseCallbackHandler):
+    def __init__(self, container, initial_text=""):
+        self.container = container
+        self.text = initial_text
+
+    def on_llm_new_token(self, token: str, **kwargs):
+        self.text += token
+        self.container.markdown(self.text)
+
+# Initialize the ChatOpenAI model - base instance for caching
+@st.cache_resource
+def get_base_chat_model():
+    return ChatOpenAI(
+        api_key=os.getenv("SUTRA_API_KEY"),
+        base_url="https://api.two.ai/v2",
+        model="sutra-v2",
+        temperature=0.7,
+    )
+
+# Create a streaming version of the model with callback handler
+def get_streaming_chat_model(callback_handler=None):
+    return ChatOpenAI(
+        api_key=os.getenv("SUTRA_API_KEY"),
+        base_url="https://api.two.ai/v2",
+        model="sutra-v2",
+        temperature=0.7,
+        streaming=True,
+        callbacks=[callback_handler] if callback_handler else None
+    )
+
+# Sidebar for input options
+st.sidebar.image("https://framerusercontent.com/images/3Ca34Pogzn9I3a7uTsNSlfs9Bdk.png", use_container_width=True)
+with st.sidebar:
+    st.title("✈️ Sutra AI Travel Planner")
+
+    # Language selector
+    selected_language = st.selectbox("Select language for itinerary:", languages)
+
+    # Travel input fields
+    destination = st.text_input("Destination", placeholder="e.g., Paris, France")
+    start_date = st.date_input("Start Date")
+    end_date = st.date_input("End Date")
+    budget = st.number_input("Budget (USD)", min_value=0, step=100)
+    preferences = st.text_area("Preferences", placeholder="e.g., Adventure, Relaxation, Culture")
+
+    st.divider()
+    st.markdown(f"Generating itinerary in: **{selected_language}**")
+
+    # About section
+    st.markdown("### About Sutra AI Travel Planner")
+    st.markdown("This app generates personalized travel itineraries using the Sutra LLM, supporting 50+ languages.")
+
+# Main app title
+st.markdown(
+    f'<h1><img src="https://framerusercontent.com/images/9vH8BcjXKRcC5OrSfkohhSyDgX0.png" width="60"/> Sutra AI Travel Planner 🤖</h1>',
+    unsafe_allow_html=True
+)
+
+# Initialize session state for itineraries
+if "itineraries" not in st.session_state:
+    st.session_state.itineraries = []
+
+# Process input and generate itinerary
+if st.button("Generate Itinerary"):
+    if destination and start_date and end_date and budget:
+        try:
+            # Create message placeholder
+            with st.container():
+                st.markdown("### Generated Itinerary")
+                response_placeholder = st.empty()
+
+                # Create a stream handler
+                stream_handler = StreamHandler(response_placeholder)
+
+                # Get streaming model with handler
+                chat = get_streaming_chat_model(stream_handler)
+
+                # Create system message for itinerary generation
+                system_message = f"You are a helpful assistant. Generate a detailed travel itinerary for a trip to {destination} from {start_date} to {end_date} with a budget of ${budget}. Consider the following preferences: {preferences}. Provide the itinerary in {selected_language} and format it as a daily schedule with activities, dining suggestions, and accommodation recommendations."
+
+                # Generate itinerary
+                messages = [
+                    HumanMessage(content=system_message)
+                ]
+
+                response = chat.invoke(messages)
+                itinerary = response.content
+
+                # Add itinerary to session state
+                st.session_state.itineraries.append({"content": itinerary})
+
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
+            if "API key" in str(e):
+                st.error("Please check your Sutra API key in the environment variables.")
+    else:
+        st.error("Please fill in all required fields: Destination, Start Date, End Date, and Budget.")
+
+# Display generated itineraries
+for item in st.session_state.itineraries:
+    with st.container():
+        st.markdown(item["content"])
+```
+
+## Functionality
+
+- **Input Options**: Users provide travel details via a sidebar, including destination, start/end dates, budget, and preferences (e.g., adventure, culture, relaxation).
+- **Language Selection**: A dropdown supports over 50 languages (e.g., English, Hindi, Spanish) for itinerary generation.
+- **Itinerary Generation**: The app generates a detailed daily itinerary with activities, dining, and accommodation suggestions using the SUTRA LLM (`sutra-v2` model), formatted in the selected language.
+- **Streaming Responses**: A custom `StreamHandler` class streams the itinerary for a dynamic, real-time display.
+- **Session State**: Persists generated itineraries using `st.session_state`.
+- **Error Handling**: Displays errors for invalid API keys, missing input fields, or API issues.
+- **Styling**: Uses custom HTML for the title with an icon and a logo in the sidebar for branding, consistent with the Sutra Cookbook’s visual identity.
+
+## Running the App
+
+1. Ensure all dependencies are installed and the `.env` file contains a valid `SUTRA_API_KEY`.
+2. Save the code as `app.py`.
+3. Run:
+   ```bash
+   streamlit run app.py
+   ```
+4. Open `http://localhost:8501` in your browser.
+5. In the sidebar, select a language (e.g., French), enter a destination (e.g., Paris, France), start/end dates, budget (e.g., $2000), and preferences (e.g., Culture, Food).
+6. Click the “Generate Itinerary” button to receive a detailed itinerary in the chosen language, displayed in a dedicated section.
+
+## Usage Examples
+
+### Example 1: English Itinerary
+
+1. Select “English” from the sidebar.
+2. Enter:
+   - Destination: New York City, USA
+   - Start Date: 2025-06-01
+   - End Date: 2025-06-07
+   - Budget: $3000
+   - Preferences: Culture, Food
+3. Click “Generate Itinerary.”
+4. Receive an itinerary like:
+
+   ```
+   ### Travel Itinerary for New York City (June 1 - June 7, 2025)
+   **Day 1: Arrival and Exploration**
+   - Morning: Arrive in NYC, check into The Standard Hotel ($200/night).
+   - Afternoon: Visit the Metropolitan Museum of Art ($25 entry).
+   - Evening: Dinner at Le Bernardin (seafood, ~$100/person).
+
+   **Day 2: Cultural Immersion**
+   - Morning: Tour the Museum of Modern Art ($25 entry).
+   - Afternoon: Stroll through Central Park.
+   - Evening: Dinner at Momofuku Noodle Bar (~$50/person).
+   ...
+   ```
+
+5. The itinerary is stored in `st.session_state.itineraries` and displayed below the “Generated Itinerary” header.
+
+### Example 2: Hindi Itinerary
+
+1. Select “Hindi” from the sidebar.
+2. Enter:
+   - Destination: Jaipur, India
+   - Start Date: 2025-07-01
+   - End Date: 2025-07-05
+   - Budget: $1000
+   - Preferences: History, Local Cuisine
+3. Click “Generate Itinerary.”
+4. Receive an itinerary like:
+
+   ```
+   ### जयपुर के लिए यात्रा योजना (1 जुलाई - 5 जुलाई, 2025)
+   **दिन 1: आगमन और स्थानीय अन्वेषण**
+   - सुबह: जयपुर पहुंचें, रमाडा होटल में चेक-इन करें ($50/रात).
+   - दोपहर: हवा महल का दौरा ($5 प्रवेश शुल्क).
+   - शाम: चोखी धानी में राजस्थानी रात्रिभोज (~$20/व्यक्ति).
+
+   **दिन 2: ऐतिहासिक स्थल**
+   - सुबह: आमेर किला घूमें ($10 प्रवेश शुल्क).
+   - दोपहर: जंतर मंतर का दौरा.
+   - शाम: लस्सीवाला में स्थानीय लस्सी (~$5).
+   ...
+   ```
+
+5. The itinerary is appended to the session state and displayed in the app.
+
+## Notes
+
+- **API Key**: The app requires a valid Sutra API key, obtainable from [Two AI's API service](https://www.two.ai/sutra/api). Ensure it’s correctly set in the `.env` file.
+- **Multilingual Support**: The app relies on the SUTRA LLM’s ability to generate itineraries in the selected language. Verify API support for the chosen language.
+- **Itinerary Generation**: The app generates a detailed daily schedule based on user inputs. The quality depends on the SUTRA LLM’s capabilities and the specificity of user preferences.
+- **Streaming**: The `StreamHandler` class ensures a smooth, real-time display of the itinerary, enhancing user engagement.
+- **Styling**: Minimal custom CSS and HTML are used for branding (e.g., logo and title). Additional styling can be implemented using Streamlit’s `st.markdown`.
+- **Limitations**:
+  - Requires a stable internet connection for API calls.
+  - The app does not integrate real-time data for flights, hotels, or weather, unlike some other travel planners (e.g., [Tripeasy](https://github.com/Pushkal-vashishtha/Tripeasy) or [Travel Itinerary Generator](https://github.com/Sanjeev-Kumar78/Travel-Itinerary-Generator)), which use APIs like Google Maps or Visual Crossing Weather.[](https://github.com/Pushkal-vashishtha/Tripeasy)[](https://github.com/Sanjeev-Kumar78/Travel-Itinerary-Generator)
+  - Budget and date inputs are used as prompts but not validated for feasibility.
+- **Extensibility**:
+  - Integrate APIs like Google Maps for location visualization or Visual Crossing Weather for weather forecasts.[](https://github.com/Sanjeev-Kumar78/Travel-Itinerary-Generator)
+  - Add input validation for dates (e.g., ensure end date is after start date) or budget constraints.
+  - Allow users to save itineraries to a database or export them as PDF files.
+  - Expand preferences with predefined categories (e.g., family-friendly, budget travel) for more tailored prompts.
+
+## Resources
+
+- [Complete Source Code](https://github.com/sutra-dev/sutra-cookbook/tree/main/starter-apps/ai-travel-planner)
+- [Sutra API Documentation](https://www.two.ai/sutra/api)
+- [LangChain Documentation](https://python.langchain.com/docs/get_started/introduction)
+- [Streamlit Documentation](https://docs.streamlit.io)

@@ -144,6 +144,44 @@ export const contents: Content[] = [
           </svg>
         ),
       },
+      {
+        title: "Model Pricing",
+        href: "/docs/models/model-pricing",
+        icon: () => (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="1.2em"
+            height="1.2em"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              fillRule="evenodd"
+              d="M3.172 5.172C2 6.343 2 8.229 2 12c0 3.771 0 5.657 1.172 6.828C4.343 20 6.229 20 10 20h4c3.771 0 5.657 0 6.828-1.172C22 17.657 22 15.771 22 12c0-3.771 0-5.657-1.172-6.828C19.657 4 17.771 4 14 4h-4C6.229 4 4.343 4 3.172 5.172M8 13a1 1 0 1 0 0-2a1 1 0 0 0 0 2m5-1a1 1 0 1 1-2 0a1 1 0 0 1 2 0m3 1a1 1 0 1 0 0-2a1 1 0 0 0 0 2"
+              clipRule="evenodd"
+            />
+          </svg>
+        ),
+      },
+      {
+        title: "Model Deprications",
+        href: "/docs/models/model-deprications",
+        icon: () => (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="1.2em"
+            height="1.2em"
+            viewBox="0 0 24 24"
+          >
+            <path
+              fill="currentColor"
+              fillRule="evenodd"
+              d="M3.172 5.172C2 6.343 2 8.229 2 12c0 3.771 0 5.657 1.172 6.828C4.343 20 6.229 20 10 20h4c3.771 0 5.657 0 6.828-1.172C22 17.657 22 15.771 22 12c0-3.771 0-5.657-1.172-6.828C19.657 4 17.771 4 14 4h-4C6.229 4 4.343 4 3.172 5.172M8 13a1 1 0 1 0 0-2a1 1 0 0 0 0 2m5-1a1 1 0 1 1-2 0a1 1 0 0 1 2 0m3 1a1 1 0 1 0 0-2a1 1 0 0 0 0 2"
+              clipRule="evenodd"
+            />
+          </svg>
+        ),
+      },
     ],
   },
   {
@@ -375,7 +413,7 @@ export const contents: Content[] = [
     list: [
       {
         title: "Overview",
-        href: "/docs/features/sutra-features-overview",
+        href: "/docs/features/overview",
         icon: Icons.book,
       },
       {
@@ -428,13 +466,18 @@ export const contents: Content[] = [
         icon: Icons.book,
       },
       {
+        title: "Gujarati",
+        href: "/docs/multilingual/indian-languages/gujrati",
+        icon: Icons.book,
+      },
+      {
         title: "Marathi",
         href: "/docs/multilingual/indian-languages/marathi",
         icon: Icons.book,
       },
       {
-        title: "Gujarati",
-        href: "/docs/multilingual/indian-languages/gujrati",
+        title: "Tamil",
+        href: "/docs/multilingual/indian-languages/tamil",
         icon: Icons.book,
       },
       {
@@ -464,6 +507,11 @@ export const contents: Content[] = [
         icon: Icons.book,
       },
       {
+        title: "Japanese",
+        href: "/docs/multilingual/foreign-languages/japanese",
+        icon: Icons.book,
+      },
+      {
         title: "German",
         href: "/docs/multilingual/foreign-languages/german",
         icon: Icons.book,
@@ -487,7 +535,7 @@ export const contents: Content[] = [
     ),
     list: [
       {
-        title: "SUTRA + Agno Integration",
+        title: "SUTRA + AGNO Integration",
         href: "/docs/popular-usecases/agno",
         icon: Icons.book,
       },
@@ -499,6 +547,16 @@ export const contents: Content[] = [
       {
         title: "Function Calling with LangChain",
         href: "/docs/popular-usecases/langchain-toolcalling",
+        icon: Icons.book,
+      },
+      {
+        title: "RAG: Chat with PDF",
+        href: "/docs/popular-usecases/chat-with-pdf",
+        icon: Icons.book,
+      },
+      {
+        title: "FastAPI",
+        href: "/docs/popular-usecases/fastapi",
         icon: Icons.book,
       },
     ],
@@ -539,11 +597,11 @@ export const contents: Content[] = [
         href: "/docs/starter-apps/mcq-generator",
         icon: Icons.book,
       },
-      // {
-      //   title: "Multilingual Travel Agent",
-      //   href: "/docs/Starter-Apps/travel-agent",
-      //   icon: Icons.book,
-      // },
+      {
+        title: "Multilingual Travel Agent",
+        href: "/docs/starter-apps/ai-travel-planner",
+        icon: Icons.book,
+      },
     ],
   },
 ];

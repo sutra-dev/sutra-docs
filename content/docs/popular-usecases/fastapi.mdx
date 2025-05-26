@@ -1,0 +1,133 @@
+---
+title: FastAPI with SUTRA
+---
+
+This guide walks you through building a **FastAPI** application integrated with **SUTRA models (V2 or R0)** to create scalable, RESTful AI-powered endpoints. Leverage SUTRA’s multilingual and reasoning capabilities to build APIs for chat, reasoning, or custom AI workflows.
+
+## 📦 Step 1: Install Dependencies
+
+Install FastAPI, Uvicorn (ASGI server), and the OpenAI SDK:
+
+```bash
+!pip install -qU fastapi uvicorn openai
+```
+
+## 🔐 Step 2: Authenticate with Your API Key
+
+Obtain your SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api) and store it securely (e.g., as an environment variable).
+
+```python
+import os
+SUTRA_API_KEY = os.getenv("SUTRA_API_KEY", "YOUR_SUTRA_API_KEY")
+```
+
+## ⚙️ Step 3: Set Up FastAPI with SUTRA Client
+
+Create a FastAPI application and initialize the SUTRA client using the OpenAI SDK.
+
+```python
+from fastapi import FastAPI
+from openai import OpenAI
+from pydantic import BaseModel
+
+app = FastAPI(title="SUTRA API with FastAPI")
+
+# Initialize SUTRA client
+client = OpenAI(
+    api_key=SUTRA_API_KEY,
+    base_url="https://api.two.ai/v2"
+)
+
+# Define request model
+class ChatRequest(BaseModel):
+    prompt: str
+    model: str = "sutra-v2"  # Default to sutra-v2, can use sutra-r0
+    max_tokens: int = 1024
+    temperature: float = 0.7
+```
+
+## 💬 Step 4: Create a Basic Chat Endpoint
+
+Add an endpoint to handle chat requests using `sutra-v2` for multilingual responses.
+
+```python
+@app.post("/chat")
+async def chat(request: ChatRequest):
+    try:
+        response = client.chat.completions.create(
+            model=request.model,
+            messages=[
+                {"role": "system", "content": "You are a helpful AI that answers concisely in the requested language."},
+                {"role": "user", "content": request.prompt}
+            ],
+            max_tokens=request.max_tokens,
+            temperature=request.temperature
+        )
+        return {"response": response.choices[0].message.content}
+    except Exception as e:
+        return {"error": str(e)}
+```
+
+## 🧠 Step 5: Create a Reasoning Endpoint with SUTRA-R0
+
+Add an endpoint for structured reasoning using `sutra-r0`, ideal for complex queries like legal or analytical tasks.
+
+```python
+class ReasoningRequest(BaseModel):
+    prompt: str
+    max_tokens: int = 1024
+    temperature: float = 0.7
+
+@app.post("/reason")
+async def reason(request: ReasoningRequest):
+    try:
+        response = client.chat.completions.create(
+            model="sutra-r0",
+            messages=[
+                {"role": "system", "content": "You are a reasoning expert. Break down the query into logical steps before answering."},
+                {"role": "user", "content": request.prompt}
+            ],
+            max_tokens=request.max_tokens,
+            temperature=request.temperature
+        )
+        return {"response": response.choices[0].message.content}
+    except Exception as e:
+        return {"error": str(e)}
+```
+
+## 🚀 Step 6: Run the FastAPI Application
+
+Run the application using Uvicorn:
+
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
+
+Test the endpoints using `curl` or a tool like Postman:
+
+- **Chat Endpoint**:
+
+```bash
+curl -X POST "http://localhost:8000/chat" -H "Content-Type: application/json" -d '{"prompt": "Explain AI benefits in Spanish", "model": "sutra-v2"}'
+```
+
+- **Reasoning Endpoint**:
+
+```bash
+curl -X POST "http://localhost:8000/reason" -H "Content-Type: application/json" -d '{"prompt": "If a contract states \"Party A is liable unless Party B notifies within 7 days,\" who is liable if notice is given on day 8?"}'
+```
+
+## 🛠 Troubleshooting
+
+- **Invalid API Key**: Ensure `SUTRA_API_KEY` is set correctly in your environment or code. Avoid hardcoding in production.
+- **Model Not Found**: Verify you’re using `sutra-v2` or `sutra-r0`. SUTRA-V1 was deprecated on March 22, 2025.
+- **Server Errors**: Check that Uvicorn is running and the port (e.g., 8000) is not blocked.
+- **Rate Limits**: If you hit rate limits, reduce request frequency or contact TWO AI at [https://www.two.ai/support](https://www.two.ai/support).
+
+## 📎 Resources
+
+- [FastAPI Documentation](https://fastapi.tiangolo.com)
+- [SUTRA API](https://www.two.ai/sutra/api)
+- [SUTRA GitHub Repository](https://github.com/sutra-dev/sutra-cookbook)
+
+Use **FastAPI + SUTRA** to build scalable, RESTful APIs with multilingual chat and advanced reasoning capabilities for production-ready AI applications.

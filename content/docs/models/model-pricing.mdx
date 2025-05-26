@@ -1,0 +1,78 @@
+---
+title: Models Pricing
+---
+
+# SUTRA Model Pricing
+
+💸 **Explore SUTRA Model Pricing**  
+This guide provides an overview of pricing for TWO AI’s SUTRA models, a family of multilingual and quantitative AI models designed for conversation, search, and advanced analytics. SUTRA models are available via usage-based pricing through simple-to-integrate APIs, empowering developers and enterprises with cost-efficient AI solutions.
+
+## 🔧 Overview
+
+SUTRA models, including SUTRA-V2, SUTRA-R0, SUTRA-Q0, and others, are offered as a Model as a Service (MaaS) with pricing based on token usage. Tokens represent the currency of AI processing, where input and output text is broken down into tokens (roughly equivalent to words or characters, depending on the language). The SUTRA API is compatible with OpenAI’s SDK, making integration seamless for developers.
+
+## 📊 Pricing Structure
+
+TWO AI offers competitive, usage-based pricing for its SUTRA models. Below are the known pricing details for specific models:
+
+- **SUTRA-Pro**: $1 per 1 million tokens (input and output). Ideal for high-performance conversational and instruction-based tasks across 50+ languages.[](https://www.deeplearning.ai/the-batch/startup-two-ai-launches-sutra-a-multilingual-model-for-south-asian-markets/)
+- **SUTRA-Light**: $0.75 per 1 million tokens (input and output). Optimized for low-latency tasks like conversation and summarization.[](https://www.deeplearning.ai/the-batch/startup-two-ai-launches-sutra-a-multilingual-model-for-south-asian-markets/)
+- **SUTRA-Online**: $1 per SUTRA-V1 API has been deprecated as of March 22, 2025, and users should transition to SUTRA-V2 for continued support.[](https://www.two.ai/blog/sutra-v2-is-here)
+- **Other Models (e.g., SUTRA-R0, SUTRA-Q0, SUTRA-Dual2L)**: Pricing details are not publicly listed. Contact TWO AI or visit [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api) for the latest pricing information.
+
+**Note**: Pricing is subject to change. For the most up-to-date rates, check [docs.two.ai](https://docs.two.ai) or sign up for a free SUTRA API key to explore pricing via the developer platform.
+
+## 🚀 Step 1: Get Started with a Free API Key
+
+- Visit [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api) to create and manage your SUTRA API key.
+- In Google Colab:
+  - Click the 🔑 icon in the left sidebar.
+  - Add a secret named: `SUTRA_API_KEY`.
+
+```python
+from google.colab import userdata
+SUTRA_API_KEY = userdata.get("SUTRA_API_KEY")
+```
+
+## 🔐 Step 2: Initialize the Client
+
+Use the OpenAI-compatible SDK to access SUTRA models:
+
+```python
+from openai import OpenAI
+client = OpenAI(
+    base_url='https://api.two.ai/v2',
+    api_key=SUTRA_API_KEY
+)
+```
+
+## 💬 Step 3: Test a Model
+
+Try a sample request to understand token usage and costs:
+
+```python
+response = client.chat.completions.create(
+    model='sutra-v2',
+    messages=[{"role": "user", "content": "Explain AI pricing in 3 sentences."}],
+    max_tokens=1024,
+    temperature=0.7
+)
+print(response.choices[0].message.content)
+```
+
+- **Track Token Usage**: Monitor input and output tokens in API responses to estimate costs. For example, a 100-word prompt may use ~150 tokens, depending on the language.
+
+## 🌐 Step 4: Explore SUTRA for Startups Program
+
+TWO AI offers the SUTRA for Startups program, providing 1 billion free tokens to selected startups in India, Korea, Japan, or the Middle East. Applications were open until July 31, 2024, with winners receiving API access to build scalable solutions. Check [https://www.two.ai](https://www.two.ai) for future rounds.[](https://analyticsindiamag.com/ai-news-updates/two-ai-announces-sutra-for-startups-program-offers-1-billion-tokens-for-free/)
+
+## 🛠 Troubleshooting
+
+- **Uncertain Pricing**: Visit [docs.two.ai](https://docs.two.ai) or contact TWO AI support at [https://www.two.ai/support](https://www.two.ai/support) for detailed pricing breakdowns.
+- **API Key Issues**: Ensure your `SUTRA_API_KEY` is correctly set and not exposed in public code.
+- **Rate Limits**: High token usage may trigger rate limits. Upgrade your plan or optimize requests to stay within quotas.
+- **Model Selection**: Confirm the model (e.g., `sutra-v2`, `sutra-q0`) matches your use case to avoid unexpected costs.
+
+## ℹ️ Additional Resources
+
+- **Newsletter**: Sign up for TWO AI’s Newsletter at [www.two.ai](https://www.two.ai) for updates on pricing, models, and promotions.

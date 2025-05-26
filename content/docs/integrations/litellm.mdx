@@ -29,7 +29,7 @@ Set up your call using SUTRA’s model and endpoint:
 import litellm
 
 response = litellm.completion(
-    model="sutra-v2",  # Or "sutra-r0" for reasoning
+    model="openai/sutra-v2",  # Or "openai/sutra-r0" for reasoning
     messages=[{"role": "user", "content": "Translate this to French: 'Good morning, how are you?'" }],
     api_base="https://api.two.ai/v2"  # SUTRA base URL
 )
@@ -41,7 +41,7 @@ print(response['choices'][0]['message']['content'])
 
 ```python
 response = litellm.completion(
-    model="sutra-r0",
+    model="openai/sutra-r0",
     messages=[{"role": "user", "content": "If A is greater than B and B is greater than C, who is greatest?"}],
     api_base="https://api.two.ai/v2"
 )
@@ -51,13 +51,13 @@ print(response['choices'][0]['message']['content'])
 
 ## 📎 Tips
 
-- Use `sutra-v2` for:
+- Use `openai/sutra-v2` for:
 
   - Multilingual translation
   - Summarization
   - General Q&A
 
-- Use `sutra-r0` for:
+- Use `openai/sutra-r0` for:
 
   - Reasoning
   - Logic-based queries
