@@ -1,17 +1,15 @@
 "use client";
 
-import { Fragment, useEffect, useId, useState } from "react";
-import useMeasure from "react-use-measure";
-import Link from "next/link";
-import clsx from "clsx";
 import { Button } from "@/components/ui/button";
+import clsx from "clsx";
+import { AnimatePresence, motion, MotionConfig } from "framer-motion";
 import { Check, Copy } from "lucide-react";
 import { useTheme } from "next-themes";
+import Link from "next/link";
 import { Highlight, themes } from "prism-react-renderer";
-import { AnimatePresence, motion, MotionConfig } from "framer-motion";
-import { Builder } from "../builder";
+import { Fragment, useEffect, useId, useState } from "react";
+import useMeasure from "react-use-measure";
 import { Spotlight } from "./spotlight";
-import { GradientBG } from "./gradient-bg";
 
 const tabs: { name: "main.py" | "index.ts"; code: string }[] = [
   {
@@ -26,9 +24,9 @@ client = OpenAI(
 response = client.chat.completions.create(
     model="sutra-v2",
     messages=[{
-    "role": "user", 
-    "content": "How many languages do you know?"
-    }],
+      "role": "user", 
+      "content": "How many languages do you know?"
+     }],
     max_tokens=1024,
     temperature=0.7
 )
