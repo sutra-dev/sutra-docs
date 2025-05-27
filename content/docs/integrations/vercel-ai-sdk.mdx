@@ -1,0 +1,260 @@
+---
+title: SUTRA-V2 Vercel AI SDK Integration Guide
+---
+
+## 🧠 Build with SUTRA-V2 using Vercel AI SDK
+
+Welcome to the SUTRA-V2 Integration Guide for the Vercel AI SDK — designed to help developers leverage SUTRA-V2’s advanced multilingual and reasoning capabilities in Vercel-hosted applications.
+
+### 🔍 What is SUTRA-V2?
+
+SUTRA-V2 is a powerful multilingual AI model optimized for:
+
+- Multi-step logical inference
+- Structured problem-solving
+- Deep contextual analysis
+- High-performance conversational AI across 50+ languages
+
+Perfect for applications in:
+
+- Legal & policy interpretation
+- Business intelligence
+- Scientific reasoning
+- Complex query answering
+
+---
+
+### 🧪 Quickstart with Vercel AI SDK
+
+#### Prerequisites
+
+- A Vercel project with a Next.js or Node.js application.
+- SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- Vercel AI SDK installed in your project.
+
+#### Step 1: Install Dependencies
+
+In your Vercel project, install the Vercel AI SDK:
+
+```bash
+# SUTRA models are OpenAI API compatible
+npm install ai @ai-sdk/openai
+```
+
+#### Step 2: Configure the OpenAI Provider
+
+Set your SUTRA API key as an environment variable in Vercel’s dashboard (e.g., `SUTRA_API_KEY`). Then, configure the Vercel AI SDK to use the OpenAI provider with the SUTRA endpoint:
+
+```javascript
+// app/api/completion/route.ts (Next.js API route)
+import { generateText } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
+
+const sutra = createOpenAI({
+  baseURL: "https://api.two.ai/v2",
+  apiKey: process.env.SUTRA_API_KEY,
+});
+
+export async function POST(req: Request) {
+  const { prompt }: { prompt: string } = await req.json();
+
+  const { text } = await generateText({
+    model: sutra("sutra-v2"),
+    system: "You are a helpful assistant.",
+    prompt,
+  });
+
+  return Response.json({ text });
+}
+```
+
+#### Step 3: Basic Completion in a Next.js Component
+
+Create a frontend component to interact with SUTRA-V2:
+
+```javascript
+// app/page.tsx
+"use client";
+
+import { useState } from "react";
+
+export default function Page() {
+  const [generation, setGeneration] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  return (
+    <div>
+      <div
+        onClick={async () => {
+          setIsLoading(true);
+
+          await fetch("/api/completion", {
+            method: "POST",
+            body: JSON.stringify({
+              prompt: "Why is the sky blue?",
+            }),
+          }).then((response) => {
+            response.json().then((json) => {
+              setGeneration(json.text);
+              setIsLoading(false);
+            });
+          });
+        }}
+      >
+        Generate
+      </div>
+
+      {isLoading ? "Loading..." : generation}
+    </div>
+  );
+}
+```
+
+---
+
+### 🔁 Streaming Response Example
+
+Stream responses for real-time interaction:
+
+```javascript
+// app/api/chat/route.ts (Next.js API route)
+import { streamText, UIMessage } from 'ai';
+import { createOpenAI } from '@ai-sdk/openai';
+
+const sutra = createOpenAI({
+  baseURL: "https://api.two.ai/v2",
+  apiKey: process.env.SUTRA_API_KEY,
+});
+
+export async function POST(req: Request) {
+  const { messages }: { messages: UIMessage[] } = await req.json();
+
+  const result = streamText({
+    model: sutra("sutra-v2"),
+    system: "You are a helpful assistant.",
+    messages,
+  });
+
+  return result.toDataStreamResponse();
+}
+```
+
+In your frontend:
+
+```javascript
+// app/chat.tsx
+"use client";
+
+import { useChat } from "ai/react";
+
+export default function StreamChat() {
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    api: "/api/chat",
+  });
+
+  return (
+    <div>
+      <h1>SUTRA-V2 Streaming Chat</h1>
+      {messages.map((m) => (
+        <div key={m.id}>
+          <strong>{m.role}: </strong>
+          {m.content}
+        </div>
+      ))}
+      <form onSubmit={handleSubmit}>
+        <input
+          value={input}
+          onChange={handleInputChange}
+          placeholder="Ask SUTRA-V2 something..."
+        />
+        <button type="submit">Send</button>
+      </form>
+    </div>
+  );
+}
+```
+
+---
+
+### 🌐 Multilingual Support Example
+
+Leverage SUTRA-V2’s multilingual capabilities with the Vercel AI SDK:
+
+```javascript
+// app/api/multilingual/route.ts
+import { createOpenAI } from '@ai-sdk/openai';
+
+const sutra = createOpenAI({
+  baseURL: "https://api.two.ai/v2",
+  apiKey: process.env.SUTRA_API_KEY,
+});
+
+export async function POST(req: Request) {
+  const prompts = [
+    { prompt: "नमस्ते, आप कैसे हैं?", lang: "Hindi" },
+    { prompt: "¿Qué es la inteligencia artificial?", lang: "Spanish" },
+  ];
+
+  const responses = await Promise.all(
+    prompts.map(async ({ prompt, lang }) => {
+      const response = await generateText({
+        model: sutra("sutra-v2"),
+        messages: [{ role: "user", content: prompt }],
+        max_tokens: 1024,
+        temperature: 0.7,
+      });
+      return { lang, content: response.text };
+    })
+  );
+
+  return Response.json(responses);
+}
+```
+
+---
+
+### 🧠 Ideal Use Cases with Vercel AI SDK
+
+| Scenario              | Example                                       |
+| --------------------- | --------------------------------------------- |
+| Legal Analysis        | Interpret complex legal documents in web apps |
+| Business Intelligence | Build dashboards for market trend analysis    |
+| Scientific Reasoning  | Create tools for research data evaluation     |
+| Multilingual Q&A      | Develop chatbots supporting 50+ languages     |
+
+---
+
+### ⚙️ Recommended Parameters
+
+| Parameter          | Purpose                | Recommended for V2      |
+| ------------------ | ---------------------- | ----------------------- |
+| `temperature`      | Controls randomness    | 0.7 for balanced output |
+| `max_tokens`       | Limits response length | 512–1024                |
+| `presence_penalty` | Reduces repetition     | 0.0–0.6                 |
+
+---
+
+### 🔗 API Access (cURL)
+
+Test the SUTRA-V2 endpoint directly:
+
+```bash
+curl -X POST https://api.two.ai/v2/chat/completions \
+-H "Authorization: Bearer $SUTRA_API_KEY" \
+-H "Content-Type: application/json" \
+-d '{
+  "model": "sutra-v2",
+  "messages": [
+    {"role": "user", "content": "Explain how blockchain improves supply chain transparency."}
+  ]
+}'
+```
+
+---
+
+### 🛠 Troubleshooting
+
+- **Invalid API Key**: Ensure `SUTRA_API_KEY` is set in Vercel’s environment variables.
+- **Rate Limit Exceeded**: Check your SUTRA-V2 plan limits or reduce request frequency.
+- **Empty Response**: Increase `max_tokens` or refine your prompt.
+- **Vercel AI SDK Compatibility**: Verify the SDK supports custom `baseURL` for OpenAI provider.
