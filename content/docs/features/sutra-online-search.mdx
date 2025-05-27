@@ -1,0 +1,163 @@
+---
+title: SUTRA-V2 Online Search
+---
+
+## 🌐 Real-Time AI News with SUTRA-V2 Online Search
+
+Welcome to the SUTRA-V2 Online Search Guide — designed to help developers leverage SUTRA-V2’s online search feature via the Two.ai API to fetch real-time information, such as the latest news on artificial intelligence. SUTRA-V2’s online search capability allows it to access up-to-date web data, making it ideal for dynamic queries that require current information.
+
+### 🔍 What is SUTRA-V2?
+
+SUTRA-V2 is a powerful AI model optimized for:
+
+- Multi-step logical inference
+- Structured problem-solving
+- Deep contextual analysis
+- High-performance conversational AI across 50+ languages
+
+With the online search feature, SUTRA-V2 can fetch real-time data from the web, enhancing its ability to answer queries about current events, trends, and more.
+
+Perfect for applications in:
+
+- Real-time news aggregation
+- Market trend analysis
+- Dynamic Q&A systems
+- Research automation
+
+---
+
+### 🧪 Quickstart: Fetching Latest AI News with SUTRA-V2
+
+#### Prerequisites
+
+- Python 3.10 or higher.
+- SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- Basic familiarity with HTTP requests in Python.
+
+#### Step 1: Set Up Your Environment
+
+Ensure you have Python installed. You’ll use the built-in `http.client` library, so no additional packages are required.
+
+Set your SUTRA API key as an environment variable:
+
+```bash
+export SUTRA_API_KEY="your-sutra-api-key"
+```
+
+#### Step 2: Use SUTRA-V2’s Online Search Feature
+
+Create a Python script to query the latest AI news using SUTRA-V2’s online search capability:
+
+```python
+import http.client
+import json
+import os
+
+# Establish connection to Two.ai API
+conn = http.client.HTTPSConnection("api.two.ai")
+
+# Prepare the request payload
+payload = json.dumps({
+    "model": "sutra-v2",
+    "messages": [
+        {
+            "role": "system",
+            "content": "You are a helpful assistant."
+        },
+        {
+            "role": "user",
+            "content": "Give me the latest news on artificial intelligence as of May 27, 2025."
+        }
+    ],
+    "max_tokens": 100,
+    "temperature": 0.3,
+    "stream": False,
+    "extra_body": {
+        "online_search": True
+    }
+})
+
+# Set up headers with your API key
+headers = {
+    'Content-Type': "application/json",
+    'Authorization': "Bearer sutra api key here"
+}
+
+try:
+    # Send the request
+    conn.request("POST", "/v2/chat/completions", payload, headers)
+
+    # Get and process the response
+    res = conn.getresponse()
+    data = res.read()
+
+    # Print the response
+    print(data.decode("utf-8"))
+
+except Exception as e:
+    print(f"Error occurred: {e}")
+
+finally:
+    conn.close()
+```
+
+#### Step 3: Run the Script
+
+Execute the script to fetch the latest AI news. On May 27, 2025, SUTRA-V2 might return news like:
+
+- Researchers at Sussex University are exploring AI consciousness using the "Dreamachine" project, investigating whether AI could become sentient as large language models evolve.
+- Google DeepMind’s CEO, Demis Hassabis, warned that AI will disrupt jobs within 5 years, urging teens to prepare by becoming "AI ninjas" and mastering the technology.
+
+These updates reflect SUTRA-V2’s ability to pull real-time web data, ensuring you get the most current information available.
+
+---
+
+### 🧠 Best Practices for Online Search with SUTRA-V2
+
+- **Enable Online Search**: Always set `"online_search": True` in the `extra_body` of your payload to activate this feature.
+- **Specify Dates**: For time-sensitive queries, include the date in your prompt (e.g., "as of May 27, 2025") to ensure accurate results.
+- **Limit Response Length**: Use `max_tokens` (e.g., 100) to keep responses concise for news summaries.
+- **Handle Errors**: Add error handling (as shown in the script) to manage network issues or API errors gracefully.
+- **Use Low Temperature**: A `temperature` of 0.3 ensures more factual and deterministic responses for news queries.
+
+---
+
+### ⚙️ Recommended Parameters for Online Search
+
+| Parameter     | Purpose                | Recommended for V2        |
+| ------------- | ---------------------- | ------------------------- |
+| `temperature` | Controls randomness    | 0.3 for factual output    |
+| `max_tokens`  | Limits response length | 100–200 for summaries     |
+| `extra_body`  | Enables online search  | `{"online_search": True}` |
+
+---
+
+### 🔗 API Access (cURL)
+
+Test the SUTRA-V2 online search feature directly with a cURL command:
+
+```bash
+curl -X POST https://api.two.ai/v2/chat/completions \
+-H "Authorization: Bearer $SUTRA_API_KEY" \
+-H "Content-Type: application/json" \
+-d '{
+  "model": "sutra-v2",
+  "messages": [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "Give me the latest news on artificial intelligence as of May 27, 2025."}
+  ],
+  "max_tokens": 100,
+  "temperature": 0.3,
+  "extra_body": {"online_search": True}
+}'
+```
+
+---
+
+### 🛠 Troubleshooting
+
+- **Invalid API Key**: Ensure `SUTRA_API_KEY` is set in your environment variables and correctly included in the `Authorization` header.
+- **Online Search Not Working**: Verify that `"online_search": True` is set in the `extra_body` of your payload.
+- **Incomplete Responses**: Increase `max_tokens` if the news summary is cut off (e.g., try 200).
+- **Network Errors**: Check your internet connection and ensure the Two.ai API endpoint (`https://api.two.ai/v2`) is accessible.
+- **Outdated Information**: Include the current date in your prompt to ensure SUTRA-V2 fetches the latest data.

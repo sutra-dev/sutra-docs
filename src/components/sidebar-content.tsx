@@ -11,10 +11,12 @@ import {
   LucideIcon,
   Presentation,
   Rocket,
+  Wrench,
 } from "lucide-react";
 import { ReactNode, SVGProps } from "react";
 import { Icons } from "./icons";
 import { Langgraph } from "./logo";
+import { Vercel } from "./logos";
 
 interface Content {
   title: string;
@@ -58,13 +60,13 @@ export const contents: Content[] = [
         icon: () => <CodeIcon className="size-4" />,
       },
       {
-        title: "SUTRA R0 Guide",
-        href: "/docs/models/sutra-r0-guide",
+        title: "SUTRA V2 Guide",
+        href: "/docs/models/sutra-v2-guide",
         icon: () => <CodeIcon className="size-4" />,
       },
       {
-        title: "SUTRA V2 Guide",
-        href: "/docs/models/sutra-v2-guide",
+        title: "SUTRA R0 Guide",
+        href: "/docs/models/sutra-r0-guide",
         icon: () => <CodeIcon className="size-4" />,
       },
       {
@@ -110,21 +112,14 @@ export const contents: Content[] = [
         href: "/docs/integrations/langgraph",
       },
       {
-        title: "Haystack",
-        icon: () => (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="1.2em"
-            height="1.2em"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="currentColor"
-              d="M3 2h18c.6 0 1 .4 1 1v18c0 .6-.4 1-1 1H3c-.6 0-1-.4-1-1V3c0-.6.4-1 1-1m1 2v16h16V4zm7 3l8 4.7V13h-2v-2.7l-6 3.5l-6-3.5V13H3v-1.3z"
-            />
-          </svg>
-        ),
-        href: "/docs/integrations/haystack",
+        title: "Vercel AI SDK",
+        icon: () => <Vercel className="size-4" />,
+        href: "/docs/integrations/vercel-ai-sdk",
+      },
+      {
+        title: "AI Suite",
+        icon: () => <Wrench className="size-4" />,
+        href: "/docs/integrations/aisuite",
       },
     ],
   },
@@ -252,10 +247,15 @@ export const contents: Content[] = [
         href: "/docs/features/upcoming-features",
         icon: Icons.book,
       },
+      {
+        title: "Online Search",
+        href: "/docs/features/sutra-online-search",
+        icon: Icons.book,
+      },
     ],
   },
   {
-    title: "Multilingual",
+    title: "Multilingual Guides",
     Icon: () => <LanguagesIcon className="size-4" />,
     list: [
       {
@@ -327,18 +327,18 @@ export const contents: Content[] = [
     Icon: () => <BookTextIcon className="size-4" />,
     list: [
       {
-        title: "SUTRA + AGNO Integration",
-        href: "/docs/popular-usecases/agno",
+        title: "Build AI Agent with SUTRA",
+        href: "/docs/popular-usecases/build-ai-agent-with-sutra",
         icon: Icons.book,
       },
       {
-        title: "Multi-Agent Systems with CrewAI",
-        href: "/docs/popular-usecases/crewai",
+        title: "Multi-Agent Systems",
+        href: "/docs/popular-usecases/multi-agent-systems",
         icon: Icons.book,
       },
       {
-        title: "Function Calling with LangChain",
-        href: "/docs/popular-usecases/langchain-toolcalling",
+        title: "Tool Calling with SUTRA",
+        href: "/docs/popular-usecases/tool-calling-with-sutra",
         icon: Icons.book,
       },
       {
@@ -347,8 +347,8 @@ export const contents: Content[] = [
         icon: Icons.book,
       },
       {
-        title: "FastAPI",
-        href: "/docs/popular-usecases/fastapi",
+        title: "SUTRA with FastAPI",
+        href: "/docs/popular-usecases/sutra-with-fastapi",
         icon: Icons.book,
       },
     ],
@@ -361,6 +361,12 @@ export const contents: Content[] = [
         title: "Overview",
         href: "/docs/starter-apps/starter-apps",
         icon: Icons.book,
+      },
+      {
+        title: "Streamlit Apps",
+        icon: Icons.book,
+        group: true,
+        href: "/docs/starter-apps/starter-apps",
       },
       {
         title: "Multilingual Chat App",
@@ -559,7 +565,7 @@ export const cookbooks: Content[] = [
         icon: Icons.book,
       },
       {
-        title: "SUTRA with PydanticAI",
+        title: "SUTRA with LiteLLM",
         href: "/docs/cookbooks/integrations/sutra-with-litellm",
         icon: Icons.book,
       },
