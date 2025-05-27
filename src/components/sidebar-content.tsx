@@ -238,6 +238,11 @@ export const contents: Content[] = [
         icon: Icons.book,
       },
       {
+        title: "Online Search",
+        href: "/docs/features/sutra-online-search",
+        icon: Icons.book,
+      },
+      {
         title: "Multilingual",
         href: "/docs/features/sutra-multilingual",
         icon: Icons.book,
@@ -245,11 +250,6 @@ export const contents: Content[] = [
       {
         title: "Upcoming Features",
         href: "/docs/features/upcoming-features",
-        icon: Icons.book,
-      },
-      {
-        title: "Online Search",
-        href: "/docs/features/sutra-online-search",
         icon: Icons.book,
       },
     ],
