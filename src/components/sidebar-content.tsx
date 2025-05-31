@@ -70,11 +70,6 @@ export const contents: Content[] = [
         icon: () => <CodeIcon className="size-4" />,
       },
       {
-        title: "Model Pricing",
-        href: "/docs/models/model-pricing",
-        icon: () => <CodeIcon className="size-4" />,
-      },
-      {
         title: "Model Deprecations",
         href: "/docs/models/model-deprecations",
         icon: () => <CodeIcon className="size-4" />,

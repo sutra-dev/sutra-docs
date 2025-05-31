@@ -20,25 +20,25 @@ import IntegrationsSection from "../landing/integrations";
 const features = [
   {
     id: 1,
-    title: "MULTILINGUAL SUPPORT",
+    title: "DEVELOPER PORTAL",
     description:
-      "Reach a global audience with built-in support for multiple languages in your applications.",
+      "Generate API keys, explore prompts, and access tools in an interactive playground built for developers.",
     icon: ShieldCheckIcon,
-    href: "/docs/multilingual/indian-languages/hindi",
+    href: "https://developer.two.ai/",
   },
   {
     id: 2,
-    title: "PLAYGROUND",
+    title: "API REFERENCE",
     description:
-      "Experiment with our tools and features in an interactive playground designed for developers.",
+      "Access detailed API documentation, sandboxes, and SDKs to help you start building end-to-end applications.",
     icon: PlugIcon,
-    href: "https://playground.two.ai/",
+    href: "https://docs.two.ai/version-2/api",
   },
   {
     id: 3,
     title: "CHATSUTRA",
     description:
-      "India’s AI Assistant by TWO AI, supporting 50+ languages for seamless multilingual conversations.",
+      "Experience SUTRA Models directly through ChatSUTRA’s conversational playground and demo interface.",
     icon: LockClosedIcon,
     href: "https://chat.two.ai/",
   },

@@ -34,8 +34,7 @@ export default async function HomePage() {
             <div className="flex flex-col md:flex-row items-center justify-center h-12">
               <span className="font-medium flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
                 <span className=" text-zinc-900 dark:text-white/90 hover:text-zinc-950 text-xs md:text-sm dark:hover:text-zinc-100 transition-colors">
-                  Introducing <span className="font-semibold">SUTRA-V2</span>,
-                  our multilingual language model
+                  Get started by generating
                 </span>
                 <span className=" text-zinc-400 hidden md:block">|</span>
                 <Link
@@ -43,7 +42,7 @@ export default async function HomePage() {
                   href="https://www.two.ai/sutra/api"
                   className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 hidden dark:hover:text-blue-300 transition-colors md:block"
                 >
-                  Get your API Key →
+                  API Key →
                 </Link>
               </span>
               <Link
