@@ -2,27 +2,24 @@
 title: SUTRA-V2 Guide
 ---
 
-## 🧠 Build with SUTRA-V2
-
 Welcome to the Build with SUTRA-V2 guide — designed to help developers harness the power of SUTRA-V2 for multilingual conversational AI, complex reasoning, and structured problem-solving.
 
 ### 🔍 What is SUTRA-V2?
 
-SUTRA-V2 is an advanced multilingual AI model optimized for:
+SUTRA-V2 is our multilingual AI model designed for instruction execution and conversational intelligence across 50+ languages. Trained on a diverse blend of proprietary and open-access datasets, it excels in handling complex tasks with high accuracy. With deep proficiency across Latin, Indic, and Far Eastern languages, SUTRA-V2 delivers natural, context-aware responses, making it a powerful solution for global enterprises, multilingual assistants, and cross-language AI applications.
 
-- Multi-step logical inference
-- Structured problem-solving
-- Deep contextual analysis
-- High-performance conversational AI across 50+ languages
+SUTRA-V2 is an advanced multilingual AI model optimized Multi-step logical inference, Structured problem-solving, Deep contextual analysis and High-performance conversational AI across 50+ languages. Following are some example scenarios where SUTRA-V2 is ideal choice.
 
-Perfect for applications in:
 
-- Legal & policy interpretation
-- Business intelligence
-- Scientific reasoning
-- Complex query answering
+| Scenario              | Example                                            |
+| --------------------- | -------------------------------------------------- |
+| Legal Analysis        | Interpret complex legal documents and policies     |
+| Business Intelligence | Analyze market trends and strategic decisions      |
+| Scientific Reasoning  | Evaluate cause-effect relationships in research    |
+| Multilingual Q&A      | Answer queries in 50+ languages with high accuracy |
 
-### 🧪 Quickstart in Python
+
+### Quickstart in Python
 
 SUTRA-V2's API is fully compatible with OpenAI’s specifications, supporting seamless integration for developers. To begin using the SUTRA-V2 API, install the required package:
 
@@ -57,7 +54,7 @@ response = client.chat.completions.create(
 print(response.choices[0].message.content)
 ```
 
-### 🔁 Streaming Response Example
+### Streaming Response Example
 
 ```python
 stream = client.chat.completions.create(
@@ -75,7 +72,7 @@ for chunk in stream:
         print(chunk.choices[0].delta.content, end='', flush=True)
 ```
 
-### 🌐 Multilingual Support Example
+### Multilingual Support Example
 
 ```python
 def multilingual_response(prompt, lang):
@@ -92,16 +89,8 @@ multilingual_response("नमस्ते, आप कैसे हैं?", "Hin
 multilingual_response("¿Qué es la inteligencia artificial?", "Spanish")
 ```
 
-### 🧠 Ideal Use Cases
 
-| Scenario              | Example                                            |
-| --------------------- | -------------------------------------------------- |
-| Legal Analysis        | Interpret complex legal documents and policies     |
-| Business Intelligence | Analyze market trends and strategic decisions      |
-| Scientific Reasoning  | Evaluate cause-effect relationships in research    |
-| Multilingual Q&A      | Answer queries in 50+ languages with high accuracy |
-
-### ⚙️ Recommended Parameters
+### Recommended Parameters
 
 | Parameter          | Purpose                | Recommended for V2      |
 | ------------------ | ---------------------- | ----------------------- |
@@ -109,7 +98,7 @@ multilingual_response("¿Qué es la inteligencia artificial?", "Spanish")
 | `max_tokens`       | Limits response length | 512–1024                |
 | `presence_penalty` | Reduces repetition     | 0.0–0.6                 |
 
-### 🔗 API Access (cURL)
+### API Access (cURL)
 
 ```bash
 curl -X POST https://api.two.ai/v2/chat/completions \
@@ -125,7 +114,7 @@ curl -X POST https://api.two.ai/v2/chat/completions \
 
 ---
 
-### 🛠 Troubleshooting
+### Troubleshooting
 
 - **Invalid API Key**: Verify your API key and ensure it’s correctly set in your environment or Colab secret.
 - **Rate Limit Exceeded**: Upgrade your plan or reduce request frequency.

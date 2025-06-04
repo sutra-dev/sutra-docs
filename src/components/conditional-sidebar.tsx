@@ -15,7 +15,7 @@ export function ConditionalSidebar() {
   return (
     <div
       className={cn(
-        "[--fd-tocnav-height:36px] md:mr-[268px] lg:mr-[286px] xl:[--fd-toc-width:286px] xl:[--fd-tocnav-height:0px] "
+        "[--fd-tocnav-height:36px] md:mr-[286px] xl:[--fd-toc-width:286px] xl:[--fd-tocnav-height:0px] "
       )}
     >
       <ArticleLayout />

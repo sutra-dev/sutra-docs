@@ -77,8 +77,7 @@ export default function Hero() {
                 SUTRA: Simplifying Multilingual AI for Developers
               </h1>
               <p className="mt-4 text-lg text-gray-400">
-                SUTRA is a family of large multilingual language models (LMLMs)
-                developed by TWO AI.
+                Get started with an easy to use API to build end-to-end solutions
               </p>
 
               {
