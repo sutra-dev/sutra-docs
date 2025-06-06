@@ -46,7 +46,7 @@ export const NavLink = ({ href, children, className, external }: Props) => {
       </Link>
       <div
         className={cn(
-          "absolute bottom-0 h-0.5 bg-muted-foreground opacity-0 transition-all duration-500",
+          "absolute bottom-0 h-0.5 bg-primary opacity-0 transition-all duration-500",
           "group-hover:opacity-100 group-hover:w-full",
           isActive ? "opacity-100 w-full" : "w-0"
         )}

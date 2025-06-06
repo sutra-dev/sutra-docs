@@ -39,7 +39,7 @@ export const Navbar = () => {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="1.4em"
-                height="1.4em"
+                height="1.5em"
                 viewBox="0 0 50 50"
               >
                 <path
@@ -56,7 +56,7 @@ export const Navbar = () => {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="1.4em"
-                height="1.4em"
+                height="1.5em"
                 viewBox="0 0 496 512"
               >
                 <path
