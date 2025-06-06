@@ -32,7 +32,7 @@ const features = [
     description:
       "Access detailed API documentation, sandboxes, and SDKs to help you start building end-to-end applications.",
     icon: PlugIcon,
-    href: "https://docs.two.ai/version-2/api",
+    href: "/docs/api-reference",
   },
   {
     id: 3,
