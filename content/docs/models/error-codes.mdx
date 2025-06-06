@@ -2,15 +2,13 @@
 title: Error Codes
 ---
 
-# Error Codes
-
 When using the SUTRA API, you may encounter errors. Below are common error codes, their causes, and suggested solutions:
 
 | CODE                       | DESCRIPTION |
 |----------------------------|-------------|
 | **400 – Invalid Format**   | **Cause:** The request body format is invalid.<br />**Solution:** Adjust your request body based on the error message hints. For more details, refer to the [SUTRA API Documentation](https://docs.two.ai/docs). |
 | **401 – Authentication Fails** | **Cause:** The API key provided is invalid.<br />**Solution:** Verify your API key. If you don't have one, generate it via the [API Key Management page](https://www.two.ai). |
-| **422 – Invalid Parameters**   | **Cause:** The request contains invalid or unsupported parameters.<br />**Solution:** Correct the parameters as indicated in the error message. See the [SUTRA API Documentation](https://sutra.apidocumentation.com/version-2/docs/get-started-with-sutra) for more details. |
+| **422 – Invalid Parameters**   | **Cause:** The request contains invalid or unsupported parameters.<br />**Solution:** Correct the parameters as indicated in the error message. |
 | **429 – Too Many Requests**    | **Cause:** Requests are being sent at a rate exceeding the server's capacity.<br />**Solution:** Slow down your request rate. If needed, switch temporarily to alternative APIs while pacing your requests. |
 | **500 – Server Error**         | **Cause:** The server encountered an unexpected issue.<br />**Solution:** Wait for a moment and try again. Contact support if the issue persists. |
 | **503 – Server Overloaded**    | **Cause:** The server is under high traffic and cannot handle the request.<br />**Solution:** Retry your request after a short delay. |
