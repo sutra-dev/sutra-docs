@@ -112,6 +112,130 @@ These updates reflect SUTRA-V2’s ability to pull real-time web data, ensuring 
 
 ---
 
+### Example: Querying Parks in Multiple Cities with Two.ai API
+
+This example demonstrates how to use the Two.ai SUTRA API to query information about parks in multiple cities using Python. The script sets different user locations and retrieves information about nearby parks.
+
+```python
+import http.client
+import os
+import json
+import time
+
+# API key for Two.ai SUTRA API
+api_key = ""
+
+# Check if API key is available
+if not api_key:
+    print("Error: API key not set.")
+    print("Get your API key from: https://www.two.ai/sutra/api")
+    exit(1)
+
+# Create connection to Two.ai API
+conn = http.client.HTTPSConnection("api.two.ai")
+
+# Define multiple locations
+locations = [
+    {
+        "city": "Mumbai",
+        "region": "Maharashtra",
+        "country_name": "India",
+        "country_code": "IN",
+        "language_code": "en",
+        "locale": "en-IN"
+    },
+    {
+        "city": "New York",
+        "region": "New York",
+        "region_type": "state",
+        "country_name": "United States",
+        "country_code": "US",
+        "language_code": "en",
+        "locale": "en-US"
+    },
+    {
+        "city": "Seoul",
+        "country_name": "South Korea",
+        "country_code": "KR",
+        "language_code": "en",
+        "locale": "en-US"
+    },
+    {
+        "city": "San Francisco",
+        "region": "California",
+        "region_type": "state",
+        "country_name": "United States",
+        "country_code": "US",
+        "language_code": "en",
+        "locale": "en-US"
+    }
+]
+
+# Common headers for all requests
+headers = {
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {api_key}"
+}
+
+# Function to query about parks in a specific location
+def query_parks_in_location(location):
+    city_name = location["city"]
+    
+    # Set the user's location
+    print(f"\n{'='*50}")
+    print(f"Setting user location to {city_name}...")
+    conn.request("POST", "/v2/location", json.dumps(location), headers)
+    res = conn.getresponse()
+    data = res.read()
+    print(f"Location response: {data.decode('utf-8')}")
+    
+    # Create chat payload for this location
+    chat_payload = {
+        "model": "sutra-v2",
+        "messages": [
+            {"role": "system", "content": "You are a helpful assistant that provides information about local places."},
+            {"role": "user", "content": f"Which is the nearest park to me in {city_name}? Please keep your answer brief and mention 1-2 popular parks."}
+        ],
+        "max_tokens": 300,
+        "temperature": 0.7
+    }
+    
+    # Ask about the nearest park
+    print(f"\nAsking about parks in {city_name}...")
+    conn.request("POST", "/v2/chat/completions", json.dumps(chat_payload), headers)
+    res = conn.getresponse()
+    data = res.read()
+    
+    # Parse and display the response
+    response = json.loads(data.decode("utf-8"))
+    if "choices" in response and len(response["choices"]) > 0:
+        print(f"\nParks in {city_name}:")
+        print(response["choices"][0]["message"]["content"])
+    else:
+        print(f"\nError or unexpected response format for {city_name}:")
+        print(json.dumps(response, indent=2))
+
+# Query each location
+print("Querying about parks in multiple cities...")
+for location in locations:
+    query_parks_in_location(location)
+    # Add a small delay between requests to avoid rate limiting
+    time.sleep(1)
+```
+
+### Usage Instructions
+1. Replace `api_key = ""` with your actual Two.ai API key from [Two.ai SUTRA API](https://www.two.ai/sutra/api).
+2. Run the script to query park information for Mumbai, New York, Seoul, and San Francisco.
+3. The script sets the user location for each city and retrieves information about 1-2 popular parks nearby.
+4. A 1-second delay is included between requests to avoid hitting API rate limits.
+
+### Notes
+- Ensure a valid API key is provided to avoid authentication errors.
+- The script uses the `http.client` module for HTTPS requests and `json` for payload handling.
+- Responses are parsed and displayed in a formatted manner for each city.
+
+---
+
 ### 🧠 Best Practices for Online Search with SUTRA-V2
 
 - **Enable Online Search**: Always set `"online_search": True` in the `extra_body` of your payload to activate this feature.
