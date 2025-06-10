@@ -10,7 +10,7 @@ export const Navbar = () => {
       <nav className="md:grid grid-cols-12 md:border-b top-0 flex items-center justify-between ">
         <Link
           href="/"
-          className="md:border-r md:px-5 px-2.5 md:py-3 py-4 text-foreground md:col-span-2 shrink-0 transition-colors md:w-[280px]"
+          className="lg:border-r md:px-5 px-2.5 md:py-3 py-4 text-foreground md:col-span-2 shrink-0 transition-colors md:w-[280px]"
         >
           <div className="flex flex-col gap-2 w-full">
             <LogoContextMenu
@@ -39,7 +39,7 @@ export const Navbar = () => {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="1.4em"
-                height="1.4em"
+                height="1.5em"
                 viewBox="0 0 50 50"
               >
                 <path
@@ -56,7 +56,7 @@ export const Navbar = () => {
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="1.4em"
-                height="1.4em"
+                height="1.5em"
                 viewBox="0 0 496 512"
               >
                 <path

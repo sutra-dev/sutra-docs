@@ -63,8 +63,6 @@ components:
       enum:
         - sutra-v2
         - sutra-r0
-        - sutra-light
-        - sutra-pro
       description: >
 
         The name of the model to use for generation. Available models include:

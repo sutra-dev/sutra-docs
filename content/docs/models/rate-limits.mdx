@@ -1,0 +1,26 @@
+---
+title: Rate Limit
+---
+
+The SUTRA API does not enforce rigid rate limits on usage. Our goal is to process all incoming requests efficiently.
+
+That said, during periods of heavy server traffic, response times may be longer. While waiting, your HTTP request will stay open, and the server may provide the following updates to maintain the connection:
+
+- **For non-streaming requests:** Periodic empty lines will be sent.
+- **For streaming requests:** Server-Sent Events (SSE) comments like `: keep-alive` will be transmitted.
+
+These interim updates are harmless and do not disrupt JSON parsing when using compatible SDKs. If you are handling responses manually, ensure your implementation can manage these empty lines or comments seamlessly.
+
+In cases where a request remains incomplete for over 30 minutes, the server will close the connection automatically.
+
+---
+
+### Note on Free-tier Usage
+
+If you’re using the public free-tier, please be aware that usage limits may apply during periods of peak demand.
+
+You may encounter the following message when the free-tier limit is exceeded:
+
+> Free-tier API hourly limit reached. SUTRA is in high demand. Try again later or contact us for commercial access to keep building without limits.
+
+This ensures fair access for all users. For uninterrupted, high-volume access, [contact us](mailto:support@two.ai) to discuss commercial options.
