@@ -224,7 +224,7 @@ elif user_input and st.session_state.vector_store is None:
 
 ## Notes
 
-- **API Key**: The app requires a valid Sutra API key. Obtain one from [Two AI's API service](https://www.two.ai/sutra/api) and set it in the `.env` file.
+- **API Key**: The app requires a valid Sutra API key. Obtain one from [Two AI's API service](https://developer.two.ai) and set it in the `.env` file.
 - **Document Processing**: The app supports PDF files only. Large or complex PDFs may require additional error handling or chunking adjustments.
 - **RAG Limitations**: The quality of answers depends on the document’s content and the Sutra LLM’s capabilities. Adjust `chunk_size` and `chunk_overlap` in `CharacterTextSplitter` for better performance if needed.
 - **Streaming**: The `StreamHandler` class ensures smooth streaming of responses, enhancing the user experience.
@@ -242,6 +242,6 @@ elif user_input and st.session_state.vector_store is None:
 ## Resources
 
 - [Complete Source Code](https://github.com/sutra-dev/sutra-cookbook/tree/main/starter-apps/streamlit-apps/Document_RAG_ChatBOT)
-- [Sutra API Documentation](https://www.two.ai/sutra/api)
+- [Sutra API Documentation](https://developer.two.ai)
 - [LangChain Documentation](https://python.langchain.com/docs/get_started/introduction)
 - [Streamlit Documentation](https://docs.streamlit.io)

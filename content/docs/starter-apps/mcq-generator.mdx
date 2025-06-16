@@ -264,7 +264,7 @@ for item in st.session_state.questions:
 
 ## Notes
 
-- **API Key**: The app requires a valid Sutra API key, obtainable from [Two AI's API service](https://www.two.ai/sutra/api). Ensure it’s correctly set in the `.env` file.
+- **API Key**: The app requires a valid Sutra API key, obtainable from [Two AI's API service](https://developer.two.ai). Ensure it’s correctly set in the `.env` file.
 - **Multilingual Support**: The app relies on the SUTRA LLM’s ability to generate questions in the selected language. Verify that the API supports the chosen language for optimal results.
 - **PDF Processing**: Uses `PyPDF2` for text extraction. Complex or scanned PDFs may require OCR tools for better text extraction, which are not included in this app.
 - **Question Generation**: The app generates five questions by default, as specified in the system message. Modify the `system_message` to change the number or format of questions.
@@ -282,7 +282,7 @@ for item in st.session_state.questions:
 ## Resources
 
 - [Complete Source Code](https://github.com/sutra-dev/sutra-cookbook/tree/main/starter-apps/streamlit-apps/Multilingual_Question_Generator)
-- [Sutra API Documentation](https://www.two.ai/sutra/api)
+- [Sutra API Documentation](https://developer.two.ai)
 - [LangChain Documentation](https://python.langchain.com/docs/get_started/introduction)
 - [Streamlit Documentation](https://docs.streamlit.io)
 - [PyPDF2 Documentation](https://pypdf2.readthedocs.io/en/stable/)

@@ -271,7 +271,7 @@ for item in st.session_state.itineraries:
 
 ## Notes
 
-- **API Key**: The app requires a valid Sutra API key, obtainable from [Two AI's API service](https://www.two.ai/sutra/api). Ensure it’s correctly set in the `.env` file.
+- **API Key**: The app requires a valid Sutra API key, obtainable from [Two AI's API service](https://developer.two.ai). Ensure it’s correctly set in the `.env` file.
 - **Multilingual Support**: The app relies on the SUTRA LLM’s ability to generate itineraries in the selected language. Verify API support for the chosen language.
 - **Itinerary Generation**: The app generates a detailed daily schedule based on user inputs. The quality depends on the SUTRA LLM’s capabilities and the specificity of user preferences.
 - **Streaming**: The `StreamHandler` class ensures a smooth, real-time display of the itinerary, enhancing user engagement.
@@ -289,6 +289,6 @@ for item in st.session_state.itineraries:
 ## Resources
 
 - [Complete Source Code](https://github.com/sutra-dev/sutra-cookbook/tree/main/starter-apps/streamlit-apps/ai-travel-planner)
-- [Sutra API Documentation](https://www.two.ai/sutra/api)
+- [Sutra API Documentation](https://developer.two.ai)
 - [LangChain Documentation](https://python.langchain.com/docs/get_started/introduction)
 - [Streamlit Documentation](https://docs.streamlit.io)
