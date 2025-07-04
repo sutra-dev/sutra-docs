@@ -1,0 +1,442 @@
+---
+title: Structured Output with Pydantic Using SUTRA
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+<img src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew" width="130" />
+<img src="https://avatars.githubusercontent.com/u/110818415?v=4" width="120" />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LKe9it-yA-f939fWYg5jaHklvbKUvfs6?usp=sharing)
+
+## SUTRA by TWO Platforms
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+# Structured Output with Pydantic Using SUTRA
+
+This notebook demonstrates how to use Pydantic with Sutra to create structured outputs from LLM responses. Pydantic provides data validation and settings management using Python type annotations, making it an excellent tool for ensuring LLM outputs conform to expected schemas.
+
+## Overview
+
+In this notebook, we will:
+
+1.  Set up Sutra and Pydantic
+2.  Define Pydantic models for various use cases
+3.  Use Sutra to generate structured responses
+4.  Validate and process the structured data
+5.  Demonstrate error handling for invalid responses
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python installation is required.
+
+## Setup and Installation
+
+First, let's install the required packages:
+
+```python
+# Install required packages
+!pip install openai pydantic
+```
+
+## Authentication
+
+SUTRA uses API keys for authentication. In Google Colab, we recommend using the `userdata` feature to securely store your API key.
+
+### Setting up your API key in Colab:
+
+1.  Click on the 🔑 icon in the left sidebar
+2.  Add a new secret with the name "SUTRA_API_KEY" and your API key as the value
+
+Then run the cell below to access your API key:
+
+```python
+from google.colab import userdata
+
+SUTRA_API_KEY = userdata.get("SUTRA_API_KEY")
+```
+
+## Initialize Sutra
+
+Now, let's initialize the Sutra model:
+
+```python
+from openai import OpenAI
+import json
+from pydantic import BaseModel, Field, field_validator
+from typing import List, Optional, Dict, Union, Any, Annotated
+from enum import Enum
+
+# Initialize the client with SUTRA's API endpoint
+client = OpenAI(
+    base_url='https://api.two.ai/v2',
+    api_key=SUTRA_API_KEY
+)
+```
+
+## Basic Pydantic Models
+
+Let's define some basic Pydantic models that we'll use with Sutra. Note that we're using Pydantic v2 syntax:
+
+```python
+# Define a simple Pydantic model for a person
+class Person(BaseModel):
+    name: str
+    age: int
+    email: str
+    is_student: bool = False
+
+    # Validator to ensure age is reasonable (using Pydantic v2 syntax)
+    @field_validator('age')
+    @classmethod
+    def age_must_be_reasonable(cls, v):
+        if v < 0 or v > 120:
+            raise ValueError('Age must be between 0 and 120')
+        return v
+
+    # Validator to ensure email has @ symbol (using Pydantic v2 syntax)
+    @field_validator('email')
+    @classmethod
+    def email_must_be_valid(cls, v):
+        if '@' not in v:
+            raise ValueError('Email must contain @ symbol')
+        return v
+
+# Define a model for a book
+class BookGenre(str, Enum):
+    FICTION = "fiction"
+    NON_FICTION = "non-fiction"
+    SCIENCE_FICTION = "science-fiction"
+    FANTASY = "fantasy"
+    MYSTERY = "mystery"
+    BIOGRAPHY = "biography"
+
+class Book(BaseModel):
+    title: str
+    author: str
+    genre: BookGenre
+    publication_year: int
+    pages: int
+    summary: str
+
+    # Validator to ensure publication year is reasonable (using Pydantic v2 syntax)
+    @field_validator('publication_year')
+    @classmethod
+    def year_must_be_reasonable(cls, v):
+        current_year = 2025  # Hardcoded for simplicity
+        if v < 1450 or v > current_year:  # Gutenberg press was invented around 1450
+            raise ValueError(f'Publication year must be between 1450 and {current_year}')
+        return v
+```
+
+## Using Sutra with Pydantic
+
+Now, let's use Sutra to generate responses that conform to our Pydantic models:
+
+```python
+def generate_structured_response(prompt, model_class):
+    """
+    Generate a structured response from Sutra that conforms to a Pydantic model
+
+    Args:
+        prompt (str): The prompt to send to Sutra
+        model_class: The Pydantic model class to validate against
+
+    Returns:
+        model_class instance: A validated instance of the model_class
+    """
+    # Get the model schema as a string
+    model_schema = model_class.model_json_schema()
+    model_schema_str = json.dumps(model_schema, indent=2)
+
+    # Create a system message that instructs the model to output according to the schema
+    system_message = f'''
+    You are a helpful assistant that generates structured data according to a specific schema.
+    The response MUST conform to the following JSON schema:
+    {model_schema_str}
+
+    Ensure all required fields are present and all values match their expected types.
+    '''
+
+    # Generate the response
+    response = client.chat.completions.create(
+        model="sutra-v2",
+        messages=[
+            {"role": "system", "content": system_message},
+            {"role": "user", "content": prompt}
+        ],
+        response_format={"type": "json_object"}
+    )
+
+    # Parse the JSON response
+    result_json = json.loads(response.choices[0].message.content)
+
+    try:
+        # Validate and create a model instance
+        validated_model = model_class.model_validate(result_json)
+        return validated_model
+    except Exception as e:
+        print(f"Validation error: {e}")
+        print(f"Raw response: {result_json}")
+        return None
+```
+
+## Example 1: Generating Person Data
+
+Let's generate data for a person using our Person model:
+
+```python
+# Generate data for a fictional person
+person_prompt = "Generate information for a fictional software engineer from Bangalore, India."
+
+person = generate_structured_response(person_prompt, Person)
+print("Generated Person Data:")
+print(person.model_dump_json(indent=2))
+
+# Access individual fields
+print(f"\nName: {person.name}")
+print(f"Age: {person.age}")
+print(f"Email: {person.email}")
+print(f"Is Student: {person.is_student}")
+```
+
+## Example 2: Generating Book Data
+
+Now, let's generate data for a book using our Book model:
+
+```python
+# Generate data for a fictional book
+book_prompt = "Generate information for a science fiction book about artificial intelligence."
+
+book = generate_structured_response(book_prompt, Book)
+print("Generated Book Data:")
+print(book.model_dump_json(indent=2))
+
+# Access individual fields
+print(f"\nTitle: {book.title}")
+print(f"Author: {book.author}")
+print(f"Genre: {book.genre}")
+print(f"Publication Year: {book.publication_year}")
+print(f"Pages: {book.pages}")
+print(f"Summary: {book.summary[:100]}...")
+```
+
+## Advanced: Nested Pydantic Models
+
+Now, let's create more complex models with nested structures:
+
+```python
+# Define models for a blog post with comments
+class Comment(BaseModel):
+    author: str
+    content: str
+    timestamp: str
+    likes: int = 0
+
+class Tag(BaseModel):
+    name: str
+    color: str = "#000000"
+
+class BlogPost(BaseModel):
+    title: str
+    author: str
+    content: str
+    publication_date: str
+    tags: List[Tag] = []
+    comments: List[Comment] = []
+    views: int = 0
+    likes: int = 0
+
+    # Validator to ensure content is not too short (using Pydantic v2 syntax)
+    @field_validator('content')
+    @classmethod
+    def content_must_be_substantial(cls, v):
+        if len(v) < 50:
+            raise ValueError('Content must be at least 50 characters long')
+        return v
+```
+
+### Generate a blog post with nested structures
+
+```python
+# Generate a blog post with nested structures
+blog_prompt = """Generate a blog post about the importance of multilingual AI models like Sutra for global accessibility.
+Include at least 3 tags and 2 comments from readers."""
+
+blog_post = generate_structured_response(blog_prompt, BlogPost)
+print("Generated Blog Post:")
+print(blog_post.model_dump_json(indent=2))
+
+# Access nested structures
+print(f"\nTitle: {blog_post.title}")
+print(f"Author: {blog_post.author}")
+print(f"\nTags ({len(blog_post.tags)}):")
+for tag in blog_post.tags:
+    print(f"  - {tag.name} ({tag.color})")
+
+print(f"\nComments ({len(blog_post.comments)}):")
+for i, comment in enumerate(blog_post.comments):
+    print(f"  {i+1}. {comment.author}: {comment.content[:50]}...")
+```
+
+## Multilingual Support with Pydantic
+
+Sutra excels at multilingual capabilities. Let's create a model for multilingual content:
+
+```python
+class Language(str, Enum):
+    ENGLISH = "english"
+    HINDI = "hindi"
+    TAMIL = "tamil"
+    BENGALI = "bengali"
+    TELUGU = "telugu"
+    MARATHI = "marathi"
+    PUNJABI = "punjabi"
+    ARABIC = "arabic"
+    CHINESE = "chinese"
+    SPANISH = "spanish"
+    RUSSIAN = "russian"
+    SWAHILI = "swahili"
+
+class MultilingualContent(BaseModel):
+    title: str
+    original_language: Language
+    translations: Dict[Language, str]
+    keywords: List[str] = []
+
+    # Validator to ensure translations don't include the original language (using Pydantic v2 syntax)
+    @field_validator('translations')
+    @classmethod
+    def translations_must_not_include_original(cls, v, info):
+        # In Pydantic v2, we use the info parameter to access other values
+        values = info.data
+        if 'original_language' in values and values['original_language'] in v:
+            raise ValueError('Translations should not include the original language')
+        return v
+```
+
+## Generate multilingual content
+
+```python
+# Generate multilingual content
+multilingual_prompt = """Generate a short article title about climate change in English,
+and provide translations in Hindi, Spanish, and Chinese. Include relevant keywords."""
+
+multilingual_content = generate_structured_response(multilingual_prompt, MultilingualContent)
+print("Generated Multilingual Content:")
+print(multilingual_content.model_dump_json(indent=2))
+
+# Access translations
+print(f"\nOriginal Title ({multilingual_content.original_language}): {multilingual_content.title}")
+print("\nTranslations:")
+for language, translation in multilingual_content.translations.items():
+    print(f"  {language}: {translation}")
+
+print("\nKeywords:")
+for keyword in multilingual_content.keywords:
+    print(f"  - {keyword}")
+```
+
+## Error Handling and Validation
+
+Let's demonstrate how Pydantic handles validation errors:
+
+```python
+# Function to manually validate data against a Pydantic model
+def validate_data(data, model_class):
+    try:
+        validated = model_class.model_validate(data)  # Pydantic v2 syntax
+        print("Validation successful!")
+        return validated
+    except Exception as e:
+        print(f"Validation error: {e}")
+        return None
+
+# Example of invalid person data
+invalid_person = {
+    "name": "John Doe",
+    "age": 150,  # Invalid age (over 120)
+    "email": "johndoe.example.com"  # Invalid email (missing @)
+}
+
+print("Validating invalid person data:")
+validate_data(invalid_person, Person)
+
+# Example of valid person data
+valid_person = {
+    "name": "Jane Smith",
+    "age": 35,
+    "email": "jane.smith@example.com"
+}
+
+print("\nValidating valid person data:")
+validate_data(valid_person, Person)
+```
+
+## Using Field Constraints and Annotations
+
+Pydantic v2 provides enhanced field constraints and annotations:
+
+```python
+from pydantic import StringConstraints, conint, constr, EmailStr
+from typing_extensions import Annotated
+
+# Define a model with field constraints
+class UserProfile(BaseModel):
+    # Username between 3-20 characters
+    username: Annotated[str, StringConstraints(min_length=3, max_length=20, pattern=r'^[a-zA-Z0-9_-]+$')]
+
+    # Age between 18-100
+    age: Annotated[int, Field(ge=18, le=100)]
+
+    # Email with validation
+    email: str  # We'll use our own validator for email
+
+    # Bio with max length
+    bio: Annotated[str, StringConstraints(max_length=500)] = ""
+
+    # Interests list with at least one item
+    interests: Annotated[List[str], Field(min_length=1)]
+
+    @field_validator('email')
+    @classmethod
+    def validate_email(cls, v):
+        if '@' not in v or '.' not in v:
+            raise ValueError('Invalid email format')
+        return v
+```
+
+## Generate a user profile
+
+```python
+# Generate a user profile
+user_prompt = "Generate a profile for a tech enthusiast who loves AI and machine learning."
+
+user_profile = generate_structured_response(user_prompt, UserProfile)
+print("Generated User Profile:")
+print(user_profile.model_dump_json(indent=2))
+```
+
+## Conclusion
+
+In this notebook, we've explored how to use Pydantic with Sutra to
+create structured outputs from LLM responses. We've covered:
+
+1.  Basic Pydantic models with validation
+2.  Nested models for complex data structures
+3.  Multilingual content handling
+4.  Error handling and validation
+5.  Advanced field constraints and annotations
+
+This approach allows you to ensure that LLM outputs conform to your
+expected data structures, making it easier to integrate Sutra into your
+applications and workflows.
+
+Pydantic provides a powerful way to define, validate, and process
+structured data from Sutra, enabling more reliable and predictable
+AI-powered applications.

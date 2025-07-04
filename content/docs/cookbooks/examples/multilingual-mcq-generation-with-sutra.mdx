@@ -1,0 +1,223 @@
+---
+title: Multilingual MCQ Generation with Educhain + SUTRA
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img src="/sutra.png" width="150" />
+  <img
+    src="https://github.com/Shubhwithai/GRE_Geometry_quiz/blob/main/Group%2042.png?raw=true"
+    width="150"
+  />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/18POcDv67qN0_CJo-_BPr6VE-r5RlXUYC?usp=sharing)
+
+## SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+## Educhain
+
+Educhain is a powerful Python package that leverages Generative AI to create engaging and personalized educational content. From generating multiple-choice questions to crafting comprehensive lesson plans, Educhain makes it easy to apply AI in various educational scenarios.
+The Educhain Multilingual MCQ Generator leverages cutting-edge AI
+technologies to create high-quality multiple-choice questions across
+various languages, breaking down linguistic barriers in educational
+content creation.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
+
+### Install necessary libraries
+
+```python
+!pip install educhain openai langgraph requests -q
+```
+
+### Setup API Keys
+
+```python
+import os
+from google.colab import userdata
+
+os.environ['SUTRA_API_KEY'] = userdata.get("SUTRA_API_KEY")
+```
+
+### Configure Educhain
+
+```python
+from educhain import Educhain, LLMConfig
+from langchain_openai import ChatOpenAI
+
+client_sutra = ChatOpenAI(
+     api_key=userdata.get("SUTRA_API_KEY"),
+    base_url="https://api.two.ai/v2",
+    model="sutra-v2"
+)
+
+sutra_config = LLMConfig(custom_model=client_sutra)
+
+client = Educhain(sutra_config)
+```
+
+### Generate MCQs in English Language
+
+```python
+print("\n--- Generating MCQs in English (Topic: Physics Basics) ---")
+questions_english = client.qna_engine.generate_questions(
+    topic="Physics Basics",
+    num=10,
+    question_type="Multiple Choice",
+    custom_instructions="Generate beginner-level questions in English."
+)
+
+questions_english.show()
+```
+
+### Generate MCQs in Hindi Language
+
+```python
+print("\n--- Generating MCQs in Hindi (Topic: भारतीय इतिहास) ---")
+questions_hindi = client.qna_engine.generate_questions(
+    topic="भारतीय इतिहास", # Topic: Indian History (in Hindi)
+    num=5,
+    question_type="Multiple Choice",
+    custom_instructions="Generate beginner-level questions in Hindi."
+)
+
+questions_hindi.show()
+```
+
+### Generating MCQs in Marathi
+
+```python
+print("\n--- Generating MCQs in Marathi (Topic: विज्ञान आणि तंत्रज्ञान) ---")
+
+questions_marathi = client.qna_engine.generate_questions(
+    topic="विज्ञान आणि तंत्रज्ञान",  # Topic: Science and Technology (in Marathi)
+    num=10,
+    question_type="Multiple Choice",
+    custom_instructions="मराठी भाषेत सोप्या पातळीवर विज्ञान व तंत्रज्ञान विषयावर प्रश्न तयार करा."  # Generate beginner-level questions in Marathi on Science & Tech.
+)
+
+questions_marathi.show()
+```
+
+### Generating MCQs in Gujarati
+
+```python
+print("\n--- Generating MCQs in Gujarati (Topic: ભારતીય ઇતિહાસ) ---")
+
+questions_gujarati = client.qna_engine.generate_questions(
+    topic="ભારતીય ઇતિહાસ",  # Topic: Indian History (in Gujarati)
+    num=10,
+    question_type="Multiple Choice",
+    custom_instructions="Beginner levelના પ્રશ્નો ગુજરાતી ભાષામાં બનાવો."  # Create beginner-level questions in Gujarati.
+)
+
+questions_gujarati.show()
+```
+
+### Generate MCQs in Tamil
+
+```python
+print("\n--- Generating MCQs in Tamil (Topic: தமிழ் இலக்கியம்) ---")
+questions_tamil = client.qna_engine.generate_questions(
+    topic="தமிழ் இலக்கியம்", # Topic: Tamil Literature (in Tamil)
+    num=10,
+    question_type="Multiple Choice",
+    custom_instructions="Generate beginner-level questions in Tamil."
+)
+
+questions_tamil.show()
+```
+
+### Generate MCQs in Malayalam
+
+```python
+print("\n--- Generating MCQs in Malayalam (Topic: മലയാള സാഹിത്യം) ---")
+questions_malayalam = client.qna_engine.generate_questions(
+    topic="മലയാള സാഹിത്യം", # Topic: Malayalam Literature (in Malayalam)
+    num=10,
+    question_type="Multiple Choice",
+    custom_instructions="Generate beginner-level questions in Malayalam."
+)
+
+questions_malayalam.show()
+```
+
+### 📝 Multilingual Quiz Generator Chatbot
+
+```python
+def multilingual_quiz_generator(topic, language, num_questions=5, difficulty="intermediate"):
+    """
+    Generate a quiz in any language supported by Sutra
+
+    Parameters:
+    - topic: The subject of the quiz
+    - language: The language to generate questions in
+    - num_questions: Number of questions to generate
+    - difficulty: Difficulty level (basic, intermediate, advanced)
+
+    Returns:
+    - A quiz object with questions
+    """
+    # Map difficulty to instructions
+    difficulty_map = {
+        "basic": "Generate very simple and fundamental questions suitable for beginners.",
+        "intermediate": "Generate moderately challenging questions requiring good understanding of the topic.",
+        "advanced": "Generate challenging questions requiring deep understanding and application of concepts."
+    }
+
+    instructions = f"Generate {difficulty} level questions in {language}."
+
+    print(f"\n--- Generating {difficulty} {language} Quiz on {topic} ---")
+    quiz = client.qna_engine.generate_questions(
+        topic=topic,
+        num=num_questions,
+        question_type="Multiple Choice",
+        custom_instructions=instructions
+    )
+
+    return quiz
+
+def quiz_chatbot():
+    print("\n📚 Welcome to the Multilingual Quiz Generator!")
+    print("Let's create your quiz step-by-step.\n")
+
+    # Step 1: Get topic
+    topic = input("🎯 Enter the topic for the quiz: ")
+
+    # Step 2: Get language
+    language = input("🌐 Enter the language for the quiz (e.g., Hindi, Tamil, Marathi): ")
+
+    # Step 3: Get number of questions
+    try:
+        num_questions = int(input("🔢 How many questions do you want to generate? (default is 5): ") or "5")
+    except ValueError:
+        print("Invalid number! Using default of 5 questions.")
+        num_questions = 5
+
+    # Step 4: Get difficulty level
+    difficulty = input("⚙️ Choose difficulty (basic, intermediate, advanced): ").lower()
+    if difficulty not in ["basic", "intermediate", "advanced"]:
+        print("Invalid choice! Using default difficulty: intermediate.")
+        difficulty = "intermediate"
+
+    # Generate quiz
+    quiz = multilingual_quiz_generator(topic, language, num_questions, difficulty)
+
+    # Show quiz
+    print(f"\n✅ Your {difficulty.capitalize()} quiz on {topic} in {language} is ready!")
+    quiz.show()
+
+# Run the chatbot
+quiz_chatbot()
+```

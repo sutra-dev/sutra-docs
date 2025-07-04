@@ -1,0 +1,137 @@
+---
+title: Contextual RAG Using SUTRA
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img src="/sutra.png" width="150" />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1SGrkXLcXWdnUm8IQI-2Gp5pxT78oLSZK?usp=sharing)
+
+## SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+## Contextual RAG Using SUTRA
+
+Contextual Retrieval-Augmented Generation (RAG) is an advanced RAG technique that improves response relevance and efficiency by incorporating contextual compression during the retrieval process. Traditional RAG retrieves and sends full documents to the generation model, which may include irrelevant information, leading to higher costs and less accurate responses.
+
+In Contextual RAG, the retrieved documents are processed through a Document Compressor before being passed to the language model. This compressor extracts and retains only the most relevant information for the query, or even discards entire irrelevant documents. This approach reduces the noise in the retrieved context, resulting in more precise, concise, and cost-effective responses from the generation model.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python installation is required.
+
+### 🔧 1. Install Required Libraries
+
+```python
+!pip install -qU langchain_openai langchain_community chromadb
+```
+
+### 🔑 2. Set Environment Variables (API Keys)
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
+```
+
+### Initialize Sutra LLM for chat generation
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
+import os
+
+llm = ChatOpenAI(
+    api_key=os.getenv("SUTRA_API_KEY"),
+    base_url="https://api.two.ai/v2",
+    model="sutra-v2"
+)
+```
+
+### Load & split documents
+
+```python
+from langchain.document_loaders import CSVLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+loader = CSVLoader("./context.csv")
+documents = loader.load()
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
+documents = text_splitter.split_documents(documents)
+```
+
+### Initialize Openai embeddings
+
+```python
+# load embedding model
+from langchain_openai import OpenAIEmbeddings
+embeddings = OpenAIEmbeddings()
+```
+
+### Create vector store with Openai embeddings
+
+```python
+from langchain.vectorstores import Chroma
+
+vectorstore = Chroma.from_documents(documents, embeddings)
+retriever = vectorstore.as_retriever()
+```
+
+### Setup Contextual Compression Retriever with Sutra LLM
+
+```python
+from langchain.retrievers import ContextualCompressionRetriever
+from langchain.retrievers.document_compressors import LLMChainExtractor
+
+compressor = LLMChainExtractor.from_llm(llm)
+
+compression_retriever = ContextualCompressionRetriever(
+    base_compressor=compressor,
+    base_retriever=retriever
+)
+```
+
+### Create prompt & RAG chain
+
+```python
+from langchain.prompts import ChatPromptTemplate
+from langchain.schema.runnable import RunnablePassthrough
+from langchain.schema.output_parser import StrOutputParser
+
+template = '''
+You are a helpful assistant that answers questions based on the following context.
+If you don't find the answer in the context, just say that you don't know.
+Context: {context}
+
+Question: {input}
+
+Answer:
+'''
+
+prompt = ChatPromptTemplate.from_template(template)
+
+rag_chain = (
+    {"context": compression_retriever, "input": RunnablePassthrough()}
+    | prompt
+    | llm
+    | StrOutputParser()
+)
+```
+
+### Query example
+
+```python
+response = rag_chain.invoke("what are points on a mortgage")
+print(response)
+```

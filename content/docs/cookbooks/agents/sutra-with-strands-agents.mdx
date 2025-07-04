@@ -1,0 +1,246 @@
+---
+title: SUTRA with Strands Agents SDK
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img src="/sutra.png" width="150" alt="SUTRA" />
+  <img
+    src="https://avatars.githubusercontent.com/u/209155962?s=200&v=4"
+    width="150"
+  />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1JEs8bnJxjdS_t-M3IVek_841I6FG4ABZ?usp=sharing)
+
+# SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+## SUTRA with Strands Agents SDK
+
+Strands Agents is a simple yet powerful SDK that takes a model-driven
+approach to building and running AI agents. From simple conversational
+assistants to complex autonomous workflows, from local development to
+production deployment, Strands Agents scales with your needs.
+
+## Setup and Installation
+
+First, let's install the required packages:
+
+```python
+# Install required packages
+!pip install strands-agents strands-agents[litellm] strands-agents-tools
+```
+
+## Step 2: Authentication
+
+SUTRA uses API keys for authentication. In Google Colab, we recommend
+using the `userdata` feature to securely store your API key.
+
+### Setting up your API key in Colab:
+
+1.  Click on the 🔑 icon in the left sidebar
+2.  Add a new secret with the name "SUTRA_API_KEY" and your API key as
+    the value
+
+Then run the cell below to access your API key:
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+```
+
+## Setting Up the Sutra v2 Model with LiteLLM
+
+We'll use LiteLLM to connect to the Sutra v2 model. This provides a
+unified interface for working with different LLM providers.
+
+```python
+from strands import Agent
+from strands.models.litellm import LiteLLMModel
+import os
+
+# Initialize the LiteLLM model for Sutra v2
+model = LiteLLMModel(
+    client_args={
+        "api_key": os.environ["SUTRA_API_KEY"],
+        "base_url": "https://api.two.ai/v2"
+    },
+    model_id="openai/sutra-v2",
+    params={
+        "max_tokens": 1000,
+        "temperature": 0.7,
+    }
+)
+```
+
+## Creating a Basic Strands Agent
+
+Now, let's create a basic Strands agent using our Sutra v2 model.
+
+```python
+# Create a basic agent with no tools
+basic_agent = Agent(model=model)
+
+# Test the agent with a simple query
+response = basic_agent("What are the key features of Sutra v2?")
+print(response)
+```
+
+## Importing Tools from strands-agents-tools
+
+Let's import various tools from the strands-agents-tools library that
+we'll use with our agent.
+
+```python
+# Import tools from strands_tools
+from strands_tools import (
+    calculator,
+    file_read,
+    file_write,
+    editor,
+    shell,
+    http_request,
+    python_repl,
+    current_time,
+    think
+)
+```
+
+## Creating a Basic Strands Agent with Calculator Tool
+
+Let's start with a simple example using the calculator tool, which was
+in the original code snippet.
+
+```python
+# Create a basic agent with calculator tool
+calculator_agent = Agent(model=model, tools=[calculator])
+
+# Test the agent with a math problem
+math_query = "What is the square root of (144 * 25) divided by 2?"
+math_response = calculator_agent(math_query)
+print(math_response)
+```
+
+## Using the current_time Tool
+
+The current_time tool allows agents to get the current time in different
+timezones.
+
+```python
+# Create an agent with current_time tool
+time_agent = Agent(model=model, tools=[current_time])
+
+# Get the current time in different timezones
+local_time = time_agent.tool.current_time()
+print(f"Local time: {local_time}")
+
+ist_time = time_agent.tool.current_time(timezone="Asia/Kolkata")
+print(f"India Standard Time: {ist_time}")
+
+pacific_time = time_agent.tool.current_time(timezone="US/Pacific")
+print(f"Pacific Time: {pacific_time}")
+
+utc_time = time_agent.tool.current_time(timezone="UTC")
+print(f"UTC: {utc_time}")
+```
+
+## Creating a Multi-Tool Agent
+
+Now, let's create an agent with multiple tools to demonstrate how they
+can be combined to solve complex tasks.
+
+```python
+# Create an agent with multiple tools
+multi_tool_agent = Agent(
+    model=model,
+    tools=[
+        calculator,
+        python_repl,
+        current_time,
+        think
+    ]
+)
+```
+
+## Solving a Complex Task with Multiple Tools
+
+Let's use our multi-tool agent to solve a complex task that requires
+multiple tools.
+
+```python
+# Define a complex task that requires multiple tools
+complex_task = """
+I need you to help me with the following task:
+
+1. Create a Python script that calculates the Fibonacci sequence up to the 20th number
+2. Save this script to a file named 'fibonacci.py'
+3. Execute the script and save the output to 'fibonacci_results.txt'
+4. Calculate the sum of all Fibonacci numbers generated
+5. Get the current time and append it to the results file
+6. Finally, display the content of the results file
+"""
+
+# Let the agent solve the complex task
+complex_task_response = multi_tool_agent(complex_task)
+print(complex_task_response)
+```
+
+## Multilingual Capabilities with Sutra v2
+
+SUTRA v2 excels at multilingual tasks. Let's test the agent's ability to
+handle different languages.
+
+```python
+# Test with Hindi query using multiple tools
+hindi_query = """मुझे निम्नलिखित कार्य में मदद करें:
+1. एक पाइथन स्क्रिप्ट बनाएं जो 1 से 10 तक के वर्गों की गणना करता है
+2. इस स्क्रिप्ट को 'squares.py' नामक फ़ाइल में सहेजें
+3. स्क्रिप्ट को निष्पादित करें और परिणाम देखें
+4. सभी वर्गों का योग गणना करें"""
+
+hindi_response = multi_tool_agent(hindi_query)
+print(hindi_response)
+```
+
+## Customizing Agent Behavior with System Instructions
+
+We can customize agent behavior through system instructions.
+
+```python
+# Create an agent with custom system instructions
+custom_agent = Agent(
+    model=model,
+    tools=[calculator, python_repl, think],
+    system_prompt="""You are a helpful AI assistant specialized in educational content.
+    Always explain your reasoning step by step and provide educational context to your answers.
+    When using tools, explain why you're using them and what you hope to learn.
+    Focus on making complex concepts accessible to learners at different levels."""
+)
+
+# Test the customized agent
+education_query = "Explain the concept of recursion in programming and demonstrate it with a Python example."
+education_response = custom_agent(education_query)
+print(education_response)
+```
+
+## Conclusion
+
+In this notebook, we've explored how to use Sutra v2 with LiteLLM
+provider and Strands agents, incorporating various tools from the
+strands-agents-tools library. We've covered:
+
+1.  Setting up the Sutra v2 model with LiteLLM
+2.  Using individual tools like calculator, and Time
+3.  Creating a multi-tool agent capable of solving complex tasks
+4.  Testing multilingual capabilities with Hindi queries
+5.  Customizing agent behavior through system instructions
+
+The combination of Sutra v2's powerful language capabilities with
+Strands' flexible agent framework and rich tool ecosystem enables the
+development of sophisticated AI applications that can understand user
+intent, break down complex tasks, and execute them effectively across
+multiple languages.

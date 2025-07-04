@@ -1,0 +1,532 @@
+---
+title: LangGraph with SUTRA
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img src="/sutra.png" width="150" />
+  <img
+    src="https://assets.streamlinehq.com/image/private/w_300,h_300,ar_1/f_auto/v1/icons/logos/langchain-ipuhh4qo1jz5ssl4x0g2a.png/langchain-dp1uxj2zn3752pntqnpfu2.png?_a=DATAdtAAZAA0"
+    width="150"
+  />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1F4Lvv-iEEbR70s_RC3EBZWr9KA5UmmG7?usp=sharing)
+
+## SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+# LangGraph with SUTRA
+
+This notebook demonstrates how to use LangGraph with Sutra, a powerful language model from Two AI. We'll create a simple conversational agent with state management using LangGraph and Sutra's capabilities.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python installation is required.
+
+## Setup
+
+First, let's install the required packages if they're not already installed.
+
+```python
+!pip install -q langchain langchain-core langchain-community langgraph openai langchain_openai
+```
+
+### Set Environment Variables (API Keys)
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+```
+
+## Initialize Sutra Model
+
+We'll use the ChatOpenAI class to initialize the Sutra model with the appropriate base URL for Two AI's API.
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, BaseMessage
+
+# Initialize the Sutra model
+chat = ChatOpenAI(
+    model="sutra-v2",  # or "sutra-r0" for reasoning tasks
+    api_key=os.environ["SUTRA_API_KEY"],
+    base_url="https://api.two.ai/v2"
+)
+
+# Test the model
+messages = [
+    SystemMessage(content="You are a helpful assistant."),
+    HumanMessage(content="Hello, who are you?")
+]
+
+response = chat.invoke(messages)
+print(response.content)
+```
+
+### 🧬 Simple LangGraph Workflow
+
+```python
+from langgraph.graph import StateGraph, END
+from langchain_core.messages import HumanMessage, SystemMessage, AIMessage
+from typing import TypedDict, List, Dict, Any
+
+# Define the state schema
+class GraphState(TypedDict):
+    messages: List[HumanMessage]
+
+# Define a node that processes the query with SUTRA-V2
+def chat_node(state: GraphState) -> GraphState:
+    messages = state["messages"]
+    response = chat.invoke([
+        SystemMessage(content="You are a helpful AI that answers concisely in the requested language."),
+        *messages
+    ])
+    state["messages"].append(response)
+    return state
+
+# Initialize the graph
+workflow = StateGraph(GraphState)
+
+# Add the chat node
+workflow.add_node("chat", chat_node)
+
+# Set entry and exit points
+workflow.set_entry_point("chat")
+workflow.add_edge("chat", END)
+
+# Compile the graph
+graph = workflow.compile()
+
+# Run the workflow
+def run_simple_workflow(query: str):
+    initial_state = {"messages": [HumanMessage(content=query)]}
+    result = graph.invoke(initial_state)
+    return result["messages"][-1].content
+```
+
+### Example usage
+
+```python
+# Example usage
+print("\n=== Example 1: Simple Workflow ===")
+response = run_simple_workflow("Explain the benefits of AI in education in Spanish.")
+print(response)
+```
+
+### Advanced Reasoning with SUTRA-R0
+
+```python
+# Initialize the Sutra model
+r0_chat = ChatOpenAI(
+    model="sutra-r0",  # or "sutra-r0" for reasoning tasks
+    api_key=os.environ["SUTRA_API_KEY"],
+    base_url="https://api.two.ai/v2"
+)
+
+# Define the state schema for reasoning
+class ReasoningState(TypedDict):
+    messages: List[HumanMessage]
+    reasoning_steps: List[str]
+
+# Node for reasoning step
+def reasoning_node(state: ReasoningState) -> ReasoningState:
+    messages = state["messages"]
+    reasoning_prompt = [
+        SystemMessage(content="You are a legal reasoning expert. Break down the query into logical steps before answering."),
+        *messages
+    ]
+    response = r0_chat.invoke(reasoning_prompt)
+    state["reasoning_steps"].append(response.content)
+    state["messages"].append(response)
+    return state
+
+# Initialize the graph
+reasoning_workflow = StateGraph(ReasoningState)
+
+# Add the reasoning node
+reasoning_workflow.add_node("reason", reasoning_node)
+
+# Set entry and exit points
+reasoning_workflow.set_entry_point("reason")
+reasoning_workflow.add_edge("reason", END)
+
+# Compile the graph
+reasoning_graph = reasoning_workflow.compile()
+
+# Function to run reasoning workflow
+def run_reasoning(query: str):
+    initial_state = {
+        "messages": [HumanMessage(content=query)],
+        "reasoning_steps": []
+    }
+    result = reasoning_graph.invoke(initial_state)
+    return result
+```
+
+### Example usage
+
+```python
+# Example usage
+print("\n=== Example 3: Advanced Reasoning ===")
+legal_query = "If a contract states 'Party A is responsible unless Party B provides notice within 7 days,' who is liable if notice is given on day 8?"
+result = run_reasoning(legal_query)
+print("Reasoning Steps:", result["reasoning_steps"])
+print("Final Answer:", result["messages"][-1].content)
+```
+
+### Multilingual Capabilities with SUTRA
+
+```python
+from typing import List, Dict, Any, TypedDict
+import re
+
+# Define the state schema for multilingual processing
+class MultilingualState(TypedDict):
+    messages: List[Any]
+    detected_language: str
+    translations: Dict[str, str]
+
+# Function to detect language (simplified version)
+def detect_language(text: str) -> str:
+    # This is a simplified language detection
+    # In a real application, you would use a proper language detection library
+    patterns = {
+        "es": r'\b(hola|como|está|gracias|por favor)\b',
+        "fr": r'\b(bonjour|comment|merci|s\'il vous plaît)\b',
+        "de": r'\b(hallo|wie|danke|bitte)\b',
+        "zh": r'[\u4e00-\u9fff]',  # Chinese characters
+        "hi": r'[\u0900-\u097F]',  # Hindi characters
+        "ja": r'[\u3040-\u309F\u30A0-\u30FF]',  # Japanese characters
+    }
+
+    for lang, pattern in patterns.items():
+        if re.search(pattern, text.lower()):
+            return lang
+
+    return "en"  # Default to English
+
+# Node for language detection
+def language_detection_node(state: MultilingualState) -> MultilingualState:
+    new_state = {
+        "messages": state["messages"].copy(),
+        "detected_language": state["detected_language"],
+        "translations": state["translations"].copy()
+    }
+
+    # Get the last user message
+    last_message = next((msg for msg in reversed(new_state["messages"])
+                         if isinstance(msg, HumanMessage)), None)
+
+    if last_message:
+        # Detect the language
+        detected_lang = detect_language(last_message.content)
+        new_state["detected_language"] = detected_lang
+
+    return new_state
+
+# Node for translation to English (if needed)
+def translation_node(state: MultilingualState) -> MultilingualState:
+    new_state = {
+        "messages": state["messages"].copy(),
+        "detected_language": state["detected_language"],
+        "translations": state["translations"].copy()
+    }
+
+    # Get the last user message
+    last_message = next((msg for msg in reversed(new_state["messages"])
+                         if isinstance(msg, HumanMessage)), None)
+
+    if last_message and state["detected_language"] != "en":
+        # Translate to English using Sutra's multilingual capabilities
+        translation_prompt = [
+            SystemMessage(content=f"Translate the following from {state['detected_language']} to English:"),
+            HumanMessage(content=last_message.content)
+        ]
+
+        translation_response = chat.invoke(translation_prompt)
+
+        # Store the translation
+        new_state["translations"][last_message.content] = translation_response.content
+
+    return new_state
+
+# Node for generating response in the original language
+def multilingual_response_node(state: MultilingualState) -> MultilingualState:
+    new_state = {
+        "messages": state["messages"].copy(),
+        "detected_language": state["detected_language"],
+        "translations": state["translations"].copy()
+    }
+
+    # Get the last user message
+    last_message = next((msg for msg in reversed(new_state["messages"])
+                         if isinstance(msg, HumanMessage)), None)
+
+    if last_message:
+        # Determine the content to respond to (original or translated)
+        query_content = last_message.content
+        if query_content in new_state["translations"]:
+            # Use the English translation for processing
+            query_content = new_state["translations"][query_content]
+
+        # Generate a response in the detected language
+        language_names = {
+            "en": "English",
+            "es": "Spanish",
+            "fr": "French",
+            "de": "German",
+            "zh": "Chinese",
+            "hi": "Hindi",
+            "ja": "Japanese"
+        }
+
+        lang_name = language_names.get(new_state["detected_language"], "the original language")
+
+        response_prompt = [
+            SystemMessage(content=f"You are a helpful assistant. Respond in {lang_name} to the following query:"),
+            *new_state["messages"]
+        ]
+
+        response = chat.invoke(response_prompt)
+        new_state["messages"].append(response)
+
+    return new_state
+
+# Initialize the multilingual graph
+multilingual_builder = StateGraph(MultilingualState)
+
+# Add nodes
+multilingual_builder.add_node("detect_language", language_detection_node)
+multilingual_builder.add_node("translate", translation_node)
+multilingual_builder.add_node("generate_response", multilingual_response_node)
+
+# Add edges
+multilingual_builder.add_edge("detect_language", "translate")
+multilingual_builder.add_edge("translate", "generate_response")
+multilingual_builder.add_edge("generate_response", END)
+
+# Set entry point
+multilingual_builder.set_entry_point("detect_language")
+
+# Compile the graph
+multilingual_graph = multilingual_builder.compile()
+
+# Function to interact with the multilingual system
+def multilingual_chat(query: str):
+    initial_state = {
+        "messages": [HumanMessage(content=query)],
+        "detected_language": "en",  # Default
+        "translations": {}
+    }
+    result = multilingual_graph.invoke(initial_state)
+    return result
+```
+
+### Examples
+
+```python
+# Spanish query
+spanish_query = "¿Puedes explicarme cómo funciona la inteligencia artificial?"
+spanish_result = multilingual_chat(spanish_query)
+print(f"Query (Spanish): {spanish_query}")
+print(f"Detected Language: {spanish_result['detected_language']}")
+print(f"Response: {spanish_result['messages'][-1].content}\n")
+```
+
+```python
+# Hindi query
+hindi_query = "कृत्रिम बुद्धिमत्ता के बारे में मुझे बताएं"
+hindi_result = multilingual_chat(hindi_query)
+print(f"Query (Hindi): {hindi_query}")
+print(f"Detected Language: {hindi_result['detected_language']}")
+print(f"Response: {hindi_result['messages'][-1].content}\n")
+```
+
+```python
+# English query
+english_query = "Tell me about artificial intelligence"
+english_result = multilingual_chat(english_query)
+print(f"Query (English): {english_query}")
+print(f"Detected Language: {english_result['detected_language']}")
+print(f"Response: {english_result['messages'][-1].content}")
+```
+
+### Interactive Agent with Feedback Loop
+
+```python
+# Define the state schema for feedback loop
+class FeedbackState(TypedDict):
+    messages: List[Any]
+    feedback: List[Dict[str, Any]]
+    quality_score: float
+
+# Node for generating initial response
+def generate_initial_response(state: FeedbackState) -> FeedbackState:
+    new_state = {
+        "messages": state["messages"].copy(),
+        "feedback": state["feedback"].copy(),
+        "quality_score": state["quality_score"]
+    }
+
+    # Get the last user message
+    last_message = next((msg for msg in reversed(new_state["messages"])
+                         if isinstance(msg, HumanMessage)), None)
+
+    if last_message:
+        system_prompt = "You are a helpful assistant. Provide a concise and accurate response."
+        response = chat.invoke([SystemMessage(content=system_prompt)] + new_state["messages"])
+        new_state["messages"].append(response)
+
+    return new_state
+
+# Node for evaluating response quality
+def evaluate_response(state: FeedbackState) -> FeedbackState:
+    new_state = {
+        "messages": state["messages"].copy(),
+        "feedback": state["feedback"].copy(),
+        "quality_score": state["quality_score"]
+    }
+
+    # Get the last AI message
+    last_ai_message = next((msg for msg in reversed(new_state["messages"])
+                           if isinstance(msg, AIMessage)), None)
+
+    if last_ai_message:
+        # Use SUTRA-R0 to evaluate the response
+        evaluation_prompt = [
+            SystemMessage(content="""You are a response evaluator. Rate the quality of the following response on a scale of 0.0 to 1.0.
+            Consider factors like accuracy, clarity, helpfulness, and conciseness.
+            Return ONLY a number between 0.0 and 1.0."""
+            ),
+            HumanMessage(content=f"Response to evaluate: {last_ai_message.content}")
+        ]
+
+        evaluation = r0_chat.invoke(evaluation_prompt)
+
+        # Extract the score (assuming the model returns just a number)
+        try:
+            score_text = evaluation.content.strip()
+            score = float(score_text)
+            new_state["quality_score"] = score
+        except ValueError:
+            # If the model didn't return just a number, try to extract it
+            import re
+            score_match = re.search(r'(\d+\.\d+)', evaluation.content)
+            if score_match:
+                new_state["quality_score"] = float(score_match.group(1))
+            else:
+                new_state["quality_score"] = 0.5  # Default if parsing fails
+
+    return new_state
+
+# Node for improving response if needed
+def improve_response(state: FeedbackState) -> FeedbackState:
+    new_state = {
+        "messages": state["messages"].copy(),
+        "feedback": state["feedback"].copy(),
+        "quality_score": state["quality_score"]
+    }
+
+    # If quality score is below threshold, improve the response
+    if new_state["quality_score"] < 0.7:
+        # Get the last user and AI messages
+        last_user_message = next((msg for msg in reversed(new_state["messages"][:-1])
+                                 if isinstance(msg, HumanMessage)), None)
+        last_ai_message = new_state["messages"][-1]
+
+        if last_user_message and isinstance(last_ai_message, AIMessage):
+            improvement_prompt = [
+                SystemMessage(content="""You are a response improver. The previous response was rated as needing improvement.
+                Please provide an improved version that is more accurate, clear, helpful, and concise."""
+                ),
+                HumanMessage(content=f"Original query: {last_user_message.content}"),
+                HumanMessage(content=f"Previous response: {last_ai_message.content}"),
+                HumanMessage(content=f"Quality score: {new_state['quality_score']}. Please improve this response.")
+            ]
+
+            improved_response = chat.invoke(improvement_prompt)
+
+            # Record feedback
+            new_state["feedback"].append({
+                "original_response": last_ai_message.content,
+                "quality_score": new_state["quality_score"],
+                "improved_response": improved_response.content
+            })
+
+            # Replace the last message with the improved response
+            new_state["messages"][-1] = AIMessage(content=improved_response.content)
+
+    return new_state
+
+# Decision node to determine if improvement is needed
+def needs_improvement(state: FeedbackState) -> str:
+    return "improve_response" if state["quality_score"] < 0.7 else "end"
+
+# Initialize the feedback loop graph
+feedback_builder = StateGraph(FeedbackState)
+
+# Add nodes
+feedback_builder.add_node("generate_response", generate_initial_response)
+feedback_builder.add_node("evaluate_response", evaluate_response)
+feedback_builder.add_node("improve_response", improve_response)
+
+# Add edges
+feedback_builder.add_edge("generate_response", "evaluate_response")
+feedback_builder.add_conditional_edges(
+    "evaluate_response",
+    needs_improvement,
+    {
+        "improve_response": "improve_response",
+        "end": END
+    }
+)
+feedback_builder.add_edge("improve_response", END)
+
+# Set entry point
+feedback_builder.set_entry_point("generate_response")
+
+# Compile the graph
+feedback_graph = feedback_builder.compile()
+
+# Function to get a response with quality feedback
+def get_quality_response(query: str):
+    initial_state = {
+        "messages": [HumanMessage(content=query)],
+        "feedback": [],
+        "quality_score": 1.0  # Default score
+    }
+    result = feedback_graph.invoke(initial_state)
+    return result
+```
+
+### Example usage
+
+```python
+# Example usage
+
+print("\n=== Example 7: Interactive Agent with Feedback Loop ===")
+
+# Simple query
+query = "Explain quantum computing in simple terms"
+result = get_quality_response(query)
+
+print(f"Query: {query}")
+print(f"Quality Score: {result['quality_score']}")
+print(f"Response: {result['messages'][-1].content}")
+
+if result["feedback"]:
+  print("\nFeedback Applied:")
+for fb in result["feedback"]:
+  print(f"Original Response: {fb['original_response']}")
+  print(f"Quality Score: {fb['quality_score']}")
+  print(f"Improved Response: {fb['improved_response']}")
+```

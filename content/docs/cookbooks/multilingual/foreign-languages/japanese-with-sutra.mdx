@@ -1,0 +1,291 @@
+---
+title: SUTRA with Japanese
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+<img src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew" width="150" />
+</div>
+
+[![Colabで開く](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1Bek-Hdl2P_Zjn4cmEAXKGh8j6glr8_JU?usp=sharing)
+
+## はじめに
+
+このノートブックでは、SutraモデルをOpenAIクライアントとともに日本語アプリケーションに使用する方法をデモンストレーションします。Sutraは日本語を含む複数の言語でのコンテンツ処理と生成に優れており、日本語タスクに最適な選択肢です。
+
+### 学習内容
+
+- OpenAIクライアントをSutraモデルで設定する方法
+- 日本語でのプロンプト作成と応答の理解
+- さまざまな日本語の使用例の探索
+- 日本語でのコンテンツ生成のベストプラクティス
+
+## APIキーの取得
+
+始める前に、以下を準備してください：
+
+1.  SUTRA APIキー（[TWO AIのSUTRA APIページ](https://www.two.ai/sutra/api)で取得）
+2.  PythonおよびJupyterノートブックの基本的な知識
+
+このノートブックはGoogle Colabで実行するように設計されており、ローカルのPythonインストールは必要ありません。
+
+## セットアップ
+
+まず、必要なライブラリをインストールします。
+
+```python
+# 必要なパッケージをインストール
+!pip install openai
+```
+
+### 必要なライブラリをインポート
+
+```python
+# 必要なライブラリをインポート
+import os
+import time
+from openai import OpenAI
+from IPython.display import display, Markdown, HTML
+from google.colab import userdata
+```
+
+## 認証
+
+Sutra APIを使用するには、APIキーを設定する必要があります。
+
+```python
+# コード内で使用する場合の例：
+os.environ["SUTRA_API_KEY"] = userdata.get('SUTRA_API_KEY')
+```
+
+## Sutra APIクライアントの設定
+
+```python
+# Sutra APIエンドポイントでOpenAIクライアントを作成
+client = OpenAI(
+    base_url="https://api.two.ai/v2",
+    api_key=os.environ.get("SUTRA_API_KEY")
+)
+```
+
+## ヘルパー関数
+
+日本語タスクのためにSutra APIと対話するヘルパー関数を作成します。
+
+```python
+import time
+from IPython.display import display, HTML
+
+def get_sutra_response(prompt, model="sutra-v2", temperature=0.7, max_tokens=1024):
+    """Sutra AIからのシンプルな非ストリーミング応答"""
+    try:
+        start_time = time.time()
+
+        # 基本的なAPI呼び出し
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+
+        # 応答内容を取得
+        result = response.choices[0].message.content
+        time_taken = time.time() - start_time
+
+        # シンプルな表示
+        print(f"プロンプト: {prompt}")
+        print(f"応答: {result}")
+        print(f"所要時間: {time_taken:.2f}秒")
+
+        return result, time_taken
+
+    except Exception as e:
+        error_msg = f"エラー: {str(e)}"
+        print(error_msg)
+        return error_msg, 0
+
+def get_sutra_streaming_response(prompt, model="sutra-v2", temperature=0.7, max_tokens=1024):
+    """Sutra AIからのシンプルなストリーミング応答"""
+    try:
+        start_time = time.time()
+
+        # ストリーミング開始
+        stream = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens,
+            stream=True
+        )
+
+        print(f"プロンプト: {prompt}")
+        print("応答: ", end="")
+
+        full_response = ""
+
+        # チャンクを逐次表示
+        for chunk in stream:
+            if chunk.choices[0].delta.content:
+                content = chunk.choices[0].delta.content
+                print(content, end="", flush=True)
+                full_response += content
+
+        time_taken = time.time() - start_time
+        print(f"\n所要時間: {time_taken:.2f}秒")
+
+        return full_response
+
+    except Exception as e:
+        error_msg = f"エラー: {str(e)}"
+        print(error_msg)
+        return error_msg
+```
+
+## 1. 基本的な日本語テキスト生成
+
+Sutraを使用して基本的な日本語テキスト生成の例から始めましょう。
+
+```python
+# シンプルな日本語テキスト生成
+japanese_prompt = "こんにちは、私の名前は太郎です。元気ですか？"
+
+response, time_taken = get_sutra_response(japanese_prompt)
+```
+
+## 2. 日本語での情報取得
+
+Sutraを使用して日本語で情報を取得しましょう。
+
+```python
+# 日本語での情報取得
+info_prompt = "日本の五大祭りについて教えてください。それぞれの意義も強調してください。"
+
+response, time_taken = get_sutra_response(info_prompt)
+```
+
+## 3. 日本語での創作
+
+Sutraは日本語で創造的なコンテンツを生成できます。
+
+```python
+# 日本語での創作
+creative_prompt = "富士山についての短い詩を書いてください。"
+
+response, time_taken = get_sutra_response(creative_prompt, temperature=0.8)
+```
+
+## 4. 日本語での要約
+
+Sutraは日本語テキストを効果的に要約できます。
+
+```python
+# 要約対象テキスト
+long_text = """
+日本の歴史は長く複雑です。日本の近代史は、1868年の明治維新から始まります。この時期、日本は封建制度から近代国家へと移行しました。明治政府は西洋の技術や制度を取り入れ、急速な近代化を進めました。
+
+第二次世界大戦中、日本は連合国と戦い、1945年に敗戦しました。戦後、日本はアメリカの占領下で新しい憲法を制定し、民主主義国家として再出発しました。
+
+経済的には、戦後の復興から高度経済成長期を経て、1980年代には世界第二位の経済大国となりました。しかし、1990年代のバブル崩壊以降、経済は停滞しました。
+
+現在、日本は技術革新と文化の発展で世界に影響を与え続けています。
+"""
+
+summarize_prompt = f"以下のテキストを100語以内で要約してください：\n\n{long_text}"
+
+summary, time_taken = get_sutra_response(summarize_prompt, temperature=0.3)
+```
+
+## 5. 日本語での質問応答
+
+Sutraを使用して日本語で質問応答を行いましょう。
+
+```python
+# 質問応答のコンテキスト
+context = """
+日本国中の和歌は、日本文化において重要な役割を果たしています。和歌は、5-7-5-7-7の31音で構成される短歌の一種で、奈良時代から発展しました。特に、平安時代の『万葉集』は和歌の代表的な作品集です。和歌は自然や季節、恋愛、人生の感情を表現するのに用いられます。
+"""
+
+qa_prompt = f"以下の情報に基づいて質問に答えてください：\n\n{context}\n\n質問1：和歌は何音で構成されていますか？\n質問2：和歌の代表的な作品集は何ですか？\n質問3：和歌はどのようなテーマを表現しますか？"
+
+answers, time_taken = get_sutra_response(qa_prompt, temperature=0.2)
+```
+
+## 6. 日本語-英語翻訳
+
+Sutraは日本語と英語間で効果的に翻訳できます。
+
+```python
+# 日本語から英語への翻訳
+japanese_text = "日本は多様な文化と伝統を持つ国です。その歴史と自然の美しさは世界中から多くの観光客を引きつけます。"
+
+translate_ja_to_en_prompt = f"以下の日本語テキストを英語に翻訳してください：\n\n{japanese_text}"
+
+translation_en, time_taken = get_sutra_response(translate_ja_to_en_prompt)
+```
+
+```python
+# 英語から日本語への翻訳
+english_text = "人工知能は私たちの生活と働き方を変革しています。医療、教育、輸送など多くの分野で応用されています。"
+
+translate_en_to_ja_prompt = f"以下の英語テキストを日本語に翻訳してください：\n\n{english_text}"
+
+translation_ja, time_taken = get_sutra_response(translate_en_to_ja_prompt)
+```
+
+## 7. 日本語での感情分析
+
+Sutraを使用して日本語テキストの感情分析を行いましょう。
+
+```python
+# 感情分析のための日本語レビュー
+reviews = [
+    "この映画はとても面白かったです。ストーリーが魅力的で、演技も素晴らしかったです。",
+    "料理が全く美味しくなく、サービスもとても悪かったです。",
+    "この製品はまあまあですが、価格が少し高いです。",
+    "この本が好きです。著者がテーマをとてもよく説明しています。",
+    "旅行は残念でした。ホテルが汚く、スタッフも不親切でした."
+]
+
+sentiment_prompt = "以下の日本語のレビューに対して感情分析を行い、それぞれを「ポジティブ」、「ネガティブ」、または「ニュートラル」に分類してください：\n\n"
+
+for i, review in enumerate(reviews):
+    sentiment_prompt += f"{i+1}. {review}\n"
+
+sentiment_analysis, time_taken = get_sutra_response(sentiment_prompt, temperature=0.1)
+```
+
+## 8. さまざまな形式での日本語コンテンツ生成
+
+Sutraはさまざまな形式で日本語コンテンツを生成できます。
+
+```python
+# 日本語のブログ記事を生成
+blog_prompt = "「日本の食文化と健康への影響」についてブログ記事を書いてください。タイトル、導入、主要なポイント、結論を含めてください。"
+
+blog_post = get_sutra_streaming_response(blog_prompt, temperature=0.7)
+```
+
+## 9. 結論
+
+このノートブックでは、OpenAIクライアントとともにSutraモデルを**日本語アプリケーション**に使用する方法を探索しました。以下のさまざまな使用例をカバーしました：
+
+- 基本的な日本語テキスト生成
+- 日本語での情報取得
+- 日本語での創作
+- 日本語テキストの要約
+- 日本語での質問応答
+- 日本語-英語翻訳
+- 日本語での感情分析
+- さまざまな形式での日本語コンテンツ生成
+
+Sutraの日本語および他の言語での強力な機能は、日本語を話すユーザー向けのアプリケーションや日本語処理を必要とするアプリケーションに最適な選択肢です。
+
+## 10. 追加リソース
+
+**日本語**でのSutraの使用についてさらに学ぶには、以下のリソースを参照してください：
+
+1.  [Sutra APIドキュメント](https://docs.two.ai)
+2.  [Sutraモデルバリアント](https://docs.two.ai/models)
+3.  [多言語機能についてさらに詳しく](https://docs.two.ai/multilingual)
+
+**日本語**および他の言語でSutraを使用して独自のアプリケーションを構築することをお勧めします！

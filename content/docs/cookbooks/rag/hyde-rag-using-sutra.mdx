@@ -1,0 +1,168 @@
+---
+title: HyDE RAG Using SUTRA
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img src="/sutra.png" width="150" />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1ADc0aDPlQ2f4gRFBV6NYYBGhFGH9HzqA?usp=sharing)
+
+## SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+## Hypothetical Document Embeddings (HyDE) RAG Using SUTRA
+
+HyDE operates by creating hypothetical document embeddings that represent ideal documents relevant to a given query. This method contrasts with conventional RAG systems, which typically rely on the similarity between a user's query and existing document embeddings. By generating these hypothetical embeddings, HyDE effectively guides the retrieval process towards documents that are more likely to contain pertinent information.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python installation is required.
+
+### 🔧 1. Install Required Libraries
+
+```python
+!pip install -qU langchain_openai langchain_community chromadb
+```
+
+### 🔑 2. Set Environment Variables (API Keys)
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY2")
+os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
+```
+
+### Initialize Openai embeddings
+
+```python
+# load embedding model
+from langchain_openai import OpenAIEmbeddings
+
+embeddings = OpenAIEmbeddings()
+```
+
+### 📄 Load and Chunk Documents
+
+```python
+from langchain.document_loaders import CSVLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+loader = CSVLoader("./context.csv")
+documents = loader.load()
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
+documents = text_splitter.split_documents(documents)
+```
+
+### 🔍 Vector Store: ChromaDB
+
+```python
+from langchain.vectorstores import Chroma
+
+vectorstore = Chroma.from_documents(documents, embeddings)
+```
+
+### 🔁 Retriever from Vectorstore
+
+```python
+retriever = vectorstore.as_retriever()
+```
+
+### Setup Sutra LLM (via ChatOpenAI interface)
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+# Sutra LLM setup
+llm = ChatOpenAI(
+    api_key=os.getenv("SUTRA_API_KEY"),
+    base_url="https://api.two.ai/v2",
+    model="sutra-v2"
+)
+
+# Hypothetical Answer Prompt
+prompt_hyde = ChatPromptTemplate.from_messages([
+    ("system", "You are a helpful assistant that answers questions.\nQuestion: {input}\nAnswer:"),
+    ("human", "{input}")
+])
+
+qa_no_context = prompt_hyde | llm | StrOutputParser()
+```
+
+### Hypothetical Answer Chain (HyDE style hallucination)
+
+```python
+# hallucinate an answer to generate better query
+question = "how does interlibrary loan work"
+hypothetical_answer = qa_no_context.invoke({"input": question})
+print("🧠 Hypothetical Answer:\n", hypothetical_answer)
+```
+
+### Retrieve Relevant Docs Based on HyDE Answer
+
+```python
+# retrieve documents based on hypothetical answer
+retrieval_chain = qa_no_context | retriever
+retrieved_docs = retrieval_chain.invoke({"input": question})
+
+# Combine content into string for prompt
+context_text = "\n".join([doc.page_content for doc in retrieved_docs])
+```
+
+### Final RAG Answer Using Context
+
+```python
+# RAG prompt with context
+template_context = '''
+You are a helpful assistant that answers questions based on the provided context.
+Use the provided context to answer the question.
+Question: {input}
+Context: {context}
+'''
+
+prompt_context = ChatPromptTemplate.from_template(template_context)
+final_rag_chain = prompt_context | llm | StrOutputParser()
+
+# Final context-aware response
+final_answer = final_rag_chain.invoke({"context": context_text, "input": question})
+print("✅ Final Answer:\n", final_answer)
+```
+
+### 📊 Prepare Data for Evaluation
+
+```python
+from datasets import Dataset
+import pandas as pd
+
+# Inference loop (can extend with more questions)
+questions = ["how does interlibrary loan work"]
+responses, contexts = [], []
+
+for q in questions:
+    docs = retriever.invoke(q)
+    ctx_text = "\n".join([doc.page_content for doc in docs])
+    result = final_rag_chain.invoke({"context": ctx_text, "input": q})
+
+    responses.append(result)
+    contexts.append([doc.page_content for doc in docs])
+
+# Create HuggingFace Dataset
+data = {"query": questions, "response": responses, "context": contexts}
+dataset = Dataset.from_dict(data)
+
+# Convert to DataFrame
+df = pd.DataFrame(dataset)
+df
+```
