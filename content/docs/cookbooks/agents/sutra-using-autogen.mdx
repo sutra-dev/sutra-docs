@@ -1,0 +1,248 @@
+---
+title: SUTRA with AutoGen
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img src="/sutra.png" width="150" />
+  <img
+    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSeRdOo-WucXlITj0XdjTKYQch6QQk-ARyfA&s"
+    width="150"
+    className="object-cover aspect-square"
+  />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1DMaBjL3euIOTAMvFH3l1CcTE3kHlYZ-0?usp=sharing)
+
+## SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+# AutoGen Agents With SUTRA
+
+This notebook demonstrates how to integrate Sutra, a powerful language model from Two AI, with AutoGen, a framework for building agent-based systems. We'll create multi-agent systems that leverage Sutra's capabilities for various tasks.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python installation is required.
+
+## Setup
+
+First, let's install the required packages if they're not already installed.
+
+```python
+!pip install -q pyautogen openai
+```
+
+## Import Libraries
+
+Now, let's import the necessary libraries for our AutoGen application.
+
+```python
+import os
+import json
+import autogen
+from autogen import AssistantAgent, UserProxyAgent, config_list_from_json
+from google.colab import userdata
+
+
+# Set your API key for Two AI
+api_key = userdata.get("SUTRA_API_KEY")  # Replace with your actual API key
+# os.environ["TWO_AI_API_KEY"] = api_key]  # Uncomment this line if you prefer to use environment variables
+```
+
+## Configure Sutra with AutoGen
+
+AutoGen supports custom LLM configurations, which we'll use to set up Sutra. We need to configure the API endpoint and model parameters.
+
+```python
+# Create a configuration for Sutra
+sutra_config = {
+    "model": "sutra-v2",  # or "sutra-r0" for reasoning tasks
+    "api_key": api_key,
+    "base_url": "https://api.two.ai/v2",
+    "api_type": "openai",
+
+}
+
+# Create a configuration list for AutoGen
+config_list = [sutra_config]
+
+# Alternatively, you can save this configuration to a JSON file
+with open("sutra_config.json", "w") as f:
+    json.dump({"model_configs": [sutra_config]}, f)
+
+# And then load it using AutoGen's utility function
+# config_list = config_list_from_json("sutra_config.json")
+```
+
+## Create a Simple Conversational Agent
+
+Let's start by creating a simple conversational agent using Sutra and AutoGen.
+
+```python
+# Create an assistant agent powered by Sutra
+assistant = AssistantAgent(
+    name="sutra_assistant",
+    system_message="You are a helpful assistant powered by Sutra. You provide concise, accurate, and helpful responses.",
+    llm_config={"config_list": config_list}
+)
+
+# Create a user proxy agent
+user_proxy = UserProxyAgent(
+    name="user_proxy",
+    human_input_mode="TERMINATE",  # Set to "ALWAYS" if you want to provide input at each step
+    max_consecutive_auto_reply=0,  # Set to a higher number for more autonomous conversations
+    system_message="You are a human user having a conversation with an AI assistant."
+)
+
+# Start a conversation
+user_proxy.initiate_chat(
+    assistant,
+    message="Hello! Can you tell me about Sutra and its capabilities?"
+)
+```
+
+## Create a Multi-Agent System
+
+Now, let's create a more complex multi-agent system with different roles and capabilities.
+
+```python
+# Create a technical expert agent
+technical_expert = AssistantAgent(
+    name="technical_expert",
+    system_message='''You are a technical expert powered by Sutra. You specialize in providing technical information,
+    explaining concepts, and helping with code. Provide detailed and accurate technical explanations.''',
+    llm_config={"config_list": config_list}
+)
+
+# Create a creative writer agent
+creative_writer = AssistantAgent(
+    name="creative_writer",
+    system_message='''You are a creative writer powered by Sutra. You specialize in creative writing, storytelling,
+    and generating imaginative content. Be engaging and creative in your responses.''',
+    llm_config={"config_list": config_list}
+)
+
+# Create a research assistant agent
+research_assistant = AssistantAgent(
+    name="research_assistant",
+    system_message='''You are a research assistant powered by Sutra. You specialize in gathering information,
+    analyzing data, and providing well-researched answers. Be thorough and cite sources when possible.''',
+    llm_config={"config_list": config_list}
+)
+
+# Create a user proxy agent that can work with multiple agents
+user_proxy_multi = UserProxyAgent(
+    name="user_proxy",
+    human_input_mode="TERMINATE",
+    max_consecutive_auto_reply=0,
+    system_message="You are a human user interacting with multiple AI agents."
+)
+```
+
+```python
+# Function to interact with the appropriate agent based on the query
+def interact_with_agent(query):
+    # Simple keyword-based routing
+    if any(keyword in query.lower() for keyword in ["code", "programming", "technical", "explain", "how to"]):
+        print("Routing to Technical Expert...\n")
+        user_proxy_multi.initiate_chat(technical_expert, message=query)
+    elif any(keyword in query.lower() for keyword in ["story", "creative", "imagine", "write", "fiction"]):
+        print("Routing to Creative Writer...\n")
+        user_proxy_multi.initiate_chat(creative_writer, message=query)
+    elif any(keyword in query.lower() for keyword in ["research", "information", "data", "analysis", "study"]):
+        print("Routing to Research Assistant...\n")
+        user_proxy_multi.initiate_chat(research_assistant, message=query)
+    else:
+        # Default to technical expert if no clear routing
+        print("No clear routing, defaulting to Technical Expert...\n")
+        user_proxy_multi.initiate_chat(technical_expert, message=query)
+
+# Example queries
+queries = [
+    "Explain how to use AutoGen with Sutra for building multi-agent systems.",
+    "Write a short story about AI agents collaborating to solve a complex problem.",
+    "Research the latest advancements in large language models and their applications."
+]
+
+# Process each query
+for query in queries:
+    print(f"\n\nQUERY: {query}\n")
+    interact_with_agent(query)
+```
+
+## Create a Group Chat with Multiple Agents
+
+AutoGen allows us to create group chats where multiple agents can
+collaborate to solve problems.
+
+```python
+# Create a group chat manager
+groupchat = autogen.GroupChat(
+    agents=[user_proxy_multi, technical_expert, creative_writer, research_assistant],
+    messages=[],
+    max_round=10
+)
+manager = autogen.GroupChatManager(groupchat=groupchat, llm_config={"config_list": config_list})
+```
+
+```python
+# Start a group chat
+user_proxy_multi.initiate_chat(
+    manager,
+    message='''Let's collaborate on creating a new AI application that combines technical expertise,
+    creative storytelling, and research insights. What should we build and how should we approach it?'''
+)
+```
+
+## Task-Solving Agent with Code Execution
+
+AutoGen supports agents that can execute code, which is useful for
+solving programming tasks.
+
+```python
+# Create a coding assistant
+coding_assistant = AssistantAgent(
+    name="coding_assistant",
+    system_message='''You are a coding assistant powered by Sutra. You specialize in writing Python code to solve problems.
+    You provide clear explanations along with your code.''',
+    llm_config={"config_list": config_list}
+)
+
+# Create a user proxy agent that can execute code
+user_proxy_exec = UserProxyAgent(
+    name="user_proxy_exec",
+    human_input_mode="TERMINATE",
+    max_consecutive_auto_reply=10,  # Allow multiple auto-replies for code execution
+    system_message="You are a human user working with a coding assistant. You can execute Python code.",
+    code_execution_config={"work_dir": "coding_workspace", "use_docker": False},  # Configure code execution
+)
+```
+
+```python
+# Start a conversation with a coding task
+user_proxy_exec.initiate_chat(
+    coding_assistant,
+    message='''Write a Python function that generates the Fibonacci sequence up to n terms.
+    Then create a visualization of the sequence using matplotlib.'''
+)
+```
+
+## Conclusion
+
+In this notebook, we've demonstrated various ways to integrate Sutra
+with AutoGen for building agent-based systems:
+
+1.  Simple conversational agents
+2.  Multi-agent systems with specialized roles
+3.  Group chats for collaborative problem-solving
+4.  Task-solving agents with code execution
+
+These examples showcase the flexibility and power of combining Sutra's
+language capabilities with AutoGen's agent framework. You can extend
+these examples to create more sophisticated applications by:

@@ -1,0 +1,192 @@
+---
+title: SUTRA with TaskGen
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img src="/sutra.png" width="150" />
+  <img
+    src="https://avatars.githubusercontent.com/u/132088052?s=280&v=4"
+    width="150"
+  />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/16xQRac5adTjq-J-My8UHRC-tHhutuSH2?usp=sharing)
+
+## SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+## TaskGen : A Task-based agentic framework building on StrictJSON outputs by LLM agents
+
+TaskGen is a cutting-edge task-based agentic framework designed for efficient task execution and subtask management, leveraging StrictJSON and native Chain of Thought reasoning. It redefines task automation with advanced features like shared variables, RAG, and async capabilities for streamlined workflows.
+
+# SUTRA using TaskGen
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python installation is required.
+
+### Install Requirements
+
+```python
+# ✅ Install dependencies
+!pip install taskgen-ai openai
+```
+
+### Configure SUTRA API
+
+```python
+from taskgen import *
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+SUTRA_API_KEY = os.getenv("SUTRA_API_KEY")
+```
+
+### Configuration
+
+```python
+def llm(system_prompt: str, user_prompt: str) -> str:
+    from openai import OpenAI
+
+    client = OpenAI(
+        api_key=SUTRA_API_KEY,
+        base_url="https://api.two.ai/v2"  # Sutra's base URL
+    )
+    response = client.chat.completions.create(
+        model='sutra-v2',  # Use Sutra LLM
+        temperature=0.7,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ]
+    )
+    return response.choices[0].message.content
+```
+
+### Example Conversation
+
+#### Psychology counsellor
+
+```python
+# Psychology Counsellor Agent
+agent = Agent('Psychology counsellor',
+              "Helps to understand and respond to User's emotion and situation. Reply User based on User Requests for the Conversation",
+              llm=llm)
+
+# Wrap with memory
+my_agent = ConversationWrapper(agent,
+             persistent_memory={'User Requests for the Conversation': '',
+                                'User Emotion': '',
+                                'Summary of Key Incidents': "Key incidents relevant to understanding User's situation in one line"})
+
+# Start conversation
+while True:
+    user_input = input('User: ')
+    if user_input.lower() == 'exit':
+        break
+    reply = my_agent.chat(user_input)
+    print(agent.agent_name + ':', reply)
+```
+
+```python
+agent.shared_variables['Conversation']
+```
+
+```python
+agent.shared_variables['Persistent Memory']
+```
+
+```python
+my_agent.reset()
+```
+
+### Inventory Manager
+
+```python
+from taskgen.agent import Agent
+
+# वस्तु जोड़ने का कार्य
+def add_item_to_inventory(shared_variables, item: str) -> str:
+    '''इन्वेंटरी में वस्तु जोड़ता है और क्रिया का परिणाम लौटाता है'''
+    shared_variables['इन्वेंटरी'].append(item)
+    return f'{item} को सफलतापूर्वक इन्वेंटरी में जोड़ा गया है।'
+
+# वस्तु हटाने का कार्य
+def remove_item_from_inventory(shared_variables, item: str) -> str:
+    '''इन्वेंटरी से वस्तु हटाता है और परिणाम लौटाता है'''
+    if item in shared_variables['इन्वेंटरी']:
+        shared_variables['इन्वेंटरी'].remove(item)
+        return f'{item} को सफलतापूर्वक इन्वेंटरी से हटा दिया गया है।'
+    else:
+        return f'{item} इन्वेंटरी में नहीं मिला, इसलिए हटाया नहीं जा सका।'
+
+# एजेंट बनाएँ
+agent = Agent(
+    'इन्वेंटरी प्रबंधक',
+    'यह एजेंट इन्वेंटरी में वस्तुएँ जोड़ता और हटाता है। केवल वही वस्तुएँ हटाई जा सकती हैं जो इन्वेंटरी में पहले से मौजूद हों।',
+    shared_variables={'इन्वेंटरी': []},
+    global_context='इन्वेंटरी: ',
+    llm=llm
+).assign_functions([add_item_to_inventory, remove_item_from_inventory])
+
+# उदाहरण इनपुट
+output = agent.run('आलू और टमाटर जोड़ें')
+print("एजेंट का उत्तर:", output)
+```
+
+```python
+# इन्वेंटरी की वर्तमान स्थिति देखें
+print("वर्तमान इन्वेंटरी:", agent.shared_variables['इन्वेंटरी'])
+```
+
+```python
+my_agent.reset()
+```
+
+```python
+from taskgen.agent import AsyncAgent
+from taskgen.function import AsyncFunction
+import asyncio
+
+# Async wrapper for Sutra LLM
+async def sutra_llm_async(system_prompt: str, user_prompt: str):
+    from openai import AsyncOpenAI
+    client = AsyncOpenAI(api_key=os.getenv("SUTRA_API_KEY"), base_url="https://api.two.ai/v2")
+    response = await client.chat.completions.create(
+        model="sutra-v2",
+        temperature=0,
+        messages=[{"role": "system", "content": system_prompt}, {"role": "user", "content": user_prompt}]
+    )
+    return response.choices[0].message.content
+
+# Async LLM function
+generate_sentence = AsyncFunction(
+    fn_description="Create a cheerful sentence using <number> and <object>",
+    output_format={"output": "sentence"},
+    fn_name="generate_cheerful_sentence",
+    llm=sutra_llm_async
+)
+
+# Binary to decimal converter
+def binary_to_decimal(binary_number: str) -> int:
+    return int(binary_number, 2)
+
+# Create Async Agent
+my_async_agent = AsyncAgent("HappyBot", "Creates happy sentences from binary input", shared_variables={}, llm=sutra_llm_async)
+my_async_agent.assign_functions([generate_sentence, binary_to_decimal])
+
+# Run agent in asyncio loop
+async def run_async_task():
+    result = await my_async_agent.run("Convert binary 1101 to decimal, then make a cheerful sentence with the number and a kite")
+    print(result)
+
+await run_async_task()
+```

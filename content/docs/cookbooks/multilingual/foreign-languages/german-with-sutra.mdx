@@ -1,0 +1,289 @@
+---
+title: SUTRA with German
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+<img src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew" width="150" />
+</div>
+
+[![In Colab öffnen](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1AmF3wnqvQ3aksgXoCwg4qMJJJKKhzna_?usp=sharing)
+
+## Einführung
+
+In diesem Notebook zeigen wir, wie das Sutra-Modell mit dem OpenAI-Client speziell für Anwendungen in der deutschen Sprache verwendet werden kann. Sutra zeichnet sich durch die Verarbeitung und Generierung von Inhalten in mehreren Sprachen, einschließlich Deutsch, aus und ist daher ideal für deutschsprachige Aufgaben geeignet.
+
+### Was Sie lernen werden
+
+- Einrichten des OpenAI-Clients für die Arbeit mit dem Sutra-Modell
+- Erstellen von Prompts auf Deutsch und Verstehen der Antworten
+- Erkundung verschiedener Anwendungsfälle in der deutschen Sprache
+- Best Practices für die Generierung von Inhalten auf Deutsch
+
+## API-Schlüssel beschaffen
+
+Bevor Sie beginnen, stellen Sie sicher, dass Sie Folgendes haben:
+
+1.  Einen SUTRA API-Schlüssel (Erhältlich auf der [SUTRA API-Seite von TWO AI](https://www.two.ai/sutra/api))
+2.  Grundlegende Kenntnisse in Python und Jupyter-Notebooks
+
+Dieses Notebook ist für die Ausführung in Google Colab konzipiert, sodass keine lokale Python-Installation erforderlich ist.
+
+## Einrichtung
+
+Zuerst installieren Sie die erforderlichen Bibliotheken.
+
+```python
+# Erforderliche Pakete installieren
+!pip install openai
+```
+
+### Erforderliche Bibliotheken importieren
+
+```python
+# Erforderliche Bibliotheken importieren
+import os
+import time
+from openai import OpenAI
+from IPython.display import display, Markdown, HTML
+from google.colab import userdata
+```
+
+## Authentifizierung
+
+Um die Sutra-API zu verwenden, müssen Sie Ihren API-Schlüssel einrichten.
+
+```python
+# Beispiel für die Verwendung im Code:
+os.environ["SUTRA_API_KEY"] = userdata.get('SUTRA_API_KEY')
+```
+
+### OpenAI-Client mit Sutra-API-Endpunkt erstellen
+
+```python
+# OpenAI-Client mit Sutra-API-Endpunkt erstellen
+client = OpenAI(
+    base_url="https://api.two.ai/v2",
+    api_key=os.environ.get("SUTRA_API_KEY")
+)
+```
+
+## Hilfsfunktionen
+
+Erstellen Sie Hilfsfunktionen, um mit der Sutra-API für deutschsprachige Aufgaben zu interagieren.
+
+```python
+import time
+from IPython.display import display, HTML
+
+def get_sutra_response(prompt, model="sutra-v2", temperature=0.7, max_tokens=1024):
+    """Einfache nicht-streamende Antwort von Sutra AI"""
+    try:
+        start_time = time.time()
+
+        # Grundlegender API-Aufruf
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+
+        # Antwortinhalt abrufen
+        result = response.choices[0].message.content
+        time_taken = time.time() - start_time
+
+        # Einfache Anzeige
+        print(f"Prompt: {prompt}")
+        print(f"Antwort: {result}")
+        print(f"Dauer: {time_taken:.2f}s")
+
+        return result, time_taken
+
+    except Exception as e:
+        error_msg = f"Fehler: {str(e)}"
+        print(error_msg)
+        return error_msg, 0
+
+def get_sutra_streaming_response(prompt, model="sutra-v2", temperature=0.7, max_tokens=1024):
+    """Einfache streamende Antwort von Sutra AI"""
+    try:
+        start_time = time.time()
+
+        # Streaming starten
+        stream = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens,
+            stream=True
+        )
+
+        print(f"Prompt: {prompt}")
+        print("Antwort: ", end="")
+
+        full_response = ""
+
+        # Chunks nach und nach anzeigen
+        for chunk in stream:
+            if chunk.choices[0].delta.content:
+                content = chunk.choices[0].delta.content
+                print(content, end="", flush=True)
+                full_response += content
+
+        time_taken = time.time() - start_time
+        print(f"\nDauer: {time_taken:.2f}s")
+
+        return full_response
+
+    except Exception as e:
+        error_msg = f"Fehler: {str(e)}"
+        print(error_msg)
+        return error_msg
+```
+
+## 1. Grundlegende Textgenerierung auf Deutsch
+
+Beginnen wir mit einigen grundlegenden Beispielen zur Generierung von deutschem Text mit Sutra.
+
+```python
+# Einfache Textgenerierung auf Deutsch
+german_prompt = "Hallo, mein Name ist Anna. Wie geht es dir?"
+
+response, time_taken = get_sutra_response(german_prompt)
+```
+
+## 2. Informationsabruf auf Deutsch
+
+Nutzen wir Sutra, um Informationen auf Deutsch abzurufen.
+
+```python
+# Informationsabruf auf Deutsch
+info_prompt = "Erzähle mir von den fünf wichtigsten deutschen Festen und hebe deren Bedeutung hervor."
+
+response, time_taken = get_sutra_response(info_prompt)
+```
+
+## 3. Kreatives Schreiben auf Deutsch
+
+Sutra kann kreative Inhalte auf Deutsch generieren.
+
+```python
+# Kreatives Schreiben auf Deutsch
+creative_prompt = "Schreibe ein kurzes Gedicht über die Alpen."
+
+response, time_taken = get_sutra_response(creative_prompt, temperature=0.8)
+```
+
+## 4. Zusammenfassung auf Deutsch
+
+Sutra kann deutsche Texte effektiv zusammenfassen.
+
+```python
+# Text für die Zusammenfassung
+long_text = """
+Die Geschichte der deutschen Wiedervereinigung ist ein bedeutendes Kapitel in der modernen Geschichte. Nach dem Zweiten Weltkrieg wurde Deutschland in Ost- und Westdeutschland geteilt, mit der Berliner Mauer als Symbol der Trennung. Die Teilung begann 1945 und dauerte bis 1989, als die Mauer fiel.
+
+Die Wiedervereinigung wurde am 3. Oktober 1990 offiziell vollzogen, als die Deutsche Demokratische Republik (DDR) der Bundesrepublik Deutschland (BRD) beitrat. Dieser Prozess war das Ergebnis politischer Verhandlungen und des starken Wunsches der Bevölkerung nach Einheit.
+
+Die Wiedervereinigung brachte wirtschaftliche und soziale Herausforderungen, aber auch neue Möglichkeiten. Heute ist Deutschland ein führendes Land in Europa, bekannt für seine wirtschaftliche Stärke und kulturelle Vielfalt.
+"""
+
+summarize_prompt = f"Fasse den folgenden Text in weniger als 100 Wörtern zusammen:\n\n{long_text}"
+
+summary, time_taken = get_sutra_response(summarize_prompt, temperature=0.3)
+```
+
+## 5. Fragenbeantwortung auf Deutsch
+
+Nutzen wir Sutra für die Beantwortung von Fragen auf Deutsch.
+
+```python
+# Kontext für die Fragenbeantwortung
+context = """
+Die deutsche Verfassung, auch Grundgesetz genannt, ist das höchste Gesetz der Bundesrepublik Deutschland. Sie wurde am 23. Mai 1949 verabschiedet und trat in Kraft. Das Grundgesetz besteht aus 146 Artikeln und regelt die Grundrechte, die Staatsorganisation und die Rechtsordnung. Es wurde von Konrad Adenauer und anderen Mitgliedern des Parlamentarischen Rates unterzeichnet.
+"""
+
+qa_prompt = f"Beantworte die folgenden Fragen basierend auf den bereitgestellten Informationen:\n\n{context}\n\nFrage 1: Wann trat das Grundgesetz in Kraft?\nFrage 2: Wie viele Artikel umfasst das Grundgesetz?\nFrage 3: Wer unterzeichnete das Grundgesetz?"
+
+answers, time_taken = get_sutra_response(qa_prompt, temperature=0.2)
+```
+
+## 6. Deutsch-Englisch-Übersetzung
+
+Sutra kann effektiv zwischen Deutsch und Englisch übersetzen.
+
+```python
+# Deutsch nach Englisch Übersetzung
+german_text = "Deutschland ist ein Land mit einer reichen Kultur und Geschichte. Seine Traditionen und Natur ziehen Besucher aus aller Welt an."
+
+translate_de_to_en_prompt = f"Übersetze den folgenden deutschen Text ins Englische:\n\n{german_text}"
+
+translation_en, time_taken = get_sutra_response(translate_de_to_en_prompt)
+```
+
+```python
+# Englisch nach Deutsch Übersetzung
+english_text = "Artificial intelligence is transforming the way we live and work. It has applications in healthcare, education, transportation, and many other fields."
+
+translate_en_to_de_prompt = f"Übersetze den folgenden englischen Text ins Deutsche:\n\n{english_text}"
+
+translation_de, time_taken = get_sutra_response(translate_en_to_de_prompt)
+```
+
+## 7. Sentimentanalyse auf Deutsch
+
+Nutzen wir Sutra, um eine Sentimentanalyse für deutsche Texte durchzuführen.
+
+```python
+# Deutsche Bewertungen für die Sentimentanalyse
+reviews = [
+    "Der Film war sehr gut. Die Geschichte war fesselnd und die Schauspieler waren hervorragend.",
+    "Das Essen war überhaupt nicht lecker und der Service war sehr schlecht.",
+    "Das Produkt ist in Ordnung, aber der Preis ist etwas hoch.",
+    "Ich mag dieses Buch, der Autor hat das Thema sehr gut erklärt.",
+    "Die Reise war enttäuschend, das Hotel war schmutzig und das Personal war unfreundlich."
+]
+
+sentiment_prompt = "Führe eine Sentimentanalyse für die folgenden deutschen Bewertungen durch und klassifiziere sie als 'Positiv', 'Negativ' oder 'Neutral':\n\n"
+
+for i, review in enumerate(reviews):
+    sentiment_prompt += f"{i+1}. {review}\n"
+
+sentiment_analysis, time_taken = get_sutra_response(sentiment_prompt, temperature=0.1)
+```
+
+## 8. Generierung von Inhalten auf Deutsch in verschiedenen Formaten
+
+Sutra kann Inhalte auf Deutsch in verschiedenen Formaten generieren.
+
+```python
+# Blogpost auf Deutsch generieren
+blog_prompt = "Schreibe einen Blogpost zum Thema 'Deutsche Küche und ihre Auswirkungen auf die Gesundheit'. Füge einen Titel, eine Einleitung, Hauptpunkte und einen Schluss hinzu."
+
+blog_post = get_sutra_streaming_response(blog_prompt, temperature=0.7)
+```
+
+## 9. Fazit
+
+In diesem Notebook haben wir die Verwendung des Sutra-Modells mit dem OpenAI-Client für **deutschsprachige Anwendungen** untersucht. Wir haben verschiedene Anwendungsfälle behandelt, darunter:
+
+- Grundlegende Textgenerierung auf Deutsch
+- Informationsabruf auf Deutsch
+- Kreatives Schreiben auf Deutsch
+- Zusammenfassung von Texten auf Deutsch
+- Fragenbeantwortung auf Deutsch
+- Deutsch-Englisch-Übersetzung
+- Sentimentanalyse auf Deutsch
+- Generierung von Inhalten auf Deutsch in verschiedenen Formaten
+
+Die starken Fähigkeiten von Sutra in der deutschen Sprache und anderen Sprachen machen es zu einer hervorragenden Wahl für Anwendungen, die auf deutschsprachige Nutzer abzielen oder deutsche Sprachverarbeitung erfordern.
+
+## 10. Zusätzliche Ressourcen
+
+Um mehr über die Verwendung von Sutra mit der **deutschen Sprache** zu erfahren, konsultieren Sie die folgenden Ressourcen:
+
+1.  [Sutra API-Dokumentation](https://docs.two.ai)
+2.  [Sutra-Modellvarianten](https://docs.two.ai/models)
+3.  [Mehr über mehrsprachige Fähigkeiten](https://docs.two.ai/multilingual)
+
+Wir ermutigen Sie, Ihre eigenen Anwendungen mit Sutra für **Deutsch** und andere Sprachen zu entwickeln!

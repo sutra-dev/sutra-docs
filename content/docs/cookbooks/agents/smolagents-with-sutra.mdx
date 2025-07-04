@@ -1,0 +1,242 @@
+---
+title: SUTRA with Smol-Agents
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img src="/sutra.png" width="150" />
+  <img
+    src="https://debuggercafe.com/wp-content/uploads/2025/01/smolagents-logo.png"
+    width="150"
+  />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1trbomQyteYsEjuH-ejyTtZqqk2JQtXzA?usp=sharing)
+
+## SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+## Smolagents With SUTRA
+
+Smolagents is an AI agent framework recently launched by the Hugging Face team to simplify the process of developing AI agents.
+It’s a lightweight library that prioritizes practicality. This means it can build AI agents in a few lines of code but focuses more on simple implementation than creating the whole agent system in production.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
+
+### 🔧 1. Install Required Libraries
+
+```python
+!pip install duckduckgo-search pyttsx3 gTTS langchain_community langchain_chroma langchain_huggingface "smolagents[litellm]"
+```
+
+### 🔑 2. Set Environment Variables (API Keys)
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+os.environ["HF_TOKEN"] = userdata.get("HF_TOKEN")
+```
+
+### Initialize Sutra LLM via LiteLLMModel (SmolAgents)
+
+```python
+from smolagents import LiteLLMModel
+
+# Multilingual message (in Hindi)
+messages = [
+    {"role": "user", "content": [{"type": "text", "text": "मुझे मंगल ग्रह के बारे में 5 पैराग्राफ दीजिए"}]}
+]
+
+# Instantiate LiteLLMModel with Sutra model
+model = LiteLLMModel(
+    model_id="openai/sutra-v2",                  # Use Sutra via LiteLLM
+    api_base="https://api.two.ai/v2",            # Sutra API base from TwoAI
+    api_key=os.getenv("SUTRA_API_KEY"),          # Pass API key
+    temperature=0.7,
+    max_tokens=500
+)
+
+# Generate response
+response = model(messages)
+print(response)
+```
+
+### Create a CodeAgent with the DuckDuckGo Search Tool
+
+```python
+from smolagents import LiteLLMModel, CodeAgent, DuckDuckGoSearchTool
+
+# Initialize Sutra model
+model = LiteLLMModel(
+    model_id="openai/sutra-v2",
+    api_base="https://api.two.ai/v2",
+    api_key=os.getenv("SUTRA_API_KEY"),
+    temperature=0.7,
+    max_tokens=500
+)
+
+# Initialize CodeAgent with DuckDuckGo search tool and Sutra model
+agent = CodeAgent(tools=[DuckDuckGoSearchTool()], model=model)
+
+# Run a query using the agent
+agent.run("ఐసీసీ 2025 ఫైనల్ ఎవరు గెలిచారు?")
+```
+
+### Text-to-Speech Response from Sutra
+
+```python
+# ✅ Import necessary modules
+from smolagents import CodeAgent, LiteLLMModel
+from gtts import gTTS
+from IPython.display import Audio
+
+
+# ✅ Initialize Sutra Model
+model = LiteLLMModel(
+    model_id="openai/sutra-v2",
+    api_base="https://api.two.ai/v2",
+    api_key=os.getenv("SUTRA_API_KEY"),
+    temperature=0.7,
+    max_tokens=1024
+)
+
+# ✅ Initialize CodeAgent
+agent = CodeAgent(tools=[], model=model, add_base_tools=True)
+
+# ✅ Run the agent
+response = agent.run("About TWO AI")
+print("Agent Response:", response)
+
+# ✅ Convert response to speech using gTTS
+tts = gTTS(text=str(response))
+tts.save("response.mp3")
+
+# ✅ Play audio in notebook
+Audio("response.mp3")
+```
+
+### Using SmolAgents to perform RAG on URLs.
+
+```python
+import os
+import requests
+from tqdm import tqdm
+
+from langchain.docstore.document import Document
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_chroma import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
+from transformers import AutoTokenizer
+
+from smolagents import LiteLLMModel, Tool
+from smolagents.agents import CodeAgent
+
+
+# ✅ Step 1: Load text content from a URL
+def load_text_from_url(url):
+    response = requests.get(url)
+    response.raise_for_status()
+    return response.text
+
+
+# ✅ Example: Use your own URL
+url = "https://arxiv.org/pdf/1706.03762"  # Replace with your own
+page_content = load_text_from_url(url)
+
+source_docs = [Document(page_content=page_content, metadata={"source": url})]
+
+# ✅ Step 2: Split text into chunks
+tokenizer = AutoTokenizer.from_pretrained("thenlper/gte-small")
+
+text_splitter = RecursiveCharacterTextSplitter.from_huggingface_tokenizer(
+    tokenizer,
+    chunk_size=200,
+    chunk_overlap=20,
+    add_start_index=True,
+    strip_whitespace=True,
+    separators=["
+
+", "
+", ".", " ", ""],
+)
+
+print("Splitting document...")
+docs_processed = []
+unique_texts = {}
+for doc in tqdm(source_docs):
+    new_docs = text_splitter.split_documents([doc])
+    for new_doc in new_docs:
+        if new_doc.page_content not in unique_texts:
+            unique_texts[new_doc.page_content] = True
+            docs_processed.append(new_doc)
+
+# ✅ Step 3: Embed & store in vector DB
+print("Embedding documents...")
+embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+vector_store = Chroma.from_documents(docs_processed, embeddings, persist_directory="./chroma_db")
+
+
+# ✅ Step 4: Create Retrieval Tool
+class RetrieverTool(Tool):
+    name = "retriever"
+    description = "Retrieve the most relevant docs from URL-based knowledge base."
+    inputs = {
+        "query": {
+            "type": "string",
+            "description": "The query for semantic search.",
+        }
+    }
+    output_type = "string"
+
+    def __init__(self, vector_store, **kwargs):
+        super().__init__(**kwargs)
+        self.vector_store = vector_store
+
+    def forward(self, query: str) -> str:
+        assert isinstance(query, str), "Query must be a string"
+        docs = self.vector_store.similarity_search(query, k=3)
+        return "
+Retrieved documents:
+" + "".join(
+            [f"
+
+===== Document {i} =====
+" + doc.page_content for i, doc in enumerate(docs)]
+        )
+
+
+retriever_tool = RetrieverTool(vector_store)
+
+# ✅ Step 5: Setup Sutra LLM
+model = LiteLLMModel(
+    model_id="openai/sutra-v2",
+    api_base="https://api.two.ai/v2",
+    api_key=userdata.get("SUTRA_API_KEY"),
+)
+
+# ✅ Step 6: Run Agent
+agent = CodeAgent(
+    tools=[retriever_tool],
+    model=model,
+    max_steps=4,
+    verbosity_level=2,
+)
+
+query = "What are encoders and decoders"
+agent_output = agent.run(query)
+
+print("Final output:")
+print(agent_output)
+```
