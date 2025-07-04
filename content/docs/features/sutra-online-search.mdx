@@ -31,7 +31,7 @@ Perfect for applications in:
 #### Prerequisites
 
 - Python 3.10 or higher.
-- SUTRA API key from [https://www.two.ai/sutra/api](https://www.two.ai/sutra/api).
+- SUTRA API key from [https://developer.two.ai](https://developer.two.ai).
 - Basic familiarity with HTTP requests in Python.
 
 #### Step 1: Set Up Your Environment
@@ -128,7 +128,7 @@ api_key = ""
 # Check if API key is available
 if not api_key:
     print("Error: API key not set.")
-    print("Get your API key from: https://www.two.ai/sutra/api")
+    print("Get your API key from: https://developer.two.ai")
     exit(1)
 
 # Create connection to Two.ai API
@@ -224,7 +224,7 @@ for location in locations:
 ```
 
 ### Usage Instructions
-1. Replace `api_key = ""` with your actual Two.ai API key from [Two.ai SUTRA API](https://www.two.ai/sutra/api).
+1. Replace `api_key = ""` with your actual Two.ai API key from [Two.ai SUTRA API](https://developer.two.ai).
 2. Run the script to query park information for Mumbai, New York, Seoul, and San Francisco.
 3. The script sets the user location for each city and retrieves information about 1-2 popular parks nearby.
 4. A 1-second delay is included between requests to avoid hitting API rate limits.

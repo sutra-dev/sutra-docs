@@ -35,7 +35,7 @@ To run this Jupyter notebook, ensure you have the following:
   - `python-docx` (`pip install python-docx`)
   - `requests` (`pip install requests`)
   - `google-colab` (for Colab-specific secrets management, pre-installed in Colab)
-- A valid **Sutra API key** (obtain from [Two AI's SUTRA API page](https://www.two.ai/sutra/api))
+- A valid **Sutra API key** (obtain from [Two AI's SUTRA API page](https://developer.two.ai))
 - An **OpenAI API key** (for embeddings, obtain from [OpenAI](https://platform.openai.com/account/api-keys))
 - A modern web browser (e.g., Chrome, Firefox) for accessing Colab
 
@@ -276,7 +276,7 @@ print("🔹 Response:\n", response)
 
 ## Notes
 
-- **API Keys**: Requires both a SUTRA API key (for the LLM) and an OpenAI API key (for embeddings). Obtain from [Two AI](https://www.two.ai/sutra/api) and [OpenAI](https://platform.openai.com/account/api-keys), respectively, and store securely in Colab Secrets or a `.env` file.
+- **API Keys**: Requires both a SUTRA API key (for the LLM) and an OpenAI API key (for embeddings). Obtain from [Two AI](https://developer.two.ai) and [OpenAI](https://platform.openai.com/account/api-keys), respectively, and store securely in Colab Secrets or a `.env` file.
 - **PDF Processing**: Uses `PyPDFLoader` for text extraction. Scanned or image-based PDFs may require OCR tools (not included). Update the PDF path in Step 3 to match your file location.
 - **Multilingual Support**: SUTRA supports over 50 languages, but response quality depends on the model’s proficiency in the selected language.
 - **RAG Limitations**: Answer accuracy relies on the quality of retrieved chunks and the PDF’s content. Adjust `chunk_size` (1000) or `chunk_overlap` (100) for better performance if needed.
@@ -293,7 +293,7 @@ print("🔹 Response:\n", response)
 
 ## Resources
 
-- [Sutra API Documentation](https://www.two.ai/sutra/api)
+- [Sutra API Documentation](https://developer.two.ai)
 - [LangChain Documentation](https://python.langchain.com/docs/get_started/introduction)
 - [FAISS Documentation](https://github.com/facebookresearch/faiss)
 - [PyPDF Documentation](https://pypdf.readthedocs.io/en/stable/)

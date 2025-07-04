@@ -1,23 +1,20 @@
-import Section from "@/components/landing/section";
-import Hero from "@/components/landing/hero";
-import Features from "@/components/landing/features";
-import Link from "next/link";
+import Section from '@/components/landing/section';
+import Hero from '@/components/landing/hero';
+import Features from '@/components/landing/features';
+import Link from 'next/link';
 
 async function getGitHubStars() {
   try {
-    const response = await fetch(
-      "https://api.github.com/repos/better-auth/better-auth",
-      {
-        next: {
-          revalidate: 60,
-        },
-      }
-    );
+    const response = await fetch('https://api.github.com/repos/better-auth/better-auth', {
+      next: {
+        revalidate: 60,
+      },
+    });
     if (!response?.ok) {
       return null;
     }
     const json = await response.json();
-    const stars = parseInt(json.stargazers_count).toLocaleString();
+    const stars = Number.parseInt(json.stargazers_count).toLocaleString();
     return stars;
   } catch {
     return null;
@@ -39,7 +36,7 @@ export default async function HomePage() {
                 <span className=" text-zinc-400 hidden md:block">|</span>
                 <Link
                   target="_blank"
-                  href="https://www.two.ai/sutra/api"
+                  href="https://developer.two.ai"
                   className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 hidden dark:hover:text-blue-300 transition-colors md:block"
                 >
                   API Key →
@@ -47,7 +44,7 @@ export default async function HomePage() {
               </span>
               <Link
                 target="_blank"
-                href="https://www.two.ai/sutra/api"
+                href="https://developer.two.ai"
                 className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 text-xs dark:hover:text-blue-300 transition-colors md:hidden"
               >
                 Get your API Key →
