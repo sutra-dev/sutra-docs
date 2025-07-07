@@ -509,17 +509,17 @@ export const cookbooks: Content[] = [
       },
       {
         title: "SUTRA with AGNO",
-        href: "/docs/cookbooks/agents/agno",
+        href: "/docs/cookbooks/agents/sutra-with-agno",
         icon: Icons.book,
       },
       {
         title: "SUTRA with PydanticAI",
-        href: "/docs/cookbooks/agents/pydanticai",
+        href: "/docs/cookbooks/agents/sutra-with-pydanticai",
         icon: Icons.book,
       },
       {
-        title: "SUTRA with OpenAI",
-        href: "/docs/cookbooks/agents/openai_agent_sdk",
+        title: "SUTRA with OpenAI Agents SDK",
+        href: "/docs/cookbooks/agents/sutra-with-openai-agent-sdk",
         icon: Icons.book,
       },
       {
