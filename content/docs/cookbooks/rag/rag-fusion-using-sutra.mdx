@@ -1,0 +1,202 @@
+---
+title: RAG Fusion Using SUTRA
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img src="/sutra.png" width="150" />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1mzQCIF3qHedBsfg9CWAyBgvywj_H1HHX?usp=sharing)
+
+## SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+## RAG Fusion Using SUTRA
+
+RAG-Fusion is an enhanced version of the traditional Retrieval-Augmented Generation (RAG) model. In RAG-Fusion, after receiving a query, the model first generates related sub-queries using a large language model. These sub-queries help find more relevant documents. Instead of simply sending the retrieved documents to the model, RAG-Fusion uses a technique called Reciprocal Rank Fusion (RRF) to score and reorder the documents based on their relevance. The best-ranked documents are then used to generate a more accurate response.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python installation is required.
+
+### 🔧 1. Install Required Libraries
+
+```python
+!pip install -qU langchain_openai langchain_community chromadb langsmith
+```
+
+### 🔑 2. Set Environment Variables (API Keys)
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
+```
+
+### 🔹 Step 3: Load Documents and Split
+
+```python
+from langchain.document_loaders import CSVLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+loader = CSVLoader("./context.csv")
+documents = loader.load()
+
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
+documents = text_splitter.split_documents(documents)
+```
+
+### 🔹 Step 4: Setup Embeddings and Vector Store (ChromaDB)
+
+```python
+from langchain_openai import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
+
+embeddings = OpenAIEmbeddings()
+
+vectorstore = Chroma.from_documents(documents, embeddings)
+```
+
+### 🔹 Step 5: Create Retriever
+
+```python
+retriever = vectorstore.as_retriever()
+```
+
+### 🔹 Step 6: Initialize Sutra LLM and Langsmith Prompt Client
+
+```python
+from langchain_openai import ChatOpenAI
+from langsmith import Client
+import os
+
+client = Client()
+
+llm = ChatOpenAI(
+    api_key=os.getenv("SUTRA_API_KEY"),
+    base_url="https://api.two.ai/v2",
+    model="sutra-v2"
+)
+```
+
+### 🔹 Step 7: Load RAG-Fusion Query Generation Prompt from Langsmith
+
+```python
+from langchain_core.output_parsers import StrOutputParser
+
+prompt = client.pull_prompt("langchain-ai/rag-fusion-query-generation")
+
+generate_queries = (
+    prompt
+    | ChatOpenAI(temperature=0, api_key=os.getenv("SUTRA_API_KEY"), base_url="https://api.two.ai/v2", model="sutra-v2")
+    | StrOutputParser()
+    | (lambda x: x.split("\n"))
+)
+```
+
+### 🔹 Step 8: Reciprocal Rank Fusion (RRF) Function
+
+```python
+from langchain.load import dumps, loads
+
+def reciprocal_rank_fusion(results: list[list], k=60):
+    fused_scores = {}
+    for docs in results:
+        # docs sorted by relevance descending
+        for rank, doc in enumerate(docs):
+            doc_str = dumps(doc)
+            if doc_str not in fused_scores:
+                fused_scores[doc_str] = 0
+            fused_scores[doc_str] += 1 / (rank + k)
+    reranked_results = [
+        (loads(doc), score)
+        for doc, score in sorted(fused_scores.items(), key=lambda x: x[1], reverse=True)
+    ]
+    return reranked_results
+```
+
+### 🔹 Step 9: Build RAG-Fusion Chain
+
+```python
+chain = generate_queries | retriever.map() | reciprocal_rank_fusion
+```
+
+### 🔹 Step 10: Test the Fusion Chain
+
+```python
+query = "what are points on a mortgage"
+results = chain.invoke(query)
+print("RRF Results Top 3 Documents:")
+for doc, score in results[:3]:
+    print(f"Score: {score:.3f} - Doc excerpt: {doc.page_content[:200]}...\n")
+```
+
+### 🔹 Step 11: Final RAG Answer Chain
+
+```python
+from langchain.schema.runnable import RunnablePassthrough
+from langchain_core.prompts import ChatPromptTemplate
+
+template = '''Answer the question based only on the following context.
+If you don't find the answer in the context, just say that you don't know.
+
+Context: {context}
+
+Question: {question}
+'''
+
+prompt_rag = ChatPromptTemplate.from_template(template)
+
+rag_fusion_chain = (
+    {
+        "context": chain,
+        "question": RunnablePassthrough()
+    }
+    | prompt_rag
+    | llm
+    | StrOutputParser()
+)
+
+final_answer = rag_fusion_chain.invoke(query)
+print("Final RAG-Fusion Answer:\n", final_answer)
+```
+
+### 🔹 Step 12: Prepare Data for Evaluation
+
+```python
+questions = ["what are points on a mortgage"]
+responses = []
+contexts = []
+ground_truths = ["Points, sometimes also called a 'discount point', are a form of pre-paid interest."]
+
+for q in questions:
+    responses.append(rag_fusion_chain.invoke(q))
+    contexts.append([doc.page_content for doc in retriever.invoke(q)])
+
+data = {
+    "query": questions,
+    "response": responses,
+    "context": contexts,
+    "ground_truth": ground_truths
+}
+```
+
+### 🔹 Step 13: Create Dataset and DataFrame
+
+```python
+from datasets import Dataset
+import pandas as pd
+
+dataset = Dataset.from_dict(data)
+df = pd.DataFrame(dataset)
+df
+```

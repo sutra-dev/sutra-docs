@@ -10,12 +10,12 @@ import {
   DollarSign,
   LanguagesIcon,
   LayoutListIcon,
-  LucideIcon,
+  type LucideIcon,
   Presentation,
   Rocket,
   Wrench,
 } from "lucide-react";
-import { ReactNode, SVGProps } from "react";
+import type { ReactNode, SVGProps } from "react";
 import { Icons } from "./icons";
 import { Langgraph } from "./logo";
 import { Vercel } from "./logos";
@@ -152,6 +152,7 @@ export const contents: Content[] = [
               fill="currentColor"
               d="M14.3 12.33H9.973s-2.432-.039-2.432 2.35v3.951s.367 2.392 5.145 2.392c4.575 0 4.726-1.93 4.726-1.93l-.007-2.031h-4.82v-.672h7.072s2.539.221 2.539-3.043c0-3.264-2.224-3.15-2.224-3.15h-1.33v2.697s.108 2.638-2.93 2.638zm.39 1.143a.838.838 0 0 1 .834.834.83.83 0 0 1-.834.834.83.83 0 0 1-.834-.834.83.83 0 0 1 .834-.834"
             />
+            <title>Python</title>
           </svg>
         ),
       },
@@ -169,6 +170,7 @@ export const contents: Content[] = [
               fill="currentColor"
               d="M3 3h18v18H3V3m4.73 15.04c.4.85 1.19 1.55 2.54 1.55c1.5 0 2.53-.8 2.53-2.55v-5.78h-1.7V17c0 .86-.35 1.08-.9 1.08c-.58 0-.82-.4-1.09-.87l-1.38.83m5.98-.18c.5.98 1.51 1.73 3.09 1.73c1.6 0 2.8-.83 2.8-2.36c0-1.41-.81-2.04-2.25-2.66l-.42-.18c-.73-.31-1.04-.52-1.04-1.02c0-.41.31-.73.81-.73c.48 0 .8.21 1.09.73l1.31-.87c-.55-.96-1.33-1.33-2.4-1.33c-1.51 0-2.48.96-2.48 2.23c0 1.38.81 2.03 2.03 2.55l.42.18c.78.34 1.24.55 1.24 1.13c0 .48-.45.83-1.15.83c-.83 0-1.31-.43-1.67-1.03l-1.38.8Z"
             />
+            <title>Node.js</title>
           </svg>
         ),
       },
@@ -186,9 +188,10 @@ export const contents: Content[] = [
               fill="currentColor"
               d="M8.851 18.56s-.917.534.653.714c1.902.218 2.874.187 4.969-.211c0 0 .552.346 1.321.646c-4.699 2.013-10.633-.118-6.943-1.149m-.575-2.627s-1.028.761.542.924c2.032.209 3.636.227 6.413-.308c0 0 .384.389.987.602c-5.679 1.661-12.007.13-7.942-1.218m4.84-4.458c1.158 1.333-.304 2.533-.304 2.533s2.939-1.518 1.589-3.418c-1.261-1.772-2.228-2.652 3.007-5.688c0-.001-8.216 2.051-4.292 6.573M19.95 20.5s.679.559-.747.991c-2.712.822-11.288 1.069-13.669.033c-.856-.373.75-.89 1.254-.998c.527-.114.828-.93.828-.093c-.953-.671-6.156 1.317-2.643 1.887c9.58 1.553 17.462-.7 14.977-1.82M9.292 13.21s-4.362 1.036-1.544 1.412c1.189.159 3.561.123 5.77-.062c1.806-.152 3.618-.477 3.618-.477s-.637.272-1.098.587c-4.429 1.165-12.986.623-10.522-.568c2.082-1.006 3.776-.892 3.776-.892m7.825 4.374c4.5-2.339 2.421-4.589.967-4.286c-.355.074-.515.138-.515.138s.132-.207.385-.297c2.875-1.011 5.086 2.981-.928 4.562c0 .001.07-.062.091-.117M14.401 0s2.494 2.494-2.365 6.33c-3.896 3.077-.888 4.832-.001 6.836c-2.274-2.053-3.943-3.858-2.824-5.539c1.644-2.469 6.197-3.665 5.19-7.627M9.734 23.924c4.322.277 10.959-.153 11.116-2.198c0 0-.302.775-3.572 1.391c-3.688.694-8.239.613-10.937.168c0 0 .553.457 3.393.639"
             />
+            <title>Java</title>
           </svg>
         ),
-      }
+      },
       // {
       //   title: "Go",
       //   href: "/docs/supported-sdks/go",
@@ -430,6 +433,7 @@ export const cookbooks: Content[] = [
           d="M12.25 10a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75"
           clipRule="evenodd"
         ></path>
+        <title>Agents</title>
       </svg>
     ),
     list: [
@@ -494,6 +498,7 @@ export const cookbooks: Content[] = [
           d="M12.25 10a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75"
           clipRule="evenodd"
         ></path>
+        <title>Agents</title>
       </svg>
     ),
     list: [
@@ -504,17 +509,47 @@ export const cookbooks: Content[] = [
       },
       {
         title: "SUTRA with AGNO",
-        href: "/docs/cookbooks/agents/agno",
+        href: "/docs/cookbooks/agents/sutra-with-agno",
         icon: Icons.book,
       },
       {
         title: "SUTRA with PydanticAI",
-        href: "/docs/cookbooks/agents/pydanticai",
+        href: "/docs/cookbooks/agents/sutra-with-pydanticai",
         icon: Icons.book,
       },
       {
-        title: "SUTRA with OpenAI",
-        href: "/docs/cookbooks/agents/openai_agent_sdk",
+        title: "SUTRA with OpenAI Agents SDK",
+        href: "/docs/cookbooks/agents/sutra-with-openai-agent-sdk",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with Strands Agents",
+        href: "/docs/cookbooks/agents/sutra-with-strands-agents",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with CrewAI",
+        href: "/docs/cookbooks/agents/sutra-with-crewai",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with Smolagents",
+        href: "/docs/cookbooks/agents/smolagents-with-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with AISuite",
+        href: "/docs/cookbooks/agents/sutra-with-aisuite",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with Autogen",
+        href: "/docs/cookbooks/agents/sutra-using-autogen",
+        icon: Icons.book,
+      },
+      {
+        title: "SUTRA with TaskGen",
+        href: "/docs/cookbooks/agents/taskgen-with-sutra",
         icon: Icons.book,
       },
     ],
@@ -543,6 +578,7 @@ export const cookbooks: Content[] = [
           d="M12.25 10a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75"
           clipRule="evenodd"
         ></path>
+        <title>Integrations</title>
       </svg>
     ),
     list: [
@@ -576,6 +612,11 @@ export const cookbooks: Content[] = [
         href: "/docs/cookbooks/integrations/sutra-with-litellm",
         icon: Icons.book,
       },
+      {
+        title: "SUTRA with LangGraph",
+        href: "/docs/cookbooks/integrations/sutra-with-langgraph",
+        icon: Icons.book,
+      },
     ],
   },
   {
@@ -602,6 +643,7 @@ export const cookbooks: Content[] = [
           d="M12.25 10a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75"
           clipRule="evenodd"
         ></path>
+        <title>Examples</title>
       </svg>
     ),
     list: [
@@ -613,6 +655,16 @@ export const cookbooks: Content[] = [
       {
         title: "SUTRA with OpenAI",
         href: "/docs/cookbooks/examples/sutra-vs-openai-models",
+        icon: Icons.book,
+      },
+      {
+        title: "Multilingual MCQ Generation",
+        href: "/docs/cookbooks/examples/multilingual-mcq-generation-with-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "Structured Output with Pydantic",
+        href: "/docs/cookbooks/examples/structured-output-with-pydantic",
         icon: Icons.book,
       },
     ],
@@ -641,6 +693,7 @@ export const cookbooks: Content[] = [
           d="M12.25 10a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75"
           clipRule="evenodd"
         ></path>
+        <title>RAG</title>
       </svg>
     ),
     list: [
@@ -657,6 +710,31 @@ export const cookbooks: Content[] = [
       {
         title: "Multilingual Chat with PDF",
         href: "/docs/cookbooks/rag/multilingual-chat-with-pdf",
+        icon: Icons.book,
+      },
+      {
+        title: "Contextual RAG",
+        href: "/docs/cookbooks/rag/contextual-rag-using-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "Hybrid RAG",
+        href: "/docs/cookbooks/rag/hybrid-rag-using-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "HyDE RAG",
+        href: "/docs/cookbooks/rag/hyde-rag-using-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "RAG Fusion",
+        href: "/docs/cookbooks/rag/rag-fusion-using-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "Multilingual Chat with URL",
+        href: "/docs/cookbooks/rag/multilingual-chat-with-url",
         icon: Icons.book,
       },
     ],
@@ -685,6 +763,7 @@ export const cookbooks: Content[] = [
           d="M12.25 10a.75.75 0 0 1 .75-.75h5a.75.75 0 0 1 0 1.5h-5a.75.75 0 0 1-.75-.75"
           clipRule="evenodd"
         ></path>
+        <title>Multilingual</title>
       </svg>
     ),
     list: [
@@ -720,6 +799,11 @@ export const cookbooks: Content[] = [
         icon: Icons.book,
       },
       {
+        title: "Tamil with SUTRA",
+        href: "/docs/cookbooks/multilingual/indian-languages/tamil-with-sutra",
+        icon: Icons.book,
+      },
+      {
         group: true,
         title: "Foreign Languages",
         href: "/docs/multilingual/foreign-languages",
@@ -738,6 +822,16 @@ export const cookbooks: Content[] = [
       {
         title: "French with SUTRA",
         href: "/docs/cookbooks/multilingual/foreign-languages/french-with-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "German with SUTRA",
+        href: "/docs/cookbooks/multilingual/foreign-languages/german-with-sutra",
+        icon: Icons.book,
+      },
+      {
+        title: "Japanese with SUTRA",
+        href: "/docs/cookbooks/multilingual/foreign-languages/japanese-with-sutra",
         icon: Icons.book,
       },
     ],

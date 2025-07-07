@@ -1,0 +1,349 @@
+---
+title: Multilingual Chat With URL
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img src="/sutra.png" width="150" />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1c-qJecFt7c0xcZMMEvF3PHW1e3M0AAFl?usp=sharing)
+
+## SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+# 📚 Multilingual Chat With URL (Powered by SUTRA)
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python installation is required.
+
+### 1. Install Required Packages
+
+```python
+!pip install -q langchain langchain_openai langchain-community faiss-cpu requests pypdf python-docx
+```
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
+```
+
+### Setup API Keys
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
+```
+
+### 2. Import Required Libraries
+
+```python
+import os
+import requests
+from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationalRetrievalChain
+from langchain.schema import HumanMessage
+```
+
+### 3. Function to Download PDF File
+
+```python
+def download_pdf(pdf_url, save_path="downloaded.pdf"):
+    response = requests.get(pdf_url)
+    with open(save_path, "wb") as f:
+        f.write(response.content)
+    return save_path
+```
+
+### 4. Function to Load Chat Model (Sutra)
+
+```python
+def get_chat_model():
+    return ChatOpenAI(
+        api_key=os.getenv("SUTRA_API_KEY"),
+        base_url="https://api.two.ai/v2",
+        model="sutra-v2",
+        temperature=0.7
+    )
+```
+
+### 5. Function to Process Documents into Conversation Chain
+
+```python
+def process_documents(file_paths, chunk_size=1000, chunk_overlap=100):
+    documents = []
+
+    for file_path in file_paths:
+        if file_path.endswith(".pdf"):
+            loader = PyPDFLoader(file_path)
+            documents.extend(loader.load())
+        elif file_path.endswith(".docx"):
+            loader = Docx2txtLoader(file_path)
+            documents.extend(loader.load())
+
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size,
+        chunk_overlap=chunk_overlap
+    )
+    chunks = text_splitter.split_documents(documents)
+
+    embeddings = OpenAIEmbeddings(api_key=os.getenv("OPENAI_API_KEY"))  # Use OpenAI embeddings
+    vectorstore = FAISS.from_documents(chunks, embeddings)
+
+    memory = ConversationBufferMemory(
+        memory_key="chat_history",
+        return_messages=True
+    )
+
+    conversation_chain = ConversationalRetrievalChain.from_llm(
+        llm=get_chat_model(),
+        retriever=vectorstore.as_retriever(),
+        memory=memory
+    )
+
+    return conversation_chain
+```
+
+### 6. Function to Query the Document
+
+```python
+def process_chat(conversation_chain, user_input, selected_language):
+    rag_response = conversation_chain.invoke(user_input)
+    context = rag_response["answer"]
+
+    system_message = f'''
+    You are a helpful assistant that answers questions about documents.
+    Use the following context to answer the question.
+
+    CONTEXT:
+    {context}
+
+    Please respond in {selected_language}.
+    '''
+
+    messages = [HumanMessage(content=f"{system_message}\n\nQuestion: {user_input}")]
+    chat = get_chat_model()
+    response = chat.invoke(messages)
+    return response.content
+```
+
+### 7. Example Usage Block
+
+```python
+# STEP 1: Download the PDF
+pdf_url = "https://agno-public.s3.amazonaws.com/recipes/ThaiRecipes.pdf"
+downloaded_pdf_path = download_pdf(pdf_url)
+
+# STEP 2: Process documents
+conversation_chain = process_documents([downloaded_pdf_path])
+
+# STEP 3: Ask a question
+user_input = "How do I make chicken and galangal in coconut milk soup"
+selected_language = "hindi"
+
+# STEP 4: Get response
+answer = process_chat(conversation_chain, user_input, selected_language)
+print(answer)
+```
+
+### Finally Integrated UI
+
+```python
+# 1. Imports
+import os
+import requests
+import ipywidgets as widgets
+from IPython.display import display, HTML, clear_output
+from langchain_community.document_loaders import PyPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
+from langchain.memory import ConversationBufferMemory
+from langchain.chains import ConversationalRetrievalChain
+from langchain.schema import HumanMessage
+from tempfile import NamedTemporaryFile
+
+# 2. Setup LLM (Sutra)
+def get_sutra_model():
+    return ChatOpenAI(
+        api_key=os.getenv("SUTRA_API_KEY"),
+        base_url="https://api.two.ai/v2",
+        model="sutra-v2",
+        temperature=0.7
+    )
+
+# 3. Load and index PDF
+def load_and_index_pdf(pdf_path):
+    loader = PyPDFLoader(pdf_path)
+    docs = loader.load()
+
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+    chunks = text_splitter.split_documents(docs)
+
+    embeddings = OpenAIEmbeddings(api_key=os.getenv("OPENAI_API_KEY"))
+    vectorstore = FAISS.from_documents(chunks, embeddings)
+
+    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+    chain = ConversationalRetrievalChain.from_llm(
+        llm=get_sutra_model(),
+        retriever=vectorstore.as_retriever(),
+        memory=memory
+    )
+    return chain
+
+# 4. UI Components
+
+# PDF URL field
+pdf_url_input = widgets.Text(
+    placeholder='Enter PDF URL...',
+    description='📄 PDF URL:',
+    layout=widgets.Layout(width='100%')
+)
+
+load_pdf_button = widgets.Button(
+    description="🔄 Load PDF",
+    button_style='info',
+    layout=widgets.Layout(width='150px')
+)
+
+status_output = widgets.Output()
+
+# Language dropdown
+languages = [
+    "English", "Hindi", "Gujarati", "Bengali", "Tamil",
+    "Telugu", "Kannada", "Malayalam", "Punjabi", "Marathi",
+    "Urdu", "Assamese", "Odia", "Sanskrit", "Korean",
+    "Japanese", "Arabic", "French", "German", "Spanish",
+    "Portuguese", "Russian", "Chinese", "Vietnamese", "Thai",
+    "Indonesian", "Turkish", "Polish", "Ukrainian", "Dutch",
+    "Italian", "Greek", "Hebrew", "Persian", "Swedish",
+    "Norwegian", "Danish", "Finnish", "Czech", "Hungarian",
+    "Romanian", "Bulgarian", "Croatian", "Serbian", "Slovak",
+    "Slovenian", "Estonian", "Latvian", "Lithuanian", "Malay",
+    "Tagalog", "Swahili"
+]
+
+lang_dropdown = widgets.Dropdown(
+    options=languages,
+    value="English",
+    description='🌐 Language:',
+    layout=widgets.Layout(width='300px')
+)
+
+chat_output = widgets.HTML(
+    value="<div style='padding:10px; font-family:Arial; font-size:14px; height:300px; overflow-y:auto; border:1px solid #ccc; border-radius:5px;'>Chat history will appear here...</div>"
+)
+
+user_input = widgets.Text(
+    placeholder='Type your message...',
+    layout=widgets.Layout(flex='4', width='auto')
+)
+
+send_button = widgets.Button(
+    description="📤 Send",
+    button_style='primary',
+    layout=widgets.Layout(flex='1', width='auto')
+)
+
+messages = []
+conversation_chain = None
+
+# 5. Load PDF Logic
+def download_pdf(url):
+    response = requests.get(url)
+    tmp_file = NamedTemporaryFile(delete=False, suffix=".pdf")
+    with open(tmp_file.name, "wb") as f:
+        f.write(response.content)
+    return tmp_file.name
+
+def on_load_pdf(b):
+    global conversation_chain
+    pdf_url = pdf_url_input.value.strip()
+    with status_output:
+        clear_output()
+        if not pdf_url:
+            print("❌ Please enter a valid PDF URL.")
+            return
+        print("⏳ Downloading and processing PDF...")
+        try:
+            pdf_path = download_pdf(pdf_url)
+            conversation_chain = load_and_index_pdf(pdf_path)
+            print("✅ PDF loaded and indexed successfully!")
+        except Exception as e:
+            print("❌ Error:", e)
+
+load_pdf_button.on_click(on_load_pdf)
+
+# 6. Chat Interaction Logic
+def on_send_click(b):
+    global conversation_chain
+    if conversation_chain is None:
+        with status_output:
+            clear_output()
+            print("❌ Load a PDF first.")
+        return
+
+    user_text = user_input.value.strip()
+    if not user_text:
+        return
+
+    lang = lang_dropdown.value
+    messages.append(f"<b style='color:#13f22d;'>You:</b> {user_text}")
+
+    context_response = conversation_chain.invoke(user_text)
+    rag_context = context_response['answer']
+
+    system_msg = f'''
+You are a helpful assistant answering based on a document.
+Use this context: {rag_context}
+Always reply in: {lang}
+Question: {user_text}
+'''
+
+    chat_model = get_sutra_model()
+    sutra_response = chat_model.invoke([HumanMessage(content=system_msg)])
+    assistant_reply = sutra_response.content.strip()
+
+    messages.append(f"<b style='color:#007acc;'>Assistant ({lang}):</b> {assistant_reply}")
+
+    chat_html = "<br>".join(messages)
+    chat_output.value = f"<div style='padding:10px; font-family:Arial; font-size:14px; height:300px; overflow-y:auto; border:1px solid #ccc; border-radius:5px;'>{chat_html}</div>"
+
+    user_input.value = ""
+
+send_button.on_click(on_send_click)
+
+# 7. Final Layout
+input_row = widgets.HBox([user_input, send_button])
+pdf_row = widgets.HBox([pdf_url_input, load_pdf_button])
+
+ui = widgets.VBox([
+    widgets.HTML("<h3 style='font-family:Arial;'>📚 Multilingual Chat with PDF (Powered by Sutra)</h3>"),
+    pdf_row,
+    lang_dropdown,
+    chat_output,
+    input_row,
+    status_output
+])
+
+# 8. Display the App
+display(ui)
+```

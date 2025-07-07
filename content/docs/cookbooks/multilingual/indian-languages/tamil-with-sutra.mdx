@@ -1,0 +1,289 @@
+---
+title: SUTRA with Tamil
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+<img src="https://play-lh.googleusercontent.com/_O9p4Z4yucA2NLmZBu9mTJCuBwXeT9NcbtrDN6I8gKlkIPRySV0adOmbyipjSj9Gew" width="150" />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1wUpw24ZwrUCaNI25Za4bulbM2wbQYQax?usp=sharing)
+
+## Introduction
+
+In this notebook, we demonstrate how to use the Sutra model with the OpenAI client specifically for applications in the Tamil language. Sutra excels at processing and generating content in multiple languages, including Tamil, making it an ideal choice for Tamil-language tasks.
+
+### What you will learn
+
+- Setting up the OpenAI client to work with the Sutra model
+- Creating prompts in Tamil and understanding the responses
+- Exploring various use cases in the Tamil language
+- Best practices for generating content in Tamil
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python installation is required.
+
+## Setup
+
+First, install the required libraries.
+
+```python
+# Install required packages
+!pip install openai
+```
+
+### Import Required Libraries
+
+```python
+# Import required libraries
+import os
+import time
+from openai import OpenAI
+from IPython.display import display, Markdown, HTML
+from google.colab import userdata
+```
+
+## Authentication
+
+To use the Sutra API, you need to set up your API key.
+
+```python
+# Example of using in code:
+os.environ["SUTRA_API_KEY"] = userdata.get('SUTRA_API_KEY')
+```
+
+### Create OpenAI Client with Sutra API Endpoint
+
+```python
+# Create OpenAI client with Sutra API endpoint
+client = OpenAI(
+    base_url="https://api.two.ai/v2",
+    api_key=os.environ.get("SUTRA_API_KEY")
+)
+```
+
+## Helper Functions
+
+Create helper functions to interact with the Sutra API for Tamil language tasks.
+
+```python
+import time
+from IPython.display import display, HTML
+
+def get_sutra_response(prompt, model="sutra-v2", temperature=0.7, max_tokens=1024):
+    """Simple non-streaming response from Sutra AI"""
+    try:
+        start_time = time.time()
+
+        # Basic API call
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens
+        )
+
+        # Get response content
+        result = response.choices[0].message.content
+        time_taken = time.time() - start_time
+
+        # Simple display
+        print(f"Prompt: {prompt}")
+        print(f"Response: {result}")
+        print(f"Time taken: {time_taken:.2f}s")
+
+        return result, time_taken
+
+    except Exception as e:
+        error_msg = f"Error: {str(e)}"
+        print(error_msg)
+        return error_msg, 0
+
+def get_sutra_streaming_response(prompt, model="sutra-v2", temperature=0.7, max_tokens=1024):
+    """Simple streaming response from Sutra AI"""
+    try:
+        start_time = time.time()
+
+        # Start streaming
+        stream = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_tokens=max_tokens,
+            stream=True
+        )
+
+        print(f"Prompt: {prompt}")
+        print("Response: ", end="")
+
+        full_response = ""
+
+        # Display chunks as they come
+        for chunk in stream:
+            if chunk.choices[0].delta.content:
+                content = chunk.choices[0].delta.content
+                print(content, end="", flush=True)
+                full_response += content
+
+        time_taken = time.time() - start_time
+        print(f"\nTime taken: {time_taken:.2f}s")
+
+        return full_response
+
+    except Exception as e:
+        error_msg = f"Error: {str(e)}"
+        print(error_msg)
+        return error_msg
+```
+
+## 1. Basic Tamil Text Generation
+
+Let's start with some basic examples of generating Tamil text with Sutra.
+
+```python
+# Simple Tamil text generation
+tamil_prompt = "வணக்கம், என் பெயர் ரமேஷ். நீங்கள் நலமா?"
+
+response, time_taken = get_sutra_response(tamil_prompt)
+```
+
+## 2. Information Retrieval in Tamil
+
+Let's use Sutra to retrieve information in Tamil.
+
+```python
+# Information retrieval in Tamil
+info_prompt = "தமிழ்நாட்டின் ஐந்து முக்கிய பண்டிகைகளைப் பற்றி கூறவும், அவற்றின் முக்கியத்துவத்தையும் வலியுறுத்தவும்."
+
+response, time_taken = get_sutra_response(info_prompt)
+```
+
+## 3. Creative Writing in Tamil
+
+Sutra can generate creative content in Tamil.
+
+```python
+# Creative writing in Tamil
+creative_prompt = "நீலகிரி மலைகளைப் பற்றி ஒரு குறுகிய கவிதை எழுதவும்."
+
+response, time_taken = get_sutra_response(creative_prompt, temperature=0.8)
+```
+
+## 4. Summarization in Tamil
+
+Sutra can effectively summarize Tamil text.
+
+```python
+# Text for summarization
+long_text = """
+தமிழ்நாட்டின் வரலாறு நீண்ட மற்றும் சிக்கலானது. பிரிட்டிஷ் ஆட்சி 17ஆம் நூற்றாண்டில் சென்னையில் தொடங்கியது, மேலும் பின்னர் முழு தமிழ்நாட்டையும் உள்ளடக்கியது. 1857ஆம் ஆண்டு முதல் சுதந்திரப் போர் என அழைக்கப்படும் வீரப்போராட்டம் பிரிட்டிஷ் ஆட்சிக்கு எதிரான முதல் பெரிய கிளர்ச்சியாக இருந்தது.
+
+இந்திய தேசிய காங்கிரஸ் 1885இல் உருவாக்கப்பட்டு, சுதந்திர இயக்கம் மிகவும் ஒழுங்கமைக்கப்பட்டது. மகாத்மா காந்தியின் தலைமையில், அகிம்சை எதிர்ப்பு மற்றும் சத்தியாகிரகம் மூலம் சுதந்திரம் கோரப்பட்டது.
+
+1947ஆம் ஆண்டு ஆகஸ்ட் 15இல் இந்தியா சுதந்திரம் பெற்றது, ஆனால் இந்தியாவும் பாகிஸ்தானாகவும் பிரிக்கப்பட்டது.
+"""
+
+summarize_prompt = f"பின்வரும் உரையை 100 சொற்களுக்கு உட்பட்டு சுருக்கவும்:\n\n{long_text}"
+
+summary, time_taken = get_sutra_response(summarize_prompt, temperature=0.3)
+```
+
+## 5. Question-Answering in Tamil
+
+Let's use Sutra for question-answering in Tamil.
+
+```python
+# Context for question-answering
+context = """
+இந்திய அரசியலமைப்பு உலகின் மிக நீளமான எழுதப்பட்ட அரசியலமைப்பு ஆகும். இது 1949 நவம்பர் 26இல் ஏற்றுக்கொள்ளப்பட்டு, 1950 ஜனவரி 26இல் நடைமுறைக்கு வந்தது. டாக்டர் பி.ஆர். அம்பேத்கர் இந்திய அரசியலமைப்பின் முதன்மை வடிவமைப்பாளராகக் கருதப்படுகிறார். முதலில் 395 பிரிவுகள், 22 பகுதிகள் மற்றும் 8 அட்டவணைகள் இருந்தன. தற்போது 448 பிரிவுகள், 25 பகுதிகள் மற்றும் 12 அட்டவணைகள் உள்ளன. 1976ஆம் ஆண்டு 42ஆவது திருத்தத்தால் முகவுரையில் 'சோசலிஸ்ட்', 'மதச்சார்பற்ற' மற்றும் 'ஒருமைப்பாடு' என்ற சொற்கள் சேர்க்கப்பட்டன.
+"""
+
+qa_prompt = f"பின்வரும் தகவல்களின் அடிப்படையில் கேள்விகளுக்கு பதிலளிக்கவும்:\n\n{context}\n\nகேள்வி 1: இந்திய அரசியலமைப்பு எப்போது நடைமுறைக்கு வந்தது?\nகேள்வி 2: இந்திய அரசியலமைப்பின் முதன்மை வடிவமைப்பாளர் யார்?\nகேள்வி 3: 42ஆவது திருத்தத்தால் முகவுரையில் எந்த சொற்கள் சேர்க்கப்பட்டன?"
+
+answers, time_taken = get_sutra_response(qa_prompt, temperature=0.2)
+```
+
+## 6. Tamil-English Translation
+
+Sutra can effectively translate between Tamil and English.
+
+```python
+# Tamil to English translation
+tamil_text = "தமிழ்நாடு பல்வேறு கலாச்சாரங்கள் மற்றும் பாரம்பரியங்களைக் கொண்ட மாநிலமாகும். அதன் இயற்கை அழகு மற்றும் வரலாறு உலகம் முழுவதிலிருந்து பயணிகளை ஈர்க்கிறது."
+
+translate_ta_to_en_prompt = f"பின்வரும் தமிழ் உரையை ஆங்கிலத்திற்கு மொழிபெயர்க்கவும்:\n\n{tamil_text}"
+
+translation_en, time_taken = get_sutra_response(translate_ta_to_en_prompt)
+```
+
+```python
+# English to Tamil translation
+english_text = "Artificial intelligence is transforming the way we live and work. It has applications in healthcare, education, transportation, and many other fields."
+
+translate_en_to_ta_prompt = f"பின்வரும் ஆங்கில உரையை தமிழுக்கு மொழிபெயர்க்கவும்:\n\n{english_text}"
+
+translation_ta, time_taken = get_sutra_response(translate_en_to_ta_prompt)
+```
+
+## 7. Sentiment Analysis in Tamil
+
+Let's use Sutra to perform sentiment analysis on Tamil text.
+
+```python
+# Tamil reviews for sentiment analysis
+reviews = [
+    "இந்த திரைப்படம் மிகவும் நன்றாக இருந்தது. கதை ஈர்க்கக்கூடியதாகவும், நடிப்பு சிறப்பாகவும் இருந்தது.",
+    "உணவு சுவையாக இல்லை, சேவையும் மிகவும் மோசமாக இருந்தது.",
+    "இந்த பொருள் ஓரளவு நன்றாக உள்ளது, ஆனால் விலை சற்று அதிகம்.",
+    "இந்த புத்தகம் எனக்கு பிடித்தது, ஆசிரியர் தலைப்பை மிகவும் நன்றாக விளக்கியுள்ளார்.",
+    "பயணம் ஏமாற்றமாக இருந்தது, ஹோட்டல் அழுக்காக இருந்தது, பணியாளர்கள் நட்பற்றவர்களாக இருந்தனர்."
+]
+
+sentiment_prompt = "பின்வரும் தமிழ் மதிப்புரைகளுக்கு உணர்வு பகுப்பாய்வு செய்து, ஒவ்வொன்றையும் 'நேர்மறை', 'எதிர்மறை' அல்லது 'நடுநிலை' என வகைப்படுத்தவும்:\n\n"
+
+for i, review in enumerate(reviews):
+    sentiment_prompt += f"{i+1}. {review}\n"
+
+sentiment_analysis, time_taken = get_sutra_response(sentiment_prompt, temperature=0.1)
+```
+
+## 8. Generating Tamil Content in Various Formats
+
+Sutra can generate content in various formats in Tamil.
+
+```python
+# Generate a blog post in Tamil
+blog_prompt = "'தமிழ் உணவு மற்றும் அதன் ஆரோக்கியத்தில் தாக்கம்' என்ற தலைப்பில் ஒரு வலைப்பதிவு இடுகையை எழுதவும். தலைப்பு, அறிமுகம், முக்கிய புள்ளிகள் மற்றும் முடிவு ஆகியவற்றை உள்ளடக்கவும்."
+
+blog_post = get_sutra_streaming_response(blog_prompt, temperature=0.7)
+```
+
+## 9. Conclusion
+
+In this notebook, we have explored using the Sutra model with the OpenAI client for **Tamil language applications**. We have covered various use cases, including:
+
+- Basic Tamil text generation
+- Information retrieval in Tamil
+- Creative writing in Tamil
+- Tamil text summarization
+- Question-answering in Tamil
+- Tamil-English translation
+- Sentiment analysis in Tamil
+- Generating Tamil content in various formats
+
+Sutra's strong capabilities in Tamil and other languages make it an excellent choice for applications targeting Tamil-speaking users or requiring Tamil language processing.
+
+## 10. Additional Resources
+
+To learn more about using Sutra with the **Tamil language**, consult the following resources:
+
+1.  [Sutra API Documentation](https://docs.two.ai)
+2.  [Sutra Model Variants](https://docs.two.ai/models)
+3.  [More about Multilingual Capabilities](https://docs.two.ai/multilingual)
+
+We encourage you to build your own applications with Sutra for **Tamil** and other languages!

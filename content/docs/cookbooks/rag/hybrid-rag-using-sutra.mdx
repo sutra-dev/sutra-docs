@@ -1,0 +1,174 @@
+---
+title: Hybrid RAG Using SUTRA
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img src="/sutra.png" width="150" />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1pA-2lAKnYyA1t7uB7SJ-TPywg82YMHqn?usp=sharing)
+
+## SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+## Hybrid RAG Using SUTRA
+
+Hybrid RAG refers to an advanced retrieval technique that combines vector similarity search with traditional search methods, such as full-text search or BM25. This approach enables more comprehensive and flexible information retrieval by leveraging the strengths of both methods, vector similarity for semantic understanding and traditional techniques for precise keyword or text-based matching.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python installation is required.
+
+### 🔧 1. Install Required Libraries
+
+```python
+!pip install -qU langchain_openai langchain_community chromadb rank_bm25
+```
+
+### 🔑 2. Set Environment Variables (API Keys)
+
+```python
+import os
+from google.colab import userdata
+
+# Set the API key from Colab secrets
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
+```
+
+### 📥 Load and Split Data
+
+```python
+# Load CSV
+from langchain.document_loaders import CSVLoader
+loader = CSVLoader("./context.csv")
+documents = loader.load()
+
+# Split text
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=0)
+documents = splitter.split_documents(documents)
+```
+
+### Embeddings: OpenAI + VectorStore: Chroma
+
+```python
+from langchain_openai import OpenAIEmbeddings
+from langchain.vectorstores import Chroma
+
+embeddings = OpenAIEmbeddings()
+vectorstore = Chroma.from_documents(documents, embeddings)
+
+# Vector retriever
+retriever = vectorstore.as_retriever()
+```
+
+### 🔎 Keyword Retriever (BM25)
+
+```python
+from langchain.retrievers import BM25Retriever
+keyword_retriever = BM25Retriever.from_documents(documents)
+keyword_retriever.k = 3
+```
+
+### ⚖️ Ensemble Retriever (Hybrid RAG)
+
+```python
+from langchain.retrievers import EnsembleRetriever
+ensemble_retriever = EnsembleRetriever(
+    retrievers=[retriever, keyword_retriever],
+    weights=[0.5, 0.5]
+)
+```
+
+### Initialize Sutra LLM for chat generation
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
+import os
+
+llm = ChatOpenAI(
+    api_key=os.getenv("SUTRA_API_KEY"),
+    base_url="https://api.two.ai/v2",
+    model="sutra-v2"
+)
+```
+
+### 🔁 RAG Chain Setup
+
+```python
+from langchain.prompts import ChatPromptTemplate
+from langchain.schema.runnable import RunnablePassthrough
+from langchain.schema.output_parser import StrOutputParser
+
+template = '''
+You are a helpful assistant that answers questions based on the following context.
+If the answer is not in the context, say you don't know.
+Context: {context}
+
+Question: {input}
+
+Answer:
+'''
+
+prompt = ChatPromptTemplate.from_template(template)
+
+rag_chain = (
+    {"context": ensemble_retriever, "input": RunnablePassthrough()}
+    | prompt
+    | llm
+    | StrOutputParser()
+)
+```
+
+### ✅ Run Example Inference
+
+```python
+response = rag_chain.invoke("what bacteria grow on macconkey agar")
+print(response)
+```
+
+### 📊 Prepare Data for Evaluation
+
+```python
+questions = [
+    "what bacteria grow on macconkey agar",
+    "who wrote a rose is a rose is a rose"
+]
+responses = []
+contexts = []
+
+for q in questions:
+    responses.append(rag_chain.invoke(q))
+    contexts.append([doc.page_content for doc in ensemble_retriever.invoke(q)])
+
+# Create dict
+data = {
+    "query": questions,
+    "response": responses,
+    "context": contexts
+}
+
+# Dataset
+from datasets import Dataset
+dataset = Dataset.from_dict(data)
+
+# DataFrame
+import pandas as pd
+df = pd.DataFrame(dataset)
+
+# Convert context to list (if string)
+df_dict = df.to_dict(orient='records')
+for record in df_dict:
+    if not isinstance(record.get('context'), list):
+        record['context'] = [record['context']] if record['context'] else []
+
+df
+```

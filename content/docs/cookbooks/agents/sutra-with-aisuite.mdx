@@ -1,0 +1,240 @@
+---
+title: SUTRA with AISuite
+---
+
+<div style={{ display: "flex", alignItems: "center", gap: "40px" }}>
+  <img src="/sutra.png" width="150" />
+</div>
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1phv0BVdZACSObnwheTkWf-no4GQh31a5?usp=sharing)
+
+## SUTRA by TWO Platforms
+
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+
+# AISuite
+
+AISuite is a unified interface for generative AI providers, allowing you to easily switch between different AI models and providers with minimal code changes. It provides a consistent API for working with various AI models, making it easier to integrate and experiment with different AI capabilities..
+
+# SUTRA With AISuite
+
+This notebook demonstrates how to use the Sutra model with AISuite, a
+unified interface for generative AI providers.
+
+## Get Your API Keys
+
+Before you begin, make sure you have:
+
+1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API
+    page](https://www.two.ai/sutra/api))
+2.  Basic familiarity with Python and Jupyter notebooks
+
+This notebook is designed to run in Google Colab, so no local Python
+installation is required.
+
+## Setup and Installation
+
+First, let's install the required packages:
+
+```python
+!pip install 'aisuite[openai]'
+```
+
+## Setting up Environment Variables
+
+You'll need to set up your API keys. For security reasons, it's best to
+use environment variables:
+
+```python
+from google.colab import userdata
+import os
+
+os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
+os.environ["OPENAI_API_KEY"] = userdata.get("OPENAI_API_KEY")
+os.environ["GOOGLE_API_KEY"] = userdata.get("GOOGLE_API_KEY")
+os.environ["ANTHROPIC_API_KEY"] = userdata.get("ANTHROPIC_API_KEY")
+```
+
+## Basic Usage of Sutra with AISuite
+
+Let's first see how to use Sutra with AISuite for basic completions:
+
+```python
+import aisuite as ai
+import os
+
+# Configure AISuite with SUTRA-V2
+provider_configs = {
+    "openai": {
+        "api_key": os.getenv("SUTRA_API_KEY"),
+        "base_url": "https://api.two.ai/v2"
+    }
+}
+
+client = ai.Client(provider_configs)
+
+# Test a basic completion
+messages = [
+    {"role": "system", "content": "You are a helpful assistant that specializes in Indian languages and culture."},
+    {"role": "user", "content": "Explain artificial intelligence in 3 sentences."}
+]
+
+response = client.chat.completions.create(
+    model="openai:sutra-v2",
+    messages=messages,
+    max_tokens=1024,
+    temperature=0.7
+)
+
+print(response.choices[0].message.content)
+```
+
+## Multilingual Capabilities of Sutra
+
+One of Sutra's strengths is its multilingual capabilities. Let's test it
+with Hindi:
+
+```python
+# Hindi example
+messages = [
+    {"role": "system", "content": "आप एक सहायक AI हैं जो हिंदी में उत्तर देती है।"},
+    {"role": "user", "content": "भारतीय संस्कृति में गंगा नदी का क्या महत्व है?"}
+]
+
+response = client.chat.completions.create(
+    model="openai:sutra-v2",
+    messages=messages,
+    max_tokens=1024,
+    temperature=0.7
+)
+
+print(response.choices[0].message.content)
+```
+
+## Streaming Responses with AISuite
+
+AISuite supports streaming responses, which is useful for real-time
+applications:
+
+```python
+# Stream a response
+messages = [
+    {"role": "system", "content": "You are a creative writer."},
+    {"role": "user", "content": "Write a short story about a robot discovering emotions."}
+]
+
+stream = client.chat.completions.create(
+    model="openai:sutra-v2",
+    messages=messages,
+    max_tokens=1024,
+    temperature=0.7,
+    stream=True
+)
+
+for chunk in stream:
+    if chunk.choices and chunk.choices[0].delta.content:
+        print(chunk.choices[0].delta.content, end='', flush=True)
+```
+
+## Working with Different Parameter Settings
+
+Let's explore how different parameter settings affect Sutra's responses:
+
+```python
+# Base prompt
+base_messages = [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "Write a short poem about the monsoon season in India."}
+]
+
+# Test with different temperature settings
+print("Temperature = 0.3 (More focused):\n")
+response_low_temp = client.chat.completions.create(
+    model="openai:sutra-v2",
+    messages=base_messages,
+    max_tokens=200,
+    temperature=0.3
+)
+print(response_low_temp.choices[0].message.content)
+
+print("\n\nTemperature = 0.9 (More creative):\n")
+response_high_temp = client.chat.completions.create(
+    model="openai:sutra-v2",
+    messages=base_messages,
+    max_tokens=200,
+    temperature=0.9
+)
+print(response_high_temp.choices[0].message.content)
+```
+
+## Practical Example: Building a Multilingual Q&A System
+
+Let's create a simple multilingual Q&A system using Sutra and AISuite:
+
+```python
+def multilingual_qa(question, language="english"):
+    """A simple multilingual Q&A function using Sutra and AISuite.
+
+    Args:
+        question (str): The question to ask
+        language (str): The language for the response (english, hindi, tamil, etc.)
+
+    Returns:
+        str: The response in the requested language
+    """
+    # Language-specific system prompts
+    system_prompts = {
+        "english": "You are a helpful assistant. Respond in English.",
+        "hindi": "आप एक सहायक AI हैं। कृपया हिंदी में उत्तर दें।",
+        "tamil": "நீங்கள் ஒரு உதவிகரமான AI ஆவீர்கள். தமிழில் பதிலளிக்கவும்.",
+        "bengali": "আপনি একজন সহায়ক AI। বাংলায় উত্তর দিন।",
+        "telugu": "మీరు సహాయకరమైన AI. దయచేసి తెలుగులో సమాధానం ఇవ్వండి.",
+        "marathi": "आपण एक सहाय्यक AI आहात. कृपया मराठीत उत्तर द्या.",
+        "punjabi": "ਤੁਸੀਂ ਇੱਕ ਸਹਾਇਕ AI ਹੋ। ਕਿਰਪਾ ਕਰਕੇ ਪੰਜਾਬੀ ਵਿੱਚ ਜਵਾਬ ਦਿਓ।"
+    }
+
+    # Default to English if language not supported
+    system_prompt = system_prompts.get(language.lower(), system_prompts["english"])
+
+    messages = [
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": question}
+    ]
+
+    response = client.chat.completions.create(
+        model="openai:sutra-v2",
+        messages=messages,
+        max_tokens=500,
+        temperature=0.7
+    )
+
+    return response.choices[0].message.content
+
+# Test the multilingual Q&A system
+questions = [
+    ("What are the major festivals celebrated in India?", "english"),
+    ("भारत के प्रमुख त्योहार कौन-कौन से हैं?", "hindi"),
+    ("இந்தியாவில் கொண்டாடப்படும் முக்கிய திருவிழாக்கள் யாவை?", "tamil")
+]
+
+for question, language in questions:
+    print(f"\n\n=== Question ({language}) ===\n{question}\n")
+    print(f"=== Response ===\n{multilingual_qa(question, language)}")
+```
+
+## Conclusion
+
+In this notebook, we've explored how to use Sutra with AISuite for
+various natural language processing tasks. We've covered:
+
+1.  Basic setup and configuration
+2.  Simple completions and chat interactions
+3.  Multilingual capabilities
+4.  Streaming responses
+5.  Parameter tuning
+6.  Building a practical multilingual Q&A system
+
+Sutra's multilingual capabilities make it particularly well-suited for
+applications targeting Indian languages and contexts, while AISuite
+provides a flexible and consistent interface for working with Sutra and
+potentially other AI models in your applications.
