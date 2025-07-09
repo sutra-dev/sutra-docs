@@ -211,7 +211,7 @@ export const navMenu: {
   },
   {
     name: "cookbooks",
-    path: "/cookbooks",
+    path: "/cookbook",
   },
   {
     name: "api reference",
