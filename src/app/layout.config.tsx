@@ -12,7 +12,7 @@ export const baseOptions: BaseLayoutProps = {
       active: "nested-url",
     },
     {
-      text: "Cookbooks",
+      text: "Cookbook",
       url: "/cookbook",
       active: "nested-url",
     },

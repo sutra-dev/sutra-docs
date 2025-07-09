@@ -210,7 +210,7 @@ export const navMenu: {
     path: "/docs",
   },
   {
-    name: "cookbooks",
+    name: "cookbook",
     path: "/cookbook",
   },
   {
