@@ -8,7 +8,7 @@ export function ConditionalSidebar() {
   const pathname = usePathname();
   
   // Don't render sidebar for API reference pages
-  if (pathname.startsWith('/docs/api-reference')) {
+  if (pathname.startsWith('/api')) {
     return null;
   }
   

@@ -12,7 +12,7 @@ export const source = loader({
 });
 
 export const cookbooks = loader({
-  baseUrl: "/cookbooks",
+  baseUrl: "/cookbook",
   source: createMDXSource(cookbooksCollection),
 });
 

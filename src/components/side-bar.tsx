@@ -23,7 +23,7 @@ export default function ArticleLayout() {
 
   function getDefaultValue() {
     let sidebarContents = contents;
-    if (pathname.includes("/docs/cookbooks")) {
+    if (pathname.includes("/cookbook")) {
       sidebarContents = cookbooks;
     } else {
       sidebarContents = contents;
@@ -38,7 +38,7 @@ export default function ArticleLayout() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    const grp = pathname.includes("/docs/cookbooks") ? "cookbooks" : "docs";
+    const grp = pathname.includes("/cookbook") ? "cookbooks" : "docs";
     setGroup(grp);
     setCurrentOpen(getDefaultValue());
   }, [pathname]);
@@ -276,7 +276,7 @@ function NewBadge({ isSelected }: { isSelected?: boolean }) {
 //         if (val === "docs") {
 //           router.push("/docs");
 //         } else {
-//           router.push("/docs/cookbooks");
+//           router.push("/cookbook");
 //         }
 //       },
 //     },

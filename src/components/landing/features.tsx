@@ -32,7 +32,7 @@ const features = [
     description:
       "Access detailed API documentation, sandboxes, and SDKs to help you start building end-to-end applications.",
     icon: PlugIcon,
-    href: "/docs/api-reference",
+    href: "/api",
   },
   {
     id: 3,
