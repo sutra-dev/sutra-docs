@@ -405,7 +405,7 @@ export const contents: Content[] = [
 export const cookbooks: Content[] = [
   {
     title: "Overview",
-    href: "/docs/cookbooks",
+    href: "/cookbook",
     Icon: Icons.book,
     isPage: true,
   },
@@ -439,37 +439,37 @@ export const cookbooks: Content[] = [
     list: [
       {
         title: "Overview",
-        href: "/docs/cookbooks/get-started",
+        href: "/cookbook/get-started",
         icon: Icons.book,
       },
       {
         title: "Starter Guide",
-        href: "/docs/cookbooks/get-started/sutra-starter-guide",
+        href: "/cookbook/get-started/sutra-starter-guide",
         icon: Icons.book,
       },
       {
         title: "Basics of Sutra Streaming",
-        href: "/docs/cookbooks/get-started/basics-of-sutra-streaming",
+        href: "/cookbook/get-started/basics-of-sutra-streaming",
         icon: Icons.book,
       },
       {
         title: "Exploring Sutra Models",
-        href: "/docs/cookbooks/get-started/exploring-sutra-models",
+        href: "/cookbook/get-started/exploring-sutra-models",
         icon: Icons.book,
       },
       {
         title: "Structured Output with Sutra",
-        href: "/docs/cookbooks/get-started/structured-output-with-sutra",
+        href: "/cookbook/get-started/structured-output-with-sutra",
         icon: Icons.book,
       },
       {
         title: "Reasoning Quickstart",
-        href: "/docs/cookbooks/get-started/sutra-reasoning-quickstart",
+        href: "/cookbook/get-started/sutra-reasoning-quickstart",
         icon: Icons.book,
       },
       {
         title: "Prompting Guide",
-        href: "/docs/cookbooks/get-started/sutra-prompting-guide",
+        href: "/cookbook/get-started/sutra-prompting-guide",
         icon: Icons.book,
       },
     ],
@@ -504,52 +504,52 @@ export const cookbooks: Content[] = [
     list: [
       {
         title: "Overview",
-        href: "/docs/cookbooks/agents",
+        href: "/cookbook/agents",
         icon: Icons.book,
       },
       {
         title: "SUTRA with AGNO",
-        href: "/docs/cookbooks/agents/sutra-with-agno",
+        href: "/cookbook/agents/sutra-with-agno",
         icon: Icons.book,
       },
       {
         title: "SUTRA with PydanticAI",
-        href: "/docs/cookbooks/agents/sutra-with-pydanticai",
+        href: "/cookbook/agents/sutra-with-pydanticai",
         icon: Icons.book,
       },
       {
         title: "SUTRA with OpenAI Agents SDK",
-        href: "/docs/cookbooks/agents/sutra-with-openai-agent-sdk",
+        href: "/cookbook/agents/sutra-with-openai-agent-sdk",
         icon: Icons.book,
       },
       {
         title: "SUTRA with Strands Agents",
-        href: "/docs/cookbooks/agents/sutra-with-strands-agents",
+        href: "/cookbook/agents/sutra-with-strands-agents",
         icon: Icons.book,
       },
       {
         title: "SUTRA with CrewAI",
-        href: "/docs/cookbooks/agents/sutra-with-crewai",
+        href: "/cookbook/agents/sutra-with-crewai",
         icon: Icons.book,
       },
       {
         title: "SUTRA with Smolagents",
-        href: "/docs/cookbooks/agents/smolagents-with-sutra",
+        href: "/cookbook/agents/smolagents-with-sutra",
         icon: Icons.book,
       },
       {
         title: "SUTRA with AISuite",
-        href: "/docs/cookbooks/agents/sutra-with-aisuite",
+        href: "/cookbook/agents/sutra-with-aisuite",
         icon: Icons.book,
       },
       {
         title: "SUTRA with Autogen",
-        href: "/docs/cookbooks/agents/sutra-using-autogen",
+        href: "/cookbook/agents/sutra-using-autogen",
         icon: Icons.book,
       },
       {
         title: "SUTRA with TaskGen",
-        href: "/docs/cookbooks/agents/taskgen-with-sutra",
+        href: "/cookbook/agents/taskgen-with-sutra",
         icon: Icons.book,
       },
     ],
@@ -584,37 +584,37 @@ export const cookbooks: Content[] = [
     list: [
       {
         title: "Overview",
-        href: "/docs/cookbooks/integrations",
+        href: "/cookbook/integrations",
         icon: Icons.book,
       },
       {
         title: "SUTRA with Portkey",
-        href: "/docs/cookbooks/integrations/sutra-with-portkey",
+        href: "/cookbook/integrations/sutra-with-portkey",
         icon: Icons.book,
       },
       {
         title: "SUTRA with LlamaIndex",
-        href: "/docs/cookbooks/integrations/sutra-with-llamaindex",
+        href: "/cookbook/integrations/sutra-with-llamaindex",
         icon: Icons.book,
       },
       {
         title: "SUTRA with LangChain",
-        href: "/docs/cookbooks/integrations/sutra-with-langchain",
+        href: "/cookbook/integrations/sutra-with-langchain",
         icon: Icons.book,
       },
       {
         title: "SUTRA with Agno",
-        href: "/docs/cookbooks/integrations/sutra-with-agno",
+        href: "/cookbook/integrations/sutra-with-agno",
         icon: Icons.book,
       },
       {
         title: "SUTRA with LiteLLM",
-        href: "/docs/cookbooks/integrations/sutra-with-litellm",
+        href: "/cookbook/integrations/sutra-with-litellm",
         icon: Icons.book,
       },
       {
         title: "SUTRA with LangGraph",
-        href: "/docs/cookbooks/integrations/sutra-with-langgraph",
+        href: "/cookbook/integrations/sutra-with-langgraph",
         icon: Icons.book,
       },
     ],
@@ -649,22 +649,22 @@ export const cookbooks: Content[] = [
     list: [
       {
         title: "Overview",
-        href: "/docs/cookbooks/examples",
+        href: "/cookbook/examples",
         icon: Icons.book,
       },
       {
         title: "SUTRA with OpenAI",
-        href: "/docs/cookbooks/examples/sutra-vs-openai-models",
+        href: "/cookbook/examples/sutra-vs-openai-models",
         icon: Icons.book,
       },
       {
         title: "Multilingual MCQ Generation",
-        href: "/docs/cookbooks/examples/multilingual-mcq-generation-with-sutra",
+        href: "/cookbook/examples/multilingual-mcq-generation-with-sutra",
         icon: Icons.book,
       },
       {
         title: "Structured Output with Pydantic",
-        href: "/docs/cookbooks/examples/structured-output-with-pydantic",
+        href: "/cookbook/examples/structured-output-with-pydantic",
         icon: Icons.book,
       },
     ],
@@ -699,42 +699,42 @@ export const cookbooks: Content[] = [
     list: [
       {
         title: "Overview",
-        href: "/docs/cookbooks/rag",
+        href: "/cookbook/rag",
         icon: Icons.book,
       },
       {
         title: "Chat with PDF using Pinecone",
-        href: "/docs/cookbooks/rag/chat-with-pdf-using-pinecone",
+        href: "/cookbook/rag/chat-with-pdf-using-pinecone",
         icon: Icons.book,
       },
       {
         title: "Multilingual Chat with PDF",
-        href: "/docs/cookbooks/rag/multilingual-chat-with-pdf",
+        href: "/cookbook/rag/multilingual-chat-with-pdf",
         icon: Icons.book,
       },
       {
         title: "Contextual RAG",
-        href: "/docs/cookbooks/rag/contextual-rag-using-sutra",
+        href: "/cookbook/rag/contextual-rag-using-sutra",
         icon: Icons.book,
       },
       {
         title: "Hybrid RAG",
-        href: "/docs/cookbooks/rag/hybrid-rag-using-sutra",
+        href: "/cookbook/rag/hybrid-rag-using-sutra",
         icon: Icons.book,
       },
       {
         title: "HyDE RAG",
-        href: "/docs/cookbooks/rag/hyde-rag-using-sutra",
+        href: "/cookbook/rag/hyde-rag-using-sutra",
         icon: Icons.book,
       },
       {
         title: "RAG Fusion",
-        href: "/docs/cookbooks/rag/rag-fusion-using-sutra",
+        href: "/cookbook/rag/rag-fusion-using-sutra",
         icon: Icons.book,
       },
       {
         title: "Multilingual Chat with URL",
-        href: "/docs/cookbooks/rag/multilingual-chat-with-url",
+        href: "/cookbook/rag/multilingual-chat-with-url",
         icon: Icons.book,
       },
     ],
@@ -769,38 +769,38 @@ export const cookbooks: Content[] = [
     list: [
       {
         title: "Overview",
-        href: "/docs/cookbooks/multilingual",
+        href: "/cookbook/multilingual",
         icon: Icons.book,
       },
       {
         group: true,
         title: "Indian Languages",
-        href: "/docs/cookbooks/multilingual/indian-languages",
+        href: "/cookbook/multilingual/indian-languages",
         icon: Icons.book,
       },
       {
         title: "Gujarati with SUTRA",
-        href: "/docs/cookbooks/multilingual/indian-languages/gujarati-with-sutra",
+        href: "/cookbook/multilingual/indian-languages/gujarati-with-sutra",
         icon: Icons.book,
       },
       {
         title: "Telugu with SUTRA",
-        href: "/docs/cookbooks/multilingual/indian-languages/telugu-with-sutra",
+        href: "/cookbook/multilingual/indian-languages/telugu-with-sutra",
         icon: Icons.book,
       },
       {
         title: "Hindi with SUTRA",
-        href: "/docs/cookbooks/multilingual/indian-languages/hindi-with-sutra",
+        href: "/cookbook/multilingual/indian-languages/hindi-with-sutra",
         icon: Icons.book,
       },
       {
         title: "Marathi with SUTRA",
-        href: "/docs/cookbooks/multilingual/indian-languages/marathi-with-sutra",
+        href: "/cookbook/multilingual/indian-languages/marathi-with-sutra",
         icon: Icons.book,
       },
       {
         title: "Tamil with SUTRA",
-        href: "/docs/cookbooks/multilingual/indian-languages/tamil-with-sutra",
+        href: "/cookbook/multilingual/indian-languages/tamil-with-sutra",
         icon: Icons.book,
       },
       {
@@ -811,27 +811,27 @@ export const cookbooks: Content[] = [
       },
       {
         title: "English with SUTRA",
-        href: "/docs/cookbooks/multilingual/foreign-languages/english-with-sutra",
+        href: "/cookbook/multilingual/foreign-languages/english-with-sutra",
         icon: Icons.book,
       },
       {
         title: "Korean with SUTRA",
-        href: "/docs/cookbooks/multilingual/foreign-languages/korean-with-sutra",
+        href: "/cookbook/multilingual/foreign-languages/korean-with-sutra",
         icon: Icons.book,
       },
       {
         title: "French with SUTRA",
-        href: "/docs/cookbooks/multilingual/foreign-languages/french-with-sutra",
+        href: "/cookbook/multilingual/foreign-languages/french-with-sutra",
         icon: Icons.book,
       },
       {
         title: "German with SUTRA",
-        href: "/docs/cookbooks/multilingual/foreign-languages/german-with-sutra",
+        href: "/cookbook/multilingual/foreign-languages/german-with-sutra",
         icon: Icons.book,
       },
       {
         title: "Japanese with SUTRA",
-        href: "/docs/cookbooks/multilingual/foreign-languages/japanese-with-sutra",
+        href: "/cookbook/multilingual/foreign-languages/japanese-with-sutra",
         icon: Icons.book,
       },
     ],

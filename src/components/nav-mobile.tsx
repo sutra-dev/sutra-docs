@@ -148,7 +148,7 @@ function DocsNavBarContent() {
   const { toggleNavbar } = useNavbarMobile();
   if (!pathname.startsWith("/docs")) return null;
 
-  const content = pathname.startsWith("/docs/cookbooks") ? cookbooks : contents;
+  const content = pathname.startsWith("/cookbook") ? cookbooks : contents;
 
   return (
     <>
@@ -211,10 +211,10 @@ export const navMenu: {
   },
   {
     name: "cookbooks",
-    path: "/docs/cookbooks",
+    path: "/cookbooks",
   },
   {
     name: "api reference",
-    path: "/docs/api-reference",
+    path: "/api",
   },
 ];

@@ -17,10 +17,10 @@ export const NavLink = ({ href, children, className, external }: Props) => {
       return path === "/";
     }
     if (href === "/docs") {
-      return path.startsWith("/docs") && !path.startsWith("/docs/cookbooks") && !path.startsWith("/docs/api-reference");
+      return path.startsWith("/docs") && !path.startsWith("/cookbook") && !path.startsWith("/docs/api-reference");
     }
-    if (href === "/docs/cookbooks") {
-      return path.startsWith("/docs/cookbooks");
+    if (href === "/cookbook") {
+      return path.startsWith("/cookbook");
     }
     if (href === "/docs/api-reference") {
       return path.startsWith("/docs/api-reference");
