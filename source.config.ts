@@ -19,7 +19,7 @@ export const docs = defineDocs({
 
 export const cookbooksCollection = defineCollections({
   type: "doc",
-  dir: "./content/cookbooks",
+  dir: "./content/cookbook",
   schema: frontmatterSchema,
 });
 

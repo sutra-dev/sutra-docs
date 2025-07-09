@@ -38,7 +38,7 @@ export default function ArticleLayout() {
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
-    const grp = pathname.includes("/cookbook") ? "cookbooks" : "docs";
+    const grp = pathname.includes("/cookbook") ? "cookbook" : "docs";
     setGroup(grp);
     setCurrentOpen(getDefaultValue());
   }, [pathname]);
