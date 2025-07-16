@@ -36,7 +36,7 @@ export default async function HomePage() {
                 <span className=" text-zinc-400 hidden md:block">|</span>
                 <Link
                   target="_blank"
-                  href="https://developer.two.ai"
+                  href="http://platform.two.ai"
                   className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 hidden dark:hover:text-blue-300 transition-colors md:block"
                 >
                   API Key →
@@ -44,7 +44,7 @@ export default async function HomePage() {
               </span>
               <Link
                 target="_blank"
-                href="https://developer.two.ai"
+                href="http://platform.two.ai"
                 className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 text-xs dark:hover:text-blue-300 transition-colors md:hidden"
               >
                 Get your API Key →

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { LockClosedIcon } from "@radix-ui/react-icons";
+import { LockClosedIcon } from '@radix-ui/react-icons';
 import {
   ExternalLink,
   Globe2Icon,
@@ -10,37 +10,36 @@ import {
   RabbitIcon,
   ShieldCheckIcon,
   Webhook,
-} from "lucide-react";
+} from 'lucide-react';
 
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { GithubStat } from "../github-stat";
-import { Ripple } from "../ripple";
-import IntegrationsSection from "../landing/integrations";
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
+import { GithubStat } from '../github-stat';
+import { Ripple } from '../ripple';
+import IntegrationsSection from '../landing/integrations';
 const features = [
   {
     id: 1,
-    title: "DEVELOPER PORTAL",
+    title: 'DEVELOPER PORTAL',
     description:
-      "Generate API keys, explore prompts, and access tools in an interactive playground built for developers.",
+      'Generate API keys, explore prompts, and access tools in an interactive playground built for developers.',
     icon: ShieldCheckIcon,
-    href: "https://developer.two.ai/",
+    href: 'http://platform.two.ai/',
   },
   {
     id: 2,
-    title: "API REFERENCE",
+    title: 'API REFERENCE',
     description:
-      "Access detailed API documentation, sandboxes, and SDKs to help you start building end-to-end applications.",
+      'Access detailed API documentation, sandboxes, and SDKs to help you start building end-to-end applications.',
     icon: PlugIcon,
-    href: "/api",
+    href: '/api',
   },
   {
     id: 3,
-    title: "CHATSUTRA",
-    description:
-      "Experience SUTRA Models directly through ChatSUTRA’s conversational playground and demo interface.",
+    title: 'CHATSUTRA',
+    description: 'Experience SUTRA Models directly through ChatSUTRA’s conversational playground and demo interface.',
     icon: LockClosedIcon,
-    href: "https://chat.two.ai/",
+    href: 'https://chat.two.ai/',
   },
 ];
 
@@ -53,8 +52,8 @@ export default function Features({ stars }: { stars: string | null }) {
             <div
               key={feature.id}
               className={cn(
-                "justify-center border-l-[1.2px] md:min-h-[240px] border-t-[1.2px] md:border-t-0 transform-gpu flex flex-col p-10 hover:bg-muted/50 transition-colors",
-                index >= 3 && "md:border-t-[1.2px]"
+                'justify-center border-l-[1.2px] md:min-h-[240px] border-t-[1.2px] md:border-t-0 transform-gpu flex flex-col p-10 hover:bg-muted/50 transition-colors',
+                index >= 3 && 'md:border-t-[1.2px]',
               )}
             >
               <div className="mt-2">
@@ -68,13 +67,11 @@ export default function Features({ stars }: { stars: string | null }) {
                     />
                   </div>
                 </div>
-                <p className="mt-2 text-sm text-left text-muted-foreground">
-                  {feature.description}
-                </p>
+                <p className="mt-2 text-sm text-left text-muted-foreground">{feature.description}</p>
                 <div className="pt-3">
                   <Link
                     href={feature.href}
-                    target={feature.href.includes("http") ? "_blank" : "_self"}
+                    target={feature.href.includes('http') ? '_blank' : '_self'}
                     className="underline mt-3 text-foreground/80 flex items-center gap-2"
                   >
                     Learn more <ExternalLink className="w-4 h-4" />
@@ -89,10 +86,7 @@ export default function Features({ stars }: { stars: string | null }) {
           <div className="w-full h-full p-16 pt-10 md:px-10">
             <div className="flex flex-col items-center justify-center w-full h-full gap-3">
               <p className="max-w-md mx-auto mt-4 text-4xl font-normal tracking-tighter text-center md:text-4xl">
-                <strong>
-                  Power your AI with multilingual capabilities across 50+
-                  languages!
-                </strong>
+                <strong>Power your AI with multilingual capabilities across 50+ languages!</strong>
               </p>
               <div className="flex mt-[10px] z-20 justify-center items-start">
                 {/* <TechStackDisplay skills={["Langchain", "OpenAI", "aiSDK"]} /> */}
