@@ -93,7 +93,7 @@ class StreamHandler(BaseCallbackHandler):
 def get_base_chat_model():
     return ChatOpenAI(
         api_key=os.getenv("SUTRA_API_KEY"),
-        base_url="https://api.two.ai/v2",
+        base_url="https://api.numeric.tech/v2",
         model="sutra-v2",
         temperature=0.7,
     )
@@ -102,7 +102,7 @@ def get_base_chat_model():
 def get_streaming_chat_model(callback_handler=None):
     return ChatOpenAI(
         api_key=os.getenv("SUTRA_API_KEY"),
-        base_url="https://api.two.ai/v2",
+        base_url="https://api.numeric.tech/v2",
         model="sutra-v2",
         temperature=0.7,
         streaming=True,
@@ -144,7 +144,7 @@ if uploaded_file is not None:
         documents = text_splitter.split_text(text)
 
         # Create embeddings and vector store
-        embeddings = OpenAIEmbeddings(api_key=os.getenv("SUTRA_API_KEY"), base_url="https://api.two.ai/v2")
+        embeddings = OpenAIEmbeddings(api_key=os.getenv("SUTRA_API_KEY"), base_url="https://api.numeric.tech/v2")
         st.session_state.vector_store = FAISS.from_texts(documents, embeddings)
 
         st.success("Document processed successfully!")

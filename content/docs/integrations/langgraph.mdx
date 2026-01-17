@@ -32,7 +32,7 @@ Configure a LangChain `ChatOpenAI` instance to use either `sutra-v2` for multili
 chat = ChatOpenAI(
     model="sutra-v2",  # or "sutra-r0" for reasoning tasks
     api_key=api_key,
-    base_url="https://api.two.ai/v2"
+    base_url="https://api.numeric.tech/v2"
 )
 ```
 
@@ -96,7 +96,7 @@ class ReasoningState(TypedDict):
 r0_chat = ChatOpenAI(
     model="sutra-r0",
     api_key=api_key,
-    base_url="https://api.two.ai/v2"
+    base_url="https://api.numeric.tech/v2"
 )
 
 # Node for reasoning step

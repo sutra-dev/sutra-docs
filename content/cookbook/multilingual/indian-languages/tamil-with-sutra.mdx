@@ -23,7 +23,7 @@ In this notebook, we demonstrate how to use the Sutra model with the OpenAI clie
 
 Before you begin, make sure you have:
 
-1.  A SUTRA API key (Get yours at [Numeric's SUTRA API page](https://www.two.ai/sutra/api))
+1.  A SUTRA API key (Get yours at [Numeric's SUTRA API page](https://www.numeric.tech))
 2.  Basic familiarity with Python and Jupyter notebooks
 
 This notebook is designed to run in Google Colab, so no local Python installation is required.
@@ -62,7 +62,7 @@ os.environ["SUTRA_API_KEY"] = userdata.get('SUTRA_API_KEY')
 ```python
 # Create OpenAI client with Sutra API endpoint
 client = OpenAI(
-    base_url="https://api.two.ai/v2",
+    base_url="https://api.numeric.tech/v2",
     api_key=os.environ.get("SUTRA_API_KEY")
 )
 ```

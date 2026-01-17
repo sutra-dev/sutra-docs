@@ -26,7 +26,7 @@ It’s a lightweight library that prioritizes practicality. This means it can bu
 Before you begin, make sure you have:
 
 1.  A SUTRA API key (Get yours at [Numeric's SUTRA API
-    page](https://www.two.ai/sutra/api))
+    page](https://www.numeric.tech))
 2.  Basic familiarity with Python and Jupyter notebooks
 
 This notebook is designed to run in Google Colab, so no local Python
@@ -62,7 +62,7 @@ messages = [
 # Instantiate LiteLLMModel with Sutra model
 model = LiteLLMModel(
     model_id="openai/sutra-v2",                  # Use Sutra via LiteLLM
-    api_base="https://api.two.ai/v2",            # Sutra API base from TwoAI
+    api_base="https://api.numeric.tech/v2",            # Sutra API base from TwoAI
     api_key=os.getenv("SUTRA_API_KEY"),          # Pass API key
     temperature=0.7,
     max_tokens=500
@@ -81,7 +81,7 @@ from smolagents import LiteLLMModel, CodeAgent, DuckDuckGoSearchTool
 # Initialize Sutra model
 model = LiteLLMModel(
     model_id="openai/sutra-v2",
-    api_base="https://api.two.ai/v2",
+    api_base="https://api.numeric.tech/v2",
     api_key=os.getenv("SUTRA_API_KEY"),
     temperature=0.7,
     max_tokens=500
@@ -106,7 +106,7 @@ from IPython.display import Audio
 # ✅ Initialize Sutra Model
 model = LiteLLMModel(
     model_id="openai/sutra-v2",
-    api_base="https://api.two.ai/v2",
+    api_base="https://api.numeric.tech/v2",
     api_key=os.getenv("SUTRA_API_KEY"),
     temperature=0.7,
     max_tokens=1024
@@ -222,7 +222,7 @@ retriever_tool = RetrieverTool(vector_store)
 # ✅ Step 5: Setup Sutra LLM
 model = LiteLLMModel(
     model_id="openai/sutra-v2",
-    api_base="https://api.two.ai/v2",
+    api_base="https://api.numeric.tech/v2",
     api_key=userdata.get("SUTRA_API_KEY"),
 )
 

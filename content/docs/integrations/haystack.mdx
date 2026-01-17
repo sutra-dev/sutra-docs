@@ -39,7 +39,7 @@ from haystack.components.generators.chat import OpenAIChatGenerator
 client = OpenAIChatGenerator(
     model="sutra-v2",  # or "sutra-r0" for reasoning tasks
     api_key=Secret.from_token(os.getenv("SUTRA_API_KEY")),
-    api_base_url="https://api.two.ai/v2"
+    api_base_url="https://api.numeric.tech/v2"
 )
 ```
 

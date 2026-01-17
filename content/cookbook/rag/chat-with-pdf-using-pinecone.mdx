@@ -119,7 +119,7 @@ memory = ConversationBufferMemory(
 rag_chain = ConversationalRetrievalChain.from_llm(
     llm=ChatOpenAI(
         api_key=os.getenv("SUTRA_API_KEY"),
-        base_url="https://api.two.ai/v2",
+        base_url="https://api.numeric.tech/v2",
         model="sutra-v2",
         temperature=0.7
     ),
@@ -154,7 +154,7 @@ Question: {question}
 # Invoke Sutra LLM directly for language-controlled response
 llm = ChatOpenAI(
     api_key=os.getenv("SUTRA_API_KEY"),
-    base_url="https://api.two.ai/v2",
+    base_url="https://api.numeric.tech/v2",
     model="sutra-v2",
     temperature=0.5,
 )
@@ -186,7 +186,7 @@ from langchain_pinecone import PineconeVectorStore
 def get_sutra_model():
     return ChatOpenAI(
         api_key=os.getenv("SUTRA_API_KEY"),
-        base_url="https://api.two.ai/v2",
+        base_url="https://api.numeric.tech/v2",
         model="sutra-v2",
         temperature=0.7
     )

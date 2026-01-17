@@ -23,7 +23,7 @@ title: SUTRA with Japanese
 
 始める前に、以下を準備してください：
 
-1.  SUTRA APIキー（[NumericのSUTRA APIページ](https://www.two.ai/sutra/api)で取得）
+1.  SUTRA APIキー（[NumericのSUTRA APIページ](https://www.numeric.tech)で取得）
 2.  PythonおよびJupyterノートブックの基本的な知識
 
 このノートブックはGoogle Colabで実行するように設計されており、ローカルのPythonインストールは必要ありません。
@@ -62,7 +62,7 @@ os.environ["SUTRA_API_KEY"] = userdata.get('SUTRA_API_KEY')
 ```python
 # Sutra APIエンドポイントでOpenAIクライアントを作成
 client = OpenAI(
-    base_url="https://api.two.ai/v2",
+    base_url="https://api.numeric.tech/v2",
     api_key=os.environ.get("SUTRA_API_KEY")
 )
 ```

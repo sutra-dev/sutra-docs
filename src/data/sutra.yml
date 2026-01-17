@@ -11,7 +11,7 @@ externalDocs:
   description: Sutra OpenAPI Specification
   url: endpoints
 servers:
-  - url: https://api.two.ai
+  - url: https://api.numeric.tech
     description: Sutra API Server
 components:
   schemas:

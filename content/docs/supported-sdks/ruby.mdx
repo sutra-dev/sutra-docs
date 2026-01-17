@@ -35,7 +35,7 @@ require 'openai'
 # Configure the client
 OpenAI.configure do |config|
   config.access_token = ENV.fetch('SUTRA_API_KEY') # Get from environment variable
-  config.uri_base = 'https://api.two.ai/v2' # SUTRA API base URL
+  config.uri_base = 'https://api.numeric.tech/v2' # SUTRA API base URL
 end
 
 # Create a client

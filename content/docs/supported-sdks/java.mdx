@@ -48,7 +48,7 @@ public class SutraExample {
     public static void main(String[] args) {
         // Create custom service with SUTRA base URL
         String token = System.getenv("SUTRA_API_KEY"); // Get from environment variable
-        String baseUrl = "https://api.two.ai/v2";
+        String baseUrl = "https://api.numeric.tech/v2";
 
         // Initialize the service with custom settings
         OpenAiService service = new OpenAiService(token, Duration.ofSeconds(30), baseUrl);

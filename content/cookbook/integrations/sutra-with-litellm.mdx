@@ -63,7 +63,7 @@ api_key = os.environ.get("SUTRA_API_KEY")
 response = litellm.completion(
     model="openai/sutra-v2",
     api_key=api_key,
-    api_base="https://api.two.ai/v2",
+    api_base="https://api.numeric.tech/v2",
     messages=[
         {
             "role": "user",
@@ -83,7 +83,7 @@ print(response['choices'][0]['message']['content'])
 response = litellm.completion(
     model="openai/sutra-v2",
     api_key=api_key,
-    api_base="https://api.two.ai/v2",
+    api_base="https://api.numeric.tech/v2",
     messages=[
         {
             "role": "user",
@@ -106,7 +106,7 @@ for chunk in response:
 response = litellm.completion(
     model="openai/sutra-v2",
     api_key=api_key,
-    api_base="https://api.two.ai/v2",
+    api_base="https://api.numeric.tech/v2",
     messages=[
         {
             "role": "user",
@@ -136,7 +136,7 @@ for lang, q in zip(languages, questions):
     response = litellm.completion(
         model="openai/sutra-v2",
         api_key=api_key,
-        api_base="https://api.two.ai/v2",
+        api_base="https://api.numeric.tech/v2",
         messages=[{"role": "user", "content": q}],
         temperature=0.6,
         max_tokens=500
@@ -162,7 +162,7 @@ for source_lang, target_lang, text in translations:
     response = litellm.completion(
         model="openai/sutra-v2",
         api_key=api_key,
-        api_base="https://api.two.ai/v2",
+        api_base="https://api.numeric.tech/v2",
         messages=[
             {"role": "user", "content": prompt}
         ],
@@ -198,7 +198,7 @@ while True:
         response = litellm.completion(
             model="openai/sutra-v2",
             api_key=api_key,
-            api_base="https://api.two.ai/v2",
+            api_base="https://api.numeric.tech/v2",
             messages=chat_history,
             temperature=0.7,
             max_tokens=500,

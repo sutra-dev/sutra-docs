@@ -51,7 +51,7 @@ If you are using Google Colab, you can:
 SUTRA API uses an API format compatible with OpenAI. By modifying the configuration, you can also use the OpenAI SDK or softwares compatible with the OpenAI API.
 
 ```
-https://api.two.ai/v2
+https://api.numeric.tech/v2
 ```
 
 ### Chat Completions Endpoint
@@ -90,7 +90,7 @@ from openai import OpenAI
 
 client = OpenAI(
     api_key=os.getenv("SUTRA_API_KEY", "YOUR_SUTRA_API_KEY"),
-    base_url="https://api.two.ai/v2"
+    base_url="https://api.numeric.tech/v2"
 )
 
 response = client.chat.completions.create(
@@ -111,7 +111,7 @@ import { OpenAI } from "openai";
 async function main() {
   const client = new OpenAI({
     apiKey: process.env.SUTRA_API_KEY || "YOUR_SUTRA_API_KEY",
-    baseURL: "https://api.two.ai/v2",
+    baseURL: "https://api.numeric.tech/v2",
   });
 
   const response = await client.chat.completions.create({
@@ -141,7 +141,7 @@ import OpenAI from "openai";
 
 const client = new OpenAI({
   apiKey: "YOUR_SUTRA_API_KEY",
-  baseURL: "https://api.two.ai/v2",
+  baseURL: "https://api.numeric.tech/v2",
   dangerouslyAllowBrowser: true, // Note: Use a backend proxy in production
 });
 
@@ -202,7 +202,7 @@ from openai import OpenAI
 
 client = OpenAI(
     api_key=os.getenv("SUTRA_API_KEY", "YOUR_SUTRA_API_KEY"),
-    base_url="https://api.two.ai/v2"
+    base_url="https://api.numeric.tech/v2"
 )
 
 stream = client.chat.completions.create(
@@ -227,7 +227,7 @@ import { OpenAI } from "openai";
 async function streamSutra() {
   const client = new OpenAI({
     apiKey: process.env.SUTRA_API_KEY || "YOUR_SUTRA_API_KEY",
-    baseURL: "https://api.two.ai/v2",
+    baseURL: "https://api.numeric.tech/v2",
   });
 
   const stream = await client.chat.completions.create({
@@ -255,7 +255,7 @@ streamSutra();
 <Tab title="cURL">
 
 ```bash
-curl -X POST "https://api.two.ai/v2/chat/completions" \
+curl -X POST "https://api.numeric.tech/v2/chat/completions" \
     -H "Authorization: Bearer $SUTRA_API_KEY" \
     -H "Content-Type: application/json" \
     -H "Accept: text/event-stream" \

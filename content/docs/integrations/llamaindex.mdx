@@ -19,7 +19,7 @@ from llama_index.llms.openai_like import OpenAILike
 # Initialize Sutra as an OpenAI-compatible LLM
 llm = OpenAILike(
     model="sutra-v2",                             # Model name
-    api_base="https://api.two.ai/v2",            # Sutra API base
+    api_base="https://api.numeric.tech/v2",            # Sutra API base
     api_key=os.getenv("SUTRA_API_KEY"),          # API Key from environment
     is_chat_model=True                           # Set True for chat-based models
 )
@@ -45,7 +45,7 @@ from llama_index.llms.openai_like import OpenAILike
 # Initialize Sutra LLM with necessary parameters
 llm = OpenAILike(
     model="sutra-v2",                    # Sutra model name
-    api_base="https://api.two.ai/v2",    # Sutra API base URL
+    api_base="https://api.numeric.tech/v2",    # Sutra API base URL
     api_key=os.getenv("SUTRA_API_KEY"),  # Sutra API key
     is_chat_model=True,                  # Mandatory: Set to True for chat-based models
 )
@@ -77,7 +77,7 @@ from llama_index.core.llms import ChatMessage
 # Initialize the Sutra model via LlamaIndex
 llm = OpenAILike(
     model="sutra-v2",                    # Sutra model name
-    api_base="https://api.two.ai/v2",    # Sutra API base URL
+    api_base="https://api.numeric.tech/v2",    # Sutra API base URL
     api_key=os.getenv("SUTRA_API_KEY"),  # Sutra API key
     is_chat_model=True,                  # Mandatory for chat-based models
 )

@@ -36,7 +36,7 @@ Authenticate with your API key:
 from openai import OpenAI
 
 client = OpenAI(
-    base_url='https://api.two.ai/v2',
+    base_url='https://api.numeric.tech/v2',
     api_key="YOUR_SUTRA_API_KEY"
 )
 ```
@@ -95,7 +95,7 @@ compare_reasoning("Explain the trade-offs between nuclear and solar energy for l
 ###  API Access (cURL)
 
 ```bash
-curl -X POST https://api.two.ai/v2/chat/completions \
+curl -X POST https://api.numeric.tech/v2/chat/completions \
 -H "Authorization: Bearer $SUTRA_API_KEY" \
 -H "Content-Type: application/json" \
 -d '{

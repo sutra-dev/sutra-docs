@@ -28,7 +28,7 @@ roles and coordinated workflows.
 Before you begin, make sure you have:
 
 1.  A SUTRA API key (Get yours at [Numeric's SUTRA API
-    page](https://www.two.ai/sutra/api))
+    page](https://www.numeric.tech))
 2.  Basic familiarity with Python and Jupyter notebooks
 
 This notebook is designed to run in Google Colab, so no local Python
@@ -67,7 +67,7 @@ from openai import OpenAI
 
 # Initialize the client with Sutra's API endpoint
 client = OpenAI(
-    base_url='https://api.two.ai/v2',
+    base_url='https://api.numeric.tech/v2',
     api_key=os.environ["SUTRA_API_KEY"]
 )
 
@@ -95,7 +95,7 @@ from crewai import LLM
 llm = LLM(
     model="openai/sutra-v2",
     api_key=os.getenv("SUTRA_API_KEY"),  # Make sure to set this in your environment
-    api_base="https://api.two.ai/v2",
+    api_base="https://api.numeric.tech/v2",
 )
 
 # Step 2: Define an agent using this LLM
@@ -139,7 +139,7 @@ from crewai import LLM
 llm = LLM(
     model="openai/sutra-v2",
     api_key=os.getenv("SUTRA_API_KEY"),
-    api_base="https://api.two.ai/v2",
+    api_base="https://api.numeric.tech/v2",
 )
 ```
 

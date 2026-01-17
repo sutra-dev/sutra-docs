@@ -62,7 +62,7 @@ from langchain.schema import HumanMessage
 # Initialize Sutra model (OpenAI-compatible)
 llm = ChatOpenAI(
     api_key=os.getenv("SUTRA_API_KEY"),
-    base_url="https://api.two.ai/v2",  # Replace with actual endpoint
+    base_url="https://api.numeric.tech/v2",  # Replace with actual endpoint
     model="sutra-v2"
 )
 
@@ -80,7 +80,7 @@ from langchain.schema import HumanMessage
 # Initialize the ChatOpenAI model
 chat = ChatOpenAI(
     api_key=os.getenv("SUTRA_API_KEY"),
-    base_url="https://api.two.ai/v2",
+    base_url="https://api.numeric.tech/v2",
     model="sutra-v2",
 
 )
@@ -110,7 +110,7 @@ from langchain.schema import HumanMessage
 # Initialize the ChatOpenAI model
 chat = ChatOpenAI(
     api_key=os.getenv("SUTRA_API_KEY"),
-    base_url="https://api.two.ai/v2",
+    base_url="https://api.numeric.tech/v2",
     model="sutra-v2"
 )
 
@@ -152,7 +152,7 @@ from langchain_openai import OpenAIEmbeddings
 # Use Sutra for LLM
 llm = ChatOpenAI(
     api_key=userdata.get("SUTRA_API_KEY"),
-    base_url="https://api.two.ai/v2",
+    base_url="https://api.numeric.tech/v2",
     model="sutra-v2",
 )
 
@@ -201,7 +201,7 @@ from langchain.schema import HumanMessage
 # Step 1: Define Sutra LLM via LangChain
 llm = ChatOpenAI(
     api_key=userdata.get("SUTRA_API_KEY"),
-    base_url="https://api.two.ai/v2",
+    base_url="https://api.numeric.tech/v2",
     model="sutra-v2"
 )
 

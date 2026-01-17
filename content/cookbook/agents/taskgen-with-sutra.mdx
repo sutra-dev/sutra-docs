@@ -26,7 +26,7 @@ TaskGen is a cutting-edge task-based agentic framework designed for efficient ta
 
 Before you begin, make sure you have:
 
-1.  A SUTRA API key (Get yours at [Numeric's SUTRA API page](https://www.two.ai/sutra/api))
+1.  A SUTRA API key (Get yours at [Numeric's SUTRA API page](https://www.numeric.tech))
 2.  Basic familiarity with Python and Jupyter notebooks
 
 This notebook is designed to run in Google Colab, so no local Python installation is required.
@@ -58,7 +58,7 @@ def llm(system_prompt: str, user_prompt: str) -> str:
 
     client = OpenAI(
         api_key=SUTRA_API_KEY,
-        base_url="https://api.two.ai/v2"  # Sutra's base URL
+        base_url="https://api.numeric.tech/v2"  # Sutra's base URL
     )
     response = client.chat.completions.create(
         model='sutra-v2',  # Use Sutra LLM
@@ -159,7 +159,7 @@ import asyncio
 # Async wrapper for Sutra LLM
 async def sutra_llm_async(system_prompt: str, user_prompt: str):
     from openai import AsyncOpenAI
-    client = AsyncOpenAI(api_key=os.getenv("SUTRA_API_KEY"), base_url="https://api.two.ai/v2")
+    client = AsyncOpenAI(api_key=os.getenv("SUTRA_API_KEY"), base_url="https://api.numeric.tech/v2")
     response = await client.chat.completions.create(
         model="sutra-v2",
         temperature=0,

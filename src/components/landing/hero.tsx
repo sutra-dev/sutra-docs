@@ -19,7 +19,7 @@ from openai import OpenAI
 
 client = OpenAI(
     api_key=os.getenv("SUTRA_API_KEY"),
-    base_url="https://api.two.ai/v2"
+    base_url="https://api.numeric.tech/v2"
 )
 response = client.chat.completions.create(
     model="sutra-v2",
@@ -38,7 +38,7 @@ print(response.choices[0].message.content)`,
 
 const client = new OpenAI({
     apiKey: process.env.SUTRA_API_KEY,
-    baseURL: "https://api.two.ai/v2"
+    baseURL: "https://api.numeric.tech/v2"
 });
 const response = await client.chat.completions.create({
     model: "sutra-v2",

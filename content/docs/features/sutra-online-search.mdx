@@ -54,7 +54,7 @@ import json
 import os
 
 # Establish connection to Two.ai API
-conn = http.client.HTTPSConnection("api.two.ai")
+conn = http.client.HTTPSConnection("api.numeric.tech")
 
 # Prepare the request payload
 payload = json.dumps({
@@ -132,7 +132,7 @@ if not api_key:
     exit(1)
 
 # Create connection to Two.ai API
-conn = http.client.HTTPSConnection("api.two.ai")
+conn = http.client.HTTPSConnection("api.numeric.tech")
 
 # Define multiple locations
 locations = [
@@ -261,7 +261,7 @@ for location in locations:
 Test the SUTRA-V2 online search feature directly with a cURL command:
 
 ```bash
-curl -X POST https://api.two.ai/v2/chat/completions \
+curl -X POST https://api.numeric.tech/v2/chat/completions \
 -H "Authorization: Bearer $SUTRA_API_KEY" \
 -H "Content-Type: application/json" \
 -d '{
@@ -283,5 +283,5 @@ curl -X POST https://api.two.ai/v2/chat/completions \
 - **Invalid API Key**: Ensure `SUTRA_API_KEY` is set in your environment variables and correctly included in the `Authorization` header.
 - **Online Search Not Working**: Verify that `"online_search": True` is set in the `extra_body` of your payload.
 - **Incomplete Responses**: Increase `max_tokens` if the news summary is cut off (e.g., try 200).
-- **Network Errors**: Check your internet connection and ensure the Two.ai API endpoint (`https://api.two.ai/v2`) is accessible.
+- **Network Errors**: Check your internet connection and ensure the Two.ai API endpoint (`https://api.numeric.tech/v2`) is accessible.
 - **Outdated Information**: Include the current date in your prompt to ensure SUTRA-V2 fetches the latest data.

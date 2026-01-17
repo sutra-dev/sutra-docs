@@ -22,7 +22,7 @@ from openai import OpenAI
 
 client = OpenAI(
     api_key="YOUR_SUTRA_API_KEY",
-    base_url="https://api.two.ai/v2"
+    base_url="https://api.numeric.tech/v2"
 )
 ```
 
@@ -44,7 +44,7 @@ for chunk in stream:
 ## 🌟 Example: cURL for Streaming
 
 ```bash
-curl -X POST "https://api.two.ai/v2/chat/completions" \
+curl -X POST "https://api.numeric.tech/v2/chat/completions" \
   -H "Authorization: Bearer $SUTRA_API_KEY" \
   -H "Content-Type: application/json" \
   -H "Accept: text/event-stream" \

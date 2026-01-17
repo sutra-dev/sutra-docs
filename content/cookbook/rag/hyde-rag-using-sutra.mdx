@@ -20,7 +20,7 @@ HyDE operates by creating hypothetical document embeddings that represent ideal 
 
 Before you begin, make sure you have:
 
-1.  A SUTRA API key (Get yours at [Numeric's SUTRA API page](https://www.two.ai/sutra/api))
+1.  A SUTRA API key (Get yours at [Numeric's SUTRA API page](https://www.numeric.tech))
 2.  Basic familiarity with Python and Jupyter notebooks
 
 This notebook is designed to run in Google Colab, so no local Python installation is required.
@@ -88,7 +88,7 @@ from langchain_core.output_parsers import StrOutputParser
 # Sutra LLM setup
 llm = ChatOpenAI(
     api_key=os.getenv("SUTRA_API_KEY"),
-    base_url="https://api.two.ai/v2",
+    base_url="https://api.numeric.tech/v2",
     model="sutra-v2"
 )
 

@@ -24,7 +24,7 @@ This notebook demonstrates how to use LangGraph with Sutra, a powerful language 
 
 Before you begin, make sure you have:
 
-1.  A SUTRA API key (Get yours at [Numeric's SUTRA API page](https://www.two.ai/sutra/api))
+1.  A SUTRA API key (Get yours at [Numeric's SUTRA API page](https://www.numeric.tech))
 2.  Basic familiarity with Python and Jupyter notebooks
 
 This notebook is designed to run in Google Colab, so no local Python installation is required.
@@ -59,7 +59,7 @@ from langchain_core.messages import HumanMessage, AIMessage, SystemMessage, Base
 chat = ChatOpenAI(
     model="sutra-v2",  # or "sutra-r0" for reasoning tasks
     api_key=os.environ["SUTRA_API_KEY"],
-    base_url="https://api.two.ai/v2"
+    base_url="https://api.numeric.tech/v2"
 )
 
 # Test the model
@@ -129,7 +129,7 @@ print(response)
 r0_chat = ChatOpenAI(
     model="sutra-r0",  # or "sutra-r0" for reasoning tasks
     api_key=os.environ["SUTRA_API_KEY"],
-    base_url="https://api.two.ai/v2"
+    base_url="https://api.numeric.tech/v2"
 )
 
 # Define the state schema for reasoning
