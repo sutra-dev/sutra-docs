@@ -20,11 +20,11 @@ import IntegrationsSection from '../landing/integrations';
 const features = [
   {
     id: 1,
-    title: 'DEVELOPER PORTAL',
+    title: 'ENTERPRISE API',
     description:
-      'Generate API keys, explore prompts, and access tools in an interactive playground built for developers.',
+      'Contact Numeric for enterprise API access, custom solutions, and dedicated support for your organization.',
     icon: ShieldCheckIcon,
-    href: 'http://platform.two.ai/',
+    href: 'https://www.numeric.tech',
   },
   {
     id: 2,

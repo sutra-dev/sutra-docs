@@ -31,23 +31,23 @@ export default async function HomePage() {
             <div className="flex flex-col md:flex-row items-center justify-center h-12">
               <span className="font-medium flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
                 <span className=" text-zinc-900 dark:text-white/90 hover:text-zinc-950 text-xs md:text-sm dark:hover:text-zinc-100 transition-colors">
-                  Get started by generating
+                  Enterprise API Access
                 </span>
                 <span className=" text-zinc-400 hidden md:block">|</span>
                 <Link
                   target="_blank"
-                  href="http://platform.two.ai"
+                  href="https://www.numeric.tech"
                   className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 hidden dark:hover:text-blue-300 transition-colors md:block"
                 >
-                  API Key →
+                  Contact Numeric →
                 </Link>
               </span>
               <Link
                 target="_blank"
-                href="http://platform.two.ai"
+                href="https://www.numeric.tech"
                 className="font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 text-xs dark:hover:text-blue-300 transition-colors md:hidden"
               >
-                Get your API Key →
+                Contact Numeric →
               </Link>
             </div>
           </div>
