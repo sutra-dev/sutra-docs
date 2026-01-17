@@ -36,10 +36,10 @@ const features = [
   },
   {
     id: 3,
-    title: 'CHATSUTRA',
-    description: 'Experience SUTRA Models directly through ChatSUTRA’s conversational playground and demo interface.',
-    icon: LockClosedIcon,
-    href: 'https://chat.two.ai/',
+    title: 'COOKBOOK',
+    description: 'Explore practical examples, integrations, and tutorials to build powerful multilingual AI applications.',
+    icon: RabbitIcon,
+    href: '/cookbook',
   },
 ];
 
