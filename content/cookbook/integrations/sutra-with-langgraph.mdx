@@ -12,19 +12,19 @@ title: LangGraph with SUTRA
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1F4Lvv-iEEbR70s_RC3EBZWr9KA5UmmG7?usp=sharing)
 
-## SUTRA by TWO Platforms
+## SUTRA by Numeric
 
-SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Numeric. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
 
 # LangGraph with SUTRA
 
-This notebook demonstrates how to use LangGraph with Sutra, a powerful language model from Two AI. We'll create a simple conversational agent with state management using LangGraph and Sutra's capabilities.
+This notebook demonstrates how to use LangGraph with Sutra, a powerful language model from Numeric. We'll create a simple conversational agent with state management using LangGraph and Sutra's capabilities.
 
 ## Get Your API Keys
 
 Before you begin, make sure you have:
 
-1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+1.  A SUTRA API key (Get yours at [Numeric's SUTRA API page](https://www.two.ai/sutra/api))
 2.  Basic familiarity with Python and Jupyter notebooks
 
 This notebook is designed to run in Google Colab, so no local Python installation is required.
@@ -49,7 +49,7 @@ os.environ["SUTRA_API_KEY"] = userdata.get("SUTRA_API_KEY")
 
 ## Initialize Sutra Model
 
-We'll use the ChatOpenAI class to initialize the Sutra model with the appropriate base URL for Two AI's API.
+We'll use the ChatOpenAI class to initialize the Sutra model with the appropriate base URL for Numeric's API.
 
 ```python
 from langchain_openai import ChatOpenAI

@@ -13,19 +13,19 @@ title: SUTRA with AutoGen
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1DMaBjL3euIOTAMvFH3l1CcTE3kHlYZ-0?usp=sharing)
 
-## SUTRA by TWO Platforms
+## SUTRA by Numeric
 
-SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Two Platforms. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
+SUTRA is a family of large multi-lingual language (LMLMs) models pioneered by Numeric. SUTRA’s dual-transformer approach extends the power of both MoE and Dense AI language model architectures, delivering cost-efficient multilingual capabilities for over 50+ languages. It powers scalable AI applications for conversation, search, and advanced reasoning, ensuring high-performance across diverse languages, domains and applications.
 
 # AutoGen Agents With SUTRA
 
-This notebook demonstrates how to integrate Sutra, a powerful language model from Two AI, with AutoGen, a framework for building agent-based systems. We'll create multi-agent systems that leverage Sutra's capabilities for various tasks.
+This notebook demonstrates how to integrate Sutra, a powerful language model from Numeric, with AutoGen, a framework for building agent-based systems. We'll create multi-agent systems that leverage Sutra's capabilities for various tasks.
 
 ## Get Your API Keys
 
 Before you begin, make sure you have:
 
-1.  A SUTRA API key (Get yours at [TWO AI's SUTRA API page](https://www.two.ai/sutra/api))
+1.  A SUTRA API key (Get yours at [Numeric's SUTRA API page](https://www.two.ai/sutra/api))
 2.  Basic familiarity with Python and Jupyter notebooks
 
 This notebook is designed to run in Google Colab, so no local Python installation is required.
@@ -50,7 +50,7 @@ from autogen import AssistantAgent, UserProxyAgent, config_list_from_json
 from google.colab import userdata
 
 
-# Set your API key for Two AI
+# Set your API key for Numeric
 api_key = userdata.get("SUTRA_API_KEY")  # Replace with your actual API key
 # os.environ["TWO_AI_API_KEY"] = api_key]  # Uncomment this line if you prefer to use environment variables
 ```

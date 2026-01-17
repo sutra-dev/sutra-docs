@@ -2,6 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/cloudflare/wrangler/main/docs/schema.json",
   "main": ".open-next/worker.js",
   "name": "sutra-docs",
+  "account_id": "ab86b3964235ecf251f4d91eb3a3fd0e",
   "compatibility_date": "2024-12-30",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
